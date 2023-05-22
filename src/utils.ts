@@ -1,7 +1,9 @@
 import axios from 'axios';
 import moment, { type Moment } from 'moment';
-import type { ETFPriceInfo } from './types';
+import { set } from 'lodash';
+import type { ETFPriceInfo, OptionInfo, OptionNestData } from './types';
 import jsonp from 'jsonp';
+import { etfInfos } from './constants';
 
 export const fetchAvgPrice = (
   code: string,
@@ -73,11 +75,12 @@ export const getCount = (amount: number, price: number) => {
 const fetchSinaFinance = (query: string) =>
   axios
     .get(
-      `https://a28c74f8c23a43c8a36364498baae175.apig.cn-north-1.huaweicloudapis.com/?query=${query}`
+      // `https://a28c74f8c23a43c8a36364498baae175.apig.cn-north-1.huaweicloudapis.com/?query=${query}`
+      `http://api.1to10.zldlwq.top/api?query=${query}`
     )
     .then((res) => res.data);
 
-const formatOpDatas = (data: string) =>
+const formatOpDatas = (data: string, etfPrice: number) =>
   data.match(/"(.*?)"/g)?.map((x) => {
     const arr = x.replace(/"/g, '').split(',');
     /**
@@ -87,19 +90,25 @@ const formatOpDatas = (data: string) =>
         标的证券类型，标的股票，期权合约简称，振幅(38)，最高价，最低价，成交量，成交额，分红调整标志，昨结算价，认购认沽标志，
         到期日，剩余天数，虚实值标志，内在价值，时间价值
         */
-    return {
+    const result: OptionNestData = {
       currPrice: Number(arr[2]),
       strikePrice: Number(arr[7]),
-      isPramary: arr[33] === '1',
-      PorC: arr[45],
+      isPrimary: Math.abs(etfPrice - Number(arr[7])) <= 0.05,
+      PorC: arr[45] as OptionNestData['PorC'],
       dealDate: arr[46],
       remainDays: Number(arr[47]),
       innerValue: Number(arr[49]),
       timeValue: Number(arr[50]),
     };
+    return result;
   });
 
-export const fetchOpDataByMonth = async (code: string, yearMonth: string) => {
+export const fetchOpDataByMonth = async (payload: {
+  code: string;
+  etfPrice: number;
+  yearMonth: string;
+}) => {
+  const { code, yearMonth, etfPrice } = payload;
   const mark = code.slice(-6) + yearMonth;
   const opQueryString = await fetchSinaFinance(`OP_UP_${mark},OP_DOWN_${mark}`);
   const [opUpQuery, opDownQuery] = opQueryString
@@ -112,8 +121,8 @@ export const fetchOpDataByMonth = async (code: string, yearMonth: string) => {
   ]);
 
   return {
-    opUpDatas: formatOpDatas(upRes),
-    opDownDatas: formatOpDatas(downRes),
+    opUpDatas: formatOpDatas(upRes, etfPrice),
+    opDownDatas: formatOpDatas(downRes, etfPrice),
   };
 };
 
@@ -136,3 +145,39 @@ export const fetchOpMonths = () =>
       val.replace(/-/g, '').slice(-4)
     )
   );
+
+export const fetchOpAllPrimaryDatas = async (etfInfos: ETFPriceInfo[]) => {
+  const months = await fetchOpMonths();
+  const codeMonthArr: Array<ETFPriceInfo & { month: string }> = [];
+  const result: OptionInfo[] = [];
+  etfInfos.forEach((data) => {
+    months.forEach((month) => {
+      codeMonthArr.push({ ...data, month });
+    });
+  });
+  await Promise.all(
+    codeMonthArr.map(({ code, month, name, price }) =>
+      fetchOpDataByMonth({ code, yearMonth: month, etfPrice: price }).then(
+        ({ opUpDatas = [], opDownDatas = [] }) => {
+          const primaryUpDatas = opUpDatas.filter((data) => data.isPrimary);
+          primaryUpDatas.forEach((up) => {
+            const down = opDownDatas.find(
+              (data) => data.strikePrice === up.strikePrice
+            );
+            result.push({
+              code,
+              name,
+              month,
+              strikePrice: up.strikePrice,
+              timeValueP: Number(down?.timeValue),
+              timeValueC: up.timeValue,
+              remainDays: up.remainDays,
+            });
+          });
+        }
+      )
+    )
+  );
+  // console.log('🚀 ~ file: App.tsx:53 ~ Promise.all ~ resArr:', resArr);
+  return result;
+};

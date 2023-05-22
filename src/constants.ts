@@ -1,5 +1,5 @@
 import type { ColumnType } from 'antd/es/table';
-import type { ETFPriceInfo, ETFPosInfo, InvestInfo } from './types';
+import type { ETFPriceInfo, ETFPosInfo, InvestInfo, OptionInfo } from './types';
 
 export const etfInfos: ETFPosInfo[] = [
   {
@@ -34,6 +34,60 @@ export const etfColumns: ColumnType<ETFPriceInfo>[] = [
     dataIndex: 'price',
     key: 'price',
     render: (price) => `¥ ${price}`,
+  },
+];
+
+export const optionColumns: ColumnType<OptionInfo>[] = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Code',
+    dataIndex: 'code',
+    key: 'code',
+  },
+  {
+    title: 'Month',
+    dataIndex: 'month',
+    key: 'month',
+  },
+  {
+    title: 'Strike Price',
+    dataIndex: 'strikePrice',
+    key: 'strikePrice',
+    render: (price) => `¥ ${price.toFixed(3)}`,
+  },
+  {
+    title: 'Time Value (P)',
+    dataIndex: 'timeValueP',
+    key: 'timeValueP',
+    render: (price) => `¥ ${price.toFixed(3)}`,
+  },
+  {
+    title: 'Time Value (C)',
+    dataIndex: 'timeValueC',
+    key: 'timeValueC',
+    render: (price) => `¥ ${price.toFixed(3)}`,
+  },
+  {
+    title: 'Value Diff (1 hand)',
+    render: (text, record) =>
+      `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
+  },
+  {
+    title: 'Remain Days',
+    dataIndex: 'remainDays',
+    key: 'remainDays',
+  },
+  {
+    title: 'Diff / Days',
+    render: (text, record) =>
+      `¥ ${(
+        ((record.timeValueP - record.timeValueC) * 10000) /
+        record.remainDays
+      ).toFixed(2)}`,
   },
 ];
 
@@ -95,9 +149,10 @@ export const investColumns: ColumnType<InvestInfo>[] = [
     title: 'Monthly Amount',
     dataIndex: 'monthlyAmount',
     key: 'monthlyAmount',
+    render: (price) => `¥ ${price}`,
   },
   {
-    title: 'Option Count',
+    title: 'Option Hands',
     dataIndex: 'optionCount',
     key: 'optionCount',
     render: (count) => `${count} OR (${count + 1})`,
@@ -109,7 +164,7 @@ export const investColumns: ColumnType<InvestInfo>[] = [
     render: (count) => `${count} OR (${count - 10000})`,
   },
   {
-    title: 'Scaling Option Count',
+    title: 'Scaling Option Hands',
     key: 'scalingOptionCount',
     dataIndex: 'scalingOptionCount',
     render: (count) => `${count} OR (${count + 1})`,

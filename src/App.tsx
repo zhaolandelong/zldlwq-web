@@ -8,17 +8,20 @@ import {
   getAnualReturnRate,
   getOptionDealDate,
   getCount,
+  fetchOpAllPrimaryDatas,
 } from './utils';
-import type { ETFPosInfo, ETFPriceInfo, InvestInfo } from './types';
+import type { ETFPosInfo, ETFPriceInfo, InvestInfo, OptionInfo } from './types';
 import {
   etfInfos,
   etfColumns,
   positionCloumns,
   investColumns,
+  optionColumns,
 } from './constants';
 
 function App() {
   const [etfDataSource, setEtfDataSource] = useState<ETFPriceInfo[]>([]);
+  const [optionDataSource, setOptionDataSource] = useState<OptionInfo[]>([]);
   const [posDataSource, setPosDataSource] = useState<ETFPosInfo[]>([]);
   const [investDataSource, setinvestDataSource] = useState<InvestInfo[]>([]);
   const [dataTime, setDataTime] = useState(moment().format('HH:mm:ss'));
@@ -26,14 +29,18 @@ function App() {
   const optionDealDate = useMemo(() => getOptionDealDate(), []);
 
   useEffect(() => {
-    Promise.all([
-      fetchETFPrice(etfInfos.map((info) => info.code)),
-      ...etfInfos.map((info) => fetchAvgPrice(info.code, info.startDate)),
-    ]).then(([etfArr, ...avgPriceArr]) => {
+    fetchETFPrice(etfInfos.map((info) => info.code)).then(async (etfArr) => {
       setDataTime(moment().format('HH:mm:ss'));
       // ETF
       setEtfDataSource(etfArr);
+
+      // Option
+      fetchOpAllPrimaryDatas(etfArr).then(setOptionDataSource);
+
       // Postion
+      const avgPriceArr = await Promise.all(
+        etfInfos.map((info) => fetchAvgPrice(info.code, info.startDate))
+      );
       const posDataSource: ETFPosInfo[] = etfInfos.map((info, index) => {
         const investMonths = moment().diff(info.startDate, 'month') + 1;
         const actualReturnRate = getAnualReturnRate(
@@ -50,6 +57,7 @@ function App() {
         };
       });
       setPosDataSource(posDataSource);
+
       // Invest
       const investDataSource: InvestInfo[] = etfInfos.map((info, index) => {
         const monthlyCount = getCount(info.monthlyAmount, etfArr[index].price);
@@ -76,11 +84,20 @@ function App() {
       <h1>Today is {moment().format('YYYY-MM-DD dddd')}</h1>
       <h2>
         Nearest Deal Date: {optionDealDate.format('YYYY-MM-DD')}. Remain{' '}
-        <span className="red">{optionDealDate.diff(moment(), 'days')}</span>{' '}
+        <span className="red">{optionDealDate.diff(moment(), 'days') + 1}</span>{' '}
         Days.
       </h2>
       <h2>ETF Info ({dataTime})</h2>
       <Table columns={etfColumns} dataSource={etfDataSource} rowKey="code" />
+      <h2>Option Info ({dataTime})</h2>
+      <Table
+        columns={optionColumns}
+        dataSource={optionDataSource}
+        rowKey={(record) =>
+          `${record.code}-${record.month}-${record.strikePrice}`
+        }
+        pagination={false}
+      />
       <h2>Position Info</h2>
       <Table
         columns={positionCloumns}

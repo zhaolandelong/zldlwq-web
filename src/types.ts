@@ -27,3 +27,24 @@ export interface InvestInfo {
   scalingOptionCount: number;
   scalingEtfCount: number;
 }
+
+export interface OptionNestData {
+  currPrice: number;
+  strikePrice: number;
+  isPrimary: boolean;
+  PorC: 'C' | 'P';
+  dealDate: string;
+  remainDays: number;
+  innerValue: number;
+  timeValue: number;
+}
+
+export interface OptionInfo {
+  code: string;
+  name: string;
+  month: string;
+  strikePrice: number;
+  timeValueP: number;
+  timeValueC: number;
+  remainDays: number;
+}
