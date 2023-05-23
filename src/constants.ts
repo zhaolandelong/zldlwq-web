@@ -1,5 +1,6 @@
 import type { ColumnType } from 'antd/es/table';
 import type { ETFPriceInfo, ETFPosInfo, InvestInfo, OptionInfo } from './types';
+import { ColumnFilterItem } from 'antd/es/table/interface';
 
 export const etfInfos: ETFPosInfo[] = [
   {
@@ -37,7 +38,9 @@ export const etfColumns: ColumnType<ETFPriceInfo>[] = [
   },
 ];
 
-export const optionColumns: ColumnType<OptionInfo>[] = [
+export const getOptionColumns = (
+  codeFilters: ColumnFilterItem[]
+): ColumnType<OptionInfo>[] => [
   {
     title: 'Name',
     dataIndex: 'name',
@@ -47,32 +50,39 @@ export const optionColumns: ColumnType<OptionInfo>[] = [
     title: 'Code',
     dataIndex: 'code',
     key: 'code',
+    filters: codeFilters,
+    onFilter: (value, record) => value === record.code,
   },
   {
     title: 'Month',
     dataIndex: 'month',
     key: 'month',
+    sorter: (a, b) => Number(a.month) - Number(b.month),
   },
   {
     title: 'Strike Price',
     dataIndex: 'strikePrice',
     key: 'strikePrice',
+    sorter: (a, b) => a.strikePrice - b.strikePrice,
     render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
     title: 'Time Value (P)',
     dataIndex: 'timeValueP',
     key: 'timeValueP',
+    sorter: (a, b) => a.timeValueP - b.timeValueP,
     render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
     title: 'Time Value (C)',
     dataIndex: 'timeValueC',
     key: 'timeValueC',
+    sorter: (a, b) => a.timeValueC - b.timeValueC,
     render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
     title: 'Value Diff (1 hand)',
+    sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, record) =>
       `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
   },
@@ -80,9 +90,14 @@ export const optionColumns: ColumnType<OptionInfo>[] = [
     title: 'Remain Days',
     dataIndex: 'remainDays',
     key: 'remainDays',
+    sorter: (a, b) => a.remainDays - b.remainDays,
+    render: (d) => `${d} days`,
   },
   {
     title: 'Diff / Days',
+    sorter: (a, b) =>
+      (a.timeValueP - a.timeValueC) / a.remainDays -
+      (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, record) =>
       `¥ ${(
         ((record.timeValueP - record.timeValueC) * 10000) /

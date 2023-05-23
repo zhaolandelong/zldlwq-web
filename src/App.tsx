@@ -16,7 +16,7 @@ import {
   etfColumns,
   positionCloumns,
   investColumns,
-  optionColumns,
+  getOptionColumns,
 } from './constants';
 
 function App() {
@@ -88,10 +88,23 @@ function App() {
         Days.
       </h2>
       <h2>ETF Info ({dataTime})</h2>
-      <Table columns={etfColumns} dataSource={etfDataSource} rowKey="code" />
+      <Table
+        columns={etfColumns}
+        dataSource={etfDataSource}
+        rowKey="code"
+        pagination={false}
+      />
       <h2>Option Info ({dataTime})</h2>
       <Table
-        columns={optionColumns}
+        columns={getOptionColumns(
+          etfInfos.map(({ code }) => {
+            const value = code.slice(-6);
+            return {
+              text: value,
+              value,
+            };
+          })
+        )}
         dataSource={optionDataSource}
         rowKey={(record) =>
           `${record.code}-${record.month}-${record.strikePrice}`
@@ -103,12 +116,14 @@ function App() {
         columns={positionCloumns}
         dataSource={posDataSource}
         rowKey="code"
+        pagination={false}
       />
       <h2>Invest Info</h2>
       <Table
         columns={investColumns}
         dataSource={investDataSource}
         rowKey="code"
+        pagination={false}
       />
     </div>
   );
