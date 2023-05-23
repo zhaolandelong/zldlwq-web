@@ -1,24 +1,22 @@
 import axios from 'axios';
 import moment, { type Moment } from 'moment';
-import { set } from 'lodash';
-import type { ETFPriceInfo, OptionInfo, OptionNestData } from './types';
+import type { ETFPriceInfo, OptionNestData, OptionPnCData } from './types';
 import jsonp from 'jsonp';
-import { etfInfos } from './constants';
 
 export const fetchAvgPrice = (
-  code: string,
+  opCode: string,
   startDate: string,
   endDate: string = moment().format('YYYY-MM-DD')
 ): Promise<number> => {
   return axios
     .get(
-      `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${code},month,${moment(
+      `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${opCode},month,${moment(
         startDate
       )
         .subtract(1, 'month')
         .format('YYYY-MM-DD')},${endDate},999,qfq`
     )
-    .then((res) => res.data.data[code].qfqmonth)
+    .then((res) => res.data.data[opCode].qfqmonth)
     .then((arr: Array<string[]>) => {
       arr.pop();
       const avgPrice = arr.reduce((a, b) => a + Number(b[2]), 0) / arr.length;
@@ -32,8 +30,10 @@ export const getDealDate = (date: Moment = moment()): Moment => {
   return firstWend.add(count, 'weeks');
 };
 
-export const fetchETFPrice = (codes: string[]): Promise<ETFPriceInfo[]> =>
-  axios.get<string>(`https://qt.gtimg.cn/q=${codes.join(',')}`).then((res) =>
+export const fetchETFPrice = (
+  opCodes: string[]
+): Promise<Pick<ETFPriceInfo, 'code' | 'price'>[]> =>
+  axios.get<string>(`https://qt.gtimg.cn/q=${opCodes.join(',')}`).then((res) =>
     res.data
       .split(';')
       .filter((v) => v.includes('~'))
@@ -41,7 +41,6 @@ export const fetchETFPrice = (codes: string[]): Promise<ETFPriceInfo[]> =>
         const arr = str.split('~');
         return {
           code: arr[2],
-          name: arr[1],
           price: Number(arr[3]),
         };
       })
@@ -80,7 +79,7 @@ const fetchSinaFinance = (query: string) =>
     )
     .then((res) => res.data);
 
-const formatOpDatas = (data: string, etfPrice: number) =>
+const formatOpDatas = (data: string) =>
   data.match(/"(.*?)"/g)?.map((x) => {
     const arr = x.replace(/"/g, '').split(',');
     /**
@@ -93,7 +92,6 @@ const formatOpDatas = (data: string, etfPrice: number) =>
     const result: OptionNestData = {
       currPrice: Number(arr[2]),
       strikePrice: Number(arr[7]),
-      isPrimary: Math.abs(etfPrice - Number(arr[7])) <= 0.05,
       PorC: arr[45] as OptionNestData['PorC'],
       dealDate: arr[46],
       remainDays: Number(arr[47]),
@@ -101,15 +99,14 @@ const formatOpDatas = (data: string, etfPrice: number) =>
       timeValue: Number(arr[50]),
     };
     return result;
-  });
+  }) ?? [];
 
 export const fetchOpDataByMonth = async (payload: {
   code: string;
-  etfPrice: number;
   yearMonth: string;
 }) => {
-  const { code, yearMonth, etfPrice } = payload;
-  const mark = code.slice(-6) + yearMonth;
+  const { code, yearMonth } = payload;
+  const mark = code + yearMonth;
   const opQueryString = await fetchSinaFinance(`OP_UP_${mark},OP_DOWN_${mark}`);
   const [opUpQuery, opDownQuery] = opQueryString
     .match(/"(.*?)"/g)
@@ -121,8 +118,8 @@ export const fetchOpDataByMonth = async (payload: {
   ]);
 
   return {
-    opUpDatas: formatOpDatas(upRes, etfPrice),
-    opDownDatas: formatOpDatas(downRes, etfPrice),
+    opUpDatas: formatOpDatas(upRes),
+    opDownDatas: formatOpDatas(downRes),
   };
 };
 
@@ -146,34 +143,45 @@ export const fetchOpMonths = () =>
     )
   );
 
-export const fetchOpAllPrimaryDatas = async (etfInfos: ETFPriceInfo[]) => {
+export const fetchEtfOpPrimaryDatas = async (etfInfo: ETFPriceInfo) => {
   const months = await fetchOpMonths();
   const codeMonthArr: Array<ETFPriceInfo & { month: string }> = [];
-  const result: OptionInfo[] = [];
-  etfInfos.forEach((data) => {
-    months.forEach((month) => {
-      codeMonthArr.push({ ...data, month });
-    });
+  months.forEach((month) => {
+    codeMonthArr.push({ ...etfInfo, month });
   });
-  await Promise.all(
+  const result: OptionPnCData[] = await Promise.all(
     codeMonthArr.map(({ code, month, name, price }) =>
-      fetchOpDataByMonth({ code, yearMonth: month, etfPrice: price }).then(
+      fetchOpDataByMonth({ code, yearMonth: month }).then(
         ({ opUpDatas = [], opDownDatas = [] }) => {
-          const primaryUpDatas = opUpDatas.filter((data) => data.isPrimary);
-          primaryUpDatas.forEach((up) => {
-            const down = opDownDatas.find(
-              (data) => data.strikePrice === up.strikePrice
-            );
-            result.push({
-              code,
-              name,
-              month,
-              strikePrice: up.strikePrice,
-              timeValueP: Number(down?.timeValue),
-              timeValueC: up.timeValue,
-              remainDays: up.remainDays,
-            });
+          let primaryUpIndex = 0;
+          let primaryDownIndex = 0;
+          let abs = Infinity;
+          opDownDatas.forEach((upData, index) => {
+            if (Math.abs(upData.strikePrice - price) < abs) {
+              abs = Math.abs(upData.strikePrice - price);
+              primaryUpIndex = index;
+              primaryDownIndex = opDownDatas.findIndex(
+                (downData) => downData.strikePrice === upData.strikePrice
+              );
+            }
           });
+          const primaryUp = opUpDatas[primaryUpIndex];
+          const primaryDown = opDownDatas[primaryDownIndex];
+          return {
+            code,
+            name,
+            month,
+            isPrimary: true,
+            strikePrice: primaryUp.strikePrice,
+            dealDate: primaryUp.dealDate,
+            remainDays: primaryUp.remainDays,
+            currPriceC: primaryUp.currPrice,
+            currPriceP: primaryDown.currPrice,
+            innerValueC: primaryUp.innerValue,
+            innerValueP: primaryDown.innerValue,
+            timeValueC: primaryUp.timeValue,
+            timeValueP: primaryDown.timeValue,
+          };
         }
       )
     )

@@ -1,83 +1,42 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import './App.css';
 import moment from 'moment';
-import { Table } from 'antd';
-import {
-  fetchETFPrice,
-  fetchAvgPrice,
-  getAnualReturnRate,
-  getOptionDealDate,
-  getCount,
-  fetchOpAllPrimaryDatas,
-} from './utils';
-import type { ETFPosInfo, ETFPriceInfo, InvestInfo, OptionInfo } from './types';
-import {
-  etfInfos,
-  etfColumns,
-  positionCloumns,
-  investColumns,
-  getOptionColumns,
-} from './constants';
+import { Checkbox, Button } from 'antd';
+import { fetchETFPrice, getOptionDealDate } from './utils';
+import type { ETFPriceInfo } from './types';
+import { DEFAULT_CODES, ETF_INFOS } from './constants';
+import ETFTable from './ETFTable';
+import ETFOpTable from './ETFOpTable';
+import PositionTable from './PosInvestTable';
+import InvestTable from './InvestTable';
 
 function App() {
+  const checkboxOptions = useMemo(
+    () =>
+      Object.values(ETF_INFOS).map((info) => ({
+        label: info.name,
+        value: info.code,
+      })),
+    []
+  );
+  const [etfCodes, setEtfCodes] = useState<string[]>(DEFAULT_CODES);
   const [etfDataSource, setEtfDataSource] = useState<ETFPriceInfo[]>([]);
-  const [optionDataSource, setOptionDataSource] = useState<OptionInfo[]>([]);
-  const [posDataSource, setPosDataSource] = useState<ETFPosInfo[]>([]);
-  const [investDataSource, setinvestDataSource] = useState<InvestInfo[]>([]);
-  const [dataTime, setDataTime] = useState(moment().format('HH:mm:ss'));
+  const [fetchTime, setfetchTime] = useState(moment().format('HH:mm:ss'));
 
   const optionDealDate = useMemo(() => getOptionDealDate(), []);
 
   useEffect(() => {
-    fetchETFPrice(etfInfos.map((info) => info.code)).then(async (etfArr) => {
-      setDataTime(moment().format('HH:mm:ss'));
-      // ETF
-      setEtfDataSource(etfArr);
-
-      // Option
-      fetchOpAllPrimaryDatas(etfArr).then(setOptionDataSource);
-
-      // Postion
-      const avgPriceArr = await Promise.all(
-        etfInfos.map((info) => fetchAvgPrice(info.code, info.startDate))
+    const etfInfos = etfCodes.map((code) => ETF_INFOS[code]);
+    const etfOpCodes = etfInfos.map((info) => info.opCode);
+    fetchETFPrice(etfOpCodes).then((etfArr) => {
+      setEtfDataSource(
+        etfArr.map((info, i) => ({
+          ...etfInfos[i],
+          price: info.price,
+        }))
       );
-      const posDataSource: ETFPosInfo[] = etfInfos.map((info, index) => {
-        const investMonths = moment().diff(info.startDate, 'month') + 1;
-        const actualReturnRate = getAnualReturnRate(
-          info.expectedReturnRate,
-          investMonths
-        );
-        return {
-          ...info,
-          name: etfArr[index].name,
-          investMonths,
-          avgCost: avgPriceArr[index],
-          actualReturnRate: actualReturnRate,
-          expectedReturnPrice: avgPriceArr[index] * (1 + actualReturnRate),
-        };
-      });
-      setPosDataSource(posDataSource);
-
-      // Invest
-      const investDataSource: InvestInfo[] = etfInfos.map((info, index) => {
-        const monthlyCount = getCount(info.monthlyAmount, etfArr[index].price);
-        const scalingCount = getCount(
-          info.monthlyAmount * info.scalingMutiple,
-          etfArr[index].price
-        );
-        return {
-          code: info.code,
-          price: etfArr[index].price,
-          name: etfArr[index].name,
-          monthlyAmount: info.monthlyAmount,
-          ...monthlyCount,
-          scalingOptionCount: scalingCount.optionCount,
-          scalingEtfCount: scalingCount.etfCount,
-        };
-      });
-      setinvestDataSource(investDataSource);
     });
-  }, []);
+  }, [fetchTime]);
 
   return (
     <div className="App">
@@ -87,44 +46,22 @@ function App() {
         <span className="red">{optionDealDate.diff(moment(), 'days') + 1}</span>{' '}
         Days.
       </h2>
-      <h2>ETF Info ({dataTime})</h2>
-      <Table
-        columns={etfColumns}
-        dataSource={etfDataSource}
-        rowKey="code"
-        pagination={false}
+      <Checkbox.Group
+        options={checkboxOptions}
+        defaultValue={DEFAULT_CODES}
+        value={etfCodes}
+        onChange={(vals) => setEtfCodes(vals as string[])}
       />
-      <h2>Option Info ({dataTime})</h2>
-      <Table
-        columns={getOptionColumns(
-          etfInfos.map(({ code }) => {
-            const value = code.slice(-6);
-            return {
-              text: value,
-              value,
-            };
-          })
-        )}
-        dataSource={optionDataSource}
-        rowKey={(record) =>
-          `${record.code}-${record.month}-${record.strikePrice}`
-        }
-        pagination={false}
-      />
-      <h2>Position Info</h2>
-      <Table
-        columns={positionCloumns}
-        dataSource={posDataSource}
-        rowKey="code"
-        pagination={false}
-      />
-      <h2>Invest Info</h2>
-      <Table
-        columns={investColumns}
-        dataSource={investDataSource}
-        rowKey="code"
-        pagination={false}
-      />
+      <Button
+        type="primary"
+        onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
+      >
+        REFRESH
+      </Button>
+      <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
+      <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
+      <PositionTable />
+      <InvestTable etfPriceInfos={etfDataSource} />
     </div>
   );
 }

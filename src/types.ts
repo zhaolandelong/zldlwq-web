@@ -1,11 +1,13 @@
 export interface ETFPriceInfo {
   code: string;
   name: string;
+  opCode: string;
   price: number;
 }
 
 export interface ETFPosInfo {
   code: string; // ETF 代码
+  opCode: string; // 完整代码
   name?: string; // ETF 名称
   startDate: string; // 开始定投日期（打底仓的月份要折算进去）
   investMonths?: number; // 投资月数
@@ -31,7 +33,6 @@ export interface InvestInfo {
 export interface OptionNestData {
   currPrice: number;
   strikePrice: number;
-  isPrimary: boolean;
   PorC: 'C' | 'P';
   dealDate: string;
   remainDays: number;
@@ -39,12 +40,18 @@ export interface OptionNestData {
   timeValue: number;
 }
 
-export interface OptionInfo {
+export interface OptionPnCData {
   code: string;
   name: string;
   month: string;
+  isPrimary: boolean;
   strikePrice: number;
+  dealDate: string;
+  remainDays: number;
+  currPriceP: number;
+  currPriceC: number;
+  innerValueP: number;
+  innerValueC: number;
   timeValueP: number;
   timeValueC: number;
-  remainDays: number;
 }
