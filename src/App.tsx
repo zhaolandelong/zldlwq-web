@@ -4,22 +4,24 @@ import moment from 'moment';
 import { Checkbox, Button } from 'antd';
 import { fetchETFPrice, getOptionDealDate } from './utils';
 import type { ETFPriceInfo } from './types';
-import { DEFAULT_CODES, ETF_INFOS } from './constants';
+import { ETF_INFOS, etfPosInfos } from './constants';
 import ETFTable from './ETFTable';
 import ETFOpTable from './ETFOpTable';
-import PositionTable from './PosInvestTable';
+import PositionTable from './PositionTable';
 import InvestTable from './InvestTable';
 
-function App() {
+const App: React.FC = () => {
+  const defaultCodes = etfPosInfos.map((info) => info.code);
   const checkboxOptions = useMemo(
     () =>
       Object.values(ETF_INFOS).map((info) => ({
         label: info.name,
         value: info.code,
+        disabled: defaultCodes.includes(info.code),
       })),
     []
   );
-  const [etfCodes, setEtfCodes] = useState<string[]>(DEFAULT_CODES);
+  const [etfCodes, setEtfCodes] = useState<string[]>(defaultCodes);
   const [etfDataSource, setEtfDataSource] = useState<ETFPriceInfo[]>([]);
   const [fetchTime, setfetchTime] = useState(moment().format('HH:mm:ss'));
 
@@ -48,7 +50,6 @@ function App() {
       </h2>
       <Checkbox.Group
         options={checkboxOptions}
-        defaultValue={DEFAULT_CODES}
         value={etfCodes}
         onChange={(vals) => setEtfCodes(vals as string[])}
       />
@@ -60,10 +61,10 @@ function App() {
       </Button>
       <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
       <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
-      <PositionTable />
-      <InvestTable etfPriceInfos={etfDataSource} />
+      <PositionTable etfPosInfos={etfPosInfos} />
+      <InvestTable etfPriceInfos={etfDataSource} etfPosInfos={etfPosInfos} />
     </div>
   );
-}
+};
 
 export default App;

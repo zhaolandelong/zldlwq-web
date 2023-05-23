@@ -1,8 +1,8 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import type { ETFPosInfo } from './types';
 import type { ColumnType } from 'antd/es/table';
-import { ETF_INFOS, etfPosInfos } from './constants';
+import { ETF_INFOS } from './constants';
 import { fetchAvgPrice, getAnualReturnRate } from './utils';
 import moment from 'moment';
 
@@ -48,7 +48,8 @@ const columns: ColumnType<ETFPosInfo>[] = [
   },
 ];
 
-const PositionTable = () => {
+const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
+  const { etfPosInfos } = props;
   const [dataSource, setDataSource] = useState<ETFPosInfo[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -76,7 +77,7 @@ const PositionTable = () => {
         setDataSource(posDataSource);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [etfPosInfos]);
 
   return (
     <>
@@ -92,4 +93,4 @@ const PositionTable = () => {
   );
 };
 
-export default memo(PositionTable);
+export default PositionTable;

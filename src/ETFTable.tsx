@@ -22,7 +22,9 @@ const columns: ColumnType<ETFPriceInfo>[] = [
   },
 ];
 
-const ETFTable = (props: { dataSource: ETFPriceInfo[]; fetchTime: string }) => (
+const ETFTable: React.FC<{ dataSource: ETFPriceInfo[]; fetchTime: string }> = (
+  props
+) => (
   <>
     <h2>ETF Info ({props.fetchTime})</h2>
     <Table

@@ -81,10 +81,10 @@ const columns: ColumnType<OptionPnCData>[] = [
   },
 ];
 
-const ETFOpTable = (props: {
+const ETFOpTable: React.FC<{
   etfPriceInfos: ETFPriceInfo[];
   fetchTime: string;
-}) => {
+}> = (props) => {
   const { etfPriceInfos, fetchTime } = props;
   const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
   const [loading, setLoading] = useState(false);

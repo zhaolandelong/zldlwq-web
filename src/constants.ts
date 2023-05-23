@@ -1,7 +1,5 @@
 import type { ETFPriceInfo, ETFPosInfo } from './types';
 
-export const DEFAULT_CODES = ['510300', '159915'];
-
 export const ETF_INFOS: Record<string, Omit<ETFPriceInfo, 'price'>> = {
   '510300': {
     code: '510300',

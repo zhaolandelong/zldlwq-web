@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import type { ETFPriceInfo, InvestInfo } from './types';
+import type { ETFPosInfo, ETFPriceInfo, InvestInfo } from './types';
 import type { ColumnType } from 'antd/es/table';
-import { ETF_INFOS, etfPosInfos } from './constants';
+import { ETF_INFOS } from './constants';
 import { getCount } from './utils';
 
 const columns: ColumnType<InvestInfo>[] = [
@@ -49,8 +49,11 @@ const columns: ColumnType<InvestInfo>[] = [
   },
 ];
 
-const InvestTable = (props: { etfPriceInfos: ETFPriceInfo[] }) => {
-  const { etfPriceInfos } = props;
+const InvestTable: React.FC<{
+  etfPriceInfos: ETFPriceInfo[];
+  etfPosInfos: ETFPosInfo[];
+}> = (props) => {
+  const { etfPriceInfos, etfPosInfos } = props;
   const [dataSource, setDataSource] = useState<InvestInfo[]>([]);
 
   useEffect(() => {
@@ -74,7 +77,7 @@ const InvestTable = (props: { etfPriceInfos: ETFPriceInfo[] }) => {
       };
     });
     setDataSource(investDataSource);
-  }, [etfPriceInfos]);
+  }, [etfPriceInfos, etfPosInfos]);
 
   return (
     <>
