@@ -67,18 +67,29 @@ export const getOptionColumns = (
     render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
+    title: 'Diff / Days',
+    sorter: (a, b) =>
+      (a.timeValueP - a.timeValueC) / a.remainDays -
+      (b.timeValueP - b.timeValueC) / b.remainDays,
+    render: (text, record) =>
+      `¥ ${(
+        ((record.timeValueP - record.timeValueC) * 10000) /
+        record.remainDays
+      ).toFixed(2)}`,
+  },
+  {
     title: 'Time Value (P)',
     dataIndex: 'timeValueP',
     key: 'timeValueP',
     sorter: (a, b) => a.timeValueP - b.timeValueP,
-    render: (price) => `¥ ${price.toFixed(3)}`,
+    render: (price) => `¥ ${price.toFixed(4)}`,
   },
   {
     title: 'Time Value (C)',
     dataIndex: 'timeValueC',
     key: 'timeValueC',
     sorter: (a, b) => a.timeValueC - b.timeValueC,
-    render: (price) => `¥ ${price.toFixed(3)}`,
+    render: (price) => `¥ ${price.toFixed(4)}`,
   },
   {
     title: 'Value Diff (1 hand)',
@@ -92,17 +103,6 @@ export const getOptionColumns = (
     key: 'remainDays',
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
-  },
-  {
-    title: 'Diff / Days',
-    sorter: (a, b) =>
-      (a.timeValueP - a.timeValueC) / a.remainDays -
-      (b.timeValueP - b.timeValueC) / b.remainDays,
-    render: (text, record) =>
-      `¥ ${(
-        ((record.timeValueP - record.timeValueC) * 10000) /
-        record.remainDays
-      ).toFixed(2)}`,
   },
 ];
 
