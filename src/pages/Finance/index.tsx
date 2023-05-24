@@ -13,7 +13,7 @@ import PositionFormList from './components/PositionFormList';
 
 const { Header, Footer, Sider, Content } = Layout;
 
-const App: React.FC = () => {
+const Finance: React.FC = () => {
   const defaultCodes = etfPosInfos.map((info) => info.code);
   const checkboxOptions = useMemo(
     () =>
@@ -46,14 +46,18 @@ const App: React.FC = () => {
   return (
     <Layout>
       <Content>
-        <h1>Today is {moment().format('YYYY-MM-DD dddd')}</h1>
-        <h2>
-          Nearest Deal Date: {optionDealDate.format('YYYY-MM-DD')}. Remain{' '}
-          <span className="red">
-            {optionDealDate.diff(moment(), 'days') + 1}
-          </span>{' '}
-          Days.
-        </h2>
+        <h1>
+          Today is {moment().format('YYYY-MM-DD dddd')}. Nearest Deal Date:{' '}
+          {optionDealDate.format('YYYY-MM-DD')} (
+          <span className="red">{optionDealDate.diff(moment(), 'days')}</span>{' '}
+          Days).
+        </h1>
+
+        {/* <PositionFormList /> */}
+        <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
+        <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
+        <PositionTable etfPosInfos={etfPosInfos} />
+        <InvestTable etfPriceInfos={etfDataSource} etfPosInfos={etfPosInfos} />
         <Checkbox.Group
           options={checkboxOptions}
           value={etfCodes}
@@ -65,14 +69,9 @@ const App: React.FC = () => {
         >
           REFRESH
         </Button>
-        {/* <PositionFormList /> */}
-        <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
-        <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
-        <PositionTable etfPosInfos={etfPosInfos} />
-        <InvestTable etfPriceInfos={etfDataSource} etfPosInfos={etfPosInfos} />
       </Content>
     </Layout>
   );
 };
 
-export default App;
+export default Finance;

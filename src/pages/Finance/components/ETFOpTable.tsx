@@ -11,30 +11,27 @@ const columns: ColumnType<OptionPnCData>[] = [
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-  },
-  {
-    title: 'Code',
-    dataIndex: 'code',
-    key: 'code',
-    filters: Object.values(ETF_INFOS).map((info) => ({
-      text: info.code,
-      value: info.code,
-    })),
-    onFilter: (value, record) => value === record.code,
+    fixed: 'left',
   },
   {
     title: 'Month',
     dataIndex: 'month',
     key: 'month',
+    fixed: 'left',
     sorter: (a, b) => Number(a.month) - Number(b.month),
   },
   {
-    title: 'Strike Price',
-    dataIndex: 'strikePrice',
-    key: 'strikePrice',
+    title: 'Diff / Days',
     align: 'right',
-    sorter: (a, b) => a.strikePrice - b.strikePrice,
-    render: (price) => `¥ ${price.toFixed(3)}`,
+    fixed: 'left',
+    sorter: (a, b) =>
+      (a.timeValueP - a.timeValueC) / a.remainDays -
+      (b.timeValueP - b.timeValueC) / b.remainDays,
+    render: (text, record) =>
+      `¥ ${(
+        ((record.timeValueP - record.timeValueC) * 10000) /
+        record.remainDays
+      ).toFixed(2)}`,
   },
   {
     title: 'Value Diff (1 hand)',
@@ -44,16 +41,12 @@ const columns: ColumnType<OptionPnCData>[] = [
       `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
   },
   {
-    title: 'Diff / Days',
+    title: 'Strike Price',
+    dataIndex: 'strikePrice',
+    key: 'strikePrice',
     align: 'right',
-    sorter: (a, b) =>
-      (a.timeValueP - a.timeValueC) / a.remainDays -
-      (b.timeValueP - b.timeValueC) / b.remainDays,
-    render: (text, record) =>
-      `¥ ${(
-        ((record.timeValueP - record.timeValueC) * 10000) /
-        record.remainDays
-      ).toFixed(2)}`,
+    sorter: (a, b) => a.strikePrice - b.strikePrice,
+    render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
     title: 'Time Value (P)',
@@ -78,6 +71,16 @@ const columns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
+  },
+  {
+    title: 'Code',
+    dataIndex: 'code',
+    key: 'code',
+    filters: Object.values(ETF_INFOS).map((info) => ({
+      text: info.code,
+      value: info.code,
+    })),
+    onFilter: (value, record) => value === record.code,
   },
 ];
 
@@ -105,6 +108,7 @@ const ETFOpTable: React.FC<{
       <h2>ETF Option Info ({fetchTime})</h2>
       <Table
         columns={columns}
+        scroll={{ x: 800 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}
