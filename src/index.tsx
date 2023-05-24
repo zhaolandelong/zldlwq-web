@@ -3,13 +3,18 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import 'antd/dist/reset.css';
-import Finance from './pages/Finance';
 import reportWebVitals from './reportWebVitals';
+import Finance from './pages/Finance';
+import Test from './pages/Test';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Finance />,
+  },
+  {
+    path: '/test',
+    element: <Test />,
   },
 ]);
 
