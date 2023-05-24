@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import type { ETFPosInfo } from './types';
+import type { ETFPosInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { ETF_INFOS } from './constants';
-import { fetchAvgPrice, getAnualReturnRate } from './utils';
+import { ETF_INFOS } from '../constants';
+import { fetchAvgPrice, getAnualReturnRate } from '../utils';
 import moment from 'moment';
 
 const columns: ColumnType<ETFPosInfo>[] = [

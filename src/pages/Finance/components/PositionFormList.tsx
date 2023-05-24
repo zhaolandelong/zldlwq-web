@@ -1,7 +1,7 @@
 import React from 'react';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Space, Select, InputNumber, Input } from 'antd';
-import { etfPosInfos, ETF_INFOS } from './constants';
+import { etfPosInfos, ETF_INFOS } from '../constants';
 
 const onFinish = (values: any) => {
   console.log('Received values of form:', values);

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import type { ETFPosInfo, ETFPriceInfo, InvestInfo } from './types';
+import type { ETFPosInfo, ETFPriceInfo, InvestInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { ETF_INFOS } from './constants';
-import { getCount } from './utils';
+import { ETF_INFOS } from '../constants';
+import { getCount } from '../utils';
 
 const columns: ColumnType<InvestInfo>[] = [
   {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from 'antd';
-import type { ETFPriceInfo } from './types';
+import type { ETFPriceInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 
 const columns: ColumnType<ETFPriceInfo>[] = [

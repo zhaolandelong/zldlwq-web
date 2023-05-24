@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import type { ETFPriceInfo, OptionPnCData } from './types';
+import type { ETFPriceInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { ETF_INFOS } from './constants';
+import { ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchEtfOpPrimaryDatas } from './utils';
+import { fetchEtfOpPrimaryDatas } from '../utils';
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
