@@ -1,7 +1,9 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import type { ETFPriceInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
+
+const { Title } = Typography;
 
 const columns: ColumnType<ETFPriceInfo>[] = [
   {
@@ -18,7 +20,7 @@ const columns: ColumnType<ETFPriceInfo>[] = [
     title: 'Current Price',
     dataIndex: 'price',
     key: 'price',
-    render: (price) => `¥ ${price}`,
+    render: (price) => `¥ ${price.toFixed(3)}`,
   },
 ];
 
@@ -26,8 +28,9 @@ const ETFTable: React.FC<{ dataSource: ETFPriceInfo[]; fetchTime: string }> = (
   props
 ) => (
   <>
-    <h2>ETF Info ({props.fetchTime})</h2>
+    <Title level={2}>ETF Info ({props.fetchTime})</Title>
     <Table
+      size="small"
       columns={columns}
       dataSource={props.dataSource}
       rowKey="code"

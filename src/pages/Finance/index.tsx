@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import './style.css';
 import moment from 'moment';
-import { Checkbox, Button, Layout, Space } from 'antd';
+import { Checkbox, Button, Typography } from 'antd';
 import { fetchETFPrice, getOptionDealDate } from './utils';
 import type { ETFPriceInfo } from './types';
 import { ETF_INFOS, etfPosInfos } from './constants';
@@ -11,7 +10,7 @@ import PositionTable from './components/PositionTable';
 import InvestTable from './components/InvestTable';
 import PositionFormList from './components/PositionFormList';
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Text } = Typography;
 
 const Finance: React.FC = () => {
   const defaultCodes = etfPosInfos.map((info) => info.code);
@@ -44,33 +43,30 @@ const Finance: React.FC = () => {
   }, [fetchTime]);
 
   return (
-    <Layout>
-      <Content>
-        <h1>
-          Today is {moment().format('YYYY-MM-DD dddd')}. Nearest Deal Date:{' '}
-          {optionDealDate.format('YYYY-MM-DD')} (
-          <span className="red">{optionDealDate.diff(moment(), 'days')}</span>{' '}
-          Days).
-        </h1>
-
-        {/* <PositionFormList /> */}
-        <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
-        <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
-        <PositionTable etfPosInfos={etfPosInfos} />
-        <InvestTable etfPriceInfos={etfDataSource} etfPosInfos={etfPosInfos} />
-        <Checkbox.Group
-          options={checkboxOptions}
-          value={etfCodes}
-          onChange={(vals) => setEtfCodes(vals as string[])}
-        />
-        <Button
-          type="primary"
-          onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
-        >
-          REFRESH
-        </Button>
-      </Content>
-    </Layout>
+    <>
+      <Text>
+        Today is {moment().format('YYYY-MM-DD dddd')}. <br />
+        Nearest Deal Date: {optionDealDate.format('YYYY-MM-DD')} (
+        <Text type="danger">{optionDealDate.diff(moment(), 'days')}</Text>{' '}
+        Days).
+      </Text>
+      {/* <PositionFormList /> */}
+      <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
+      <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
+      <PositionTable etfPosInfos={etfPosInfos} />
+      <InvestTable etfPriceInfos={etfDataSource} etfPosInfos={etfPosInfos} />
+      <Checkbox.Group
+        options={checkboxOptions}
+        value={etfCodes}
+        onChange={(vals) => setEtfCodes(vals as string[])}
+      />
+      <Button
+        type="primary"
+        onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
+      >
+        REFRESH
+      </Button>
+    </>
   );
 };
 

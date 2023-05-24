@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import type { ETFPosInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
 import { fetchAvgPrice, getAnualReturnRate } from '../utils';
 import moment from 'moment';
+
+const { Title } = Typography;
 
 const columns: ColumnType<ETFPosInfo>[] = [
   {
@@ -81,8 +83,9 @@ const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
 
   return (
     <>
-      <h2>Position Info</h2>
+      <Title level={2}>Position Info</Title>
       <Table
+        size="small"
         columns={columns}
         dataSource={dataSource}
         rowKey="code"

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import type { ETFPosInfo, ETFPriceInfo, InvestInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
 import { getCount } from '../utils';
+
+const { Title } = Typography;
 
 const columns: ColumnType<InvestInfo>[] = [
   {
@@ -81,8 +83,9 @@ const InvestTable: React.FC<{
 
   return (
     <>
-      <h2>Invest Info</h2>
+      <Title level={2}>Invest Info</Title>
       <Table
+        size="small"
         columns={columns}
         dataSource={dataSource}
         rowKey="code"

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import type { ETFPriceInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../utils';
+
+const { Title } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
@@ -105,8 +107,9 @@ const ETFOpTable: React.FC<{
 
   return (
     <>
-      <h2>ETF Option Info ({fetchTime})</h2>
+      <Title level={2}>ETF Option Info ({fetchTime})</Title>
       <Table
+        size="small"
         columns={columns}
         scroll={{ x: 800 }}
         dataSource={dataSource}
