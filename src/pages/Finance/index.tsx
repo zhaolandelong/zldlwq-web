@@ -1,71 +1,56 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import moment from 'moment';
-import { Checkbox, Button, Typography } from 'antd';
-import { fetchETFPrice, getOptionDealDate } from './utils';
-import type { ETFPriceInfo } from './types';
-import { ETF_INFOS, etfPosInfos } from './constants';
+import { Button, Typography, Col, Row } from 'antd';
+import { getOptionDealDate } from './utils';
+import { etfPosInfos } from './constants';
 import ETFTable from './components/ETFTable';
 import ETFOpTable from './components/ETFOpTable';
 import PositionTable from './components/PositionTable';
 import InvestTable from './components/InvestTable';
-import PositionFormList from './components/PositionFormList';
+import IndexTable from './components/IndexTable';
+import IndexOpTable from './components/IndexOpTable';
+// import PositionFormList from './components/PositionFormList';
+import useEtfPriceInfos from './hooks/useEtfPriceInfos';
+import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 
-const { Text } = Typography;
+const { Title } = Typography;
 
 const Finance: React.FC = () => {
-  const defaultCodes = etfPosInfos.map((info) => info.code);
-  const checkboxOptions = useMemo(
-    () =>
-      Object.values(ETF_INFOS).map((info) => ({
-        label: info.name,
-        value: info.code,
-        disabled: defaultCodes.includes(info.code),
-      })),
-    []
-  );
-  const [etfCodes, setEtfCodes] = useState<string[]>(defaultCodes);
-  const [etfDataSource, setEtfDataSource] = useState<ETFPriceInfo[]>([]);
   const [fetchTime, setfetchTime] = useState(moment().format('HH:mm:ss'));
+  const etfPriceInfos = useEtfPriceInfos(fetchTime);
+  const indexPriceInfos = useIndexPriceInfos(fetchTime);
 
   const optionDealDate = useMemo(() => getOptionDealDate(), []);
 
-  useEffect(() => {
-    const etfInfos = etfCodes.map((code) => ETF_INFOS[code]);
-    const etfOpCodes = etfInfos.map((info) => info.opCode);
-    fetchETFPrice(etfOpCodes).then((etfArr) => {
-      setEtfDataSource(
-        etfArr.map((info, i) => ({
-          ...etfInfos[i],
-          price: info.price,
-        }))
-      );
-    });
-  }, [fetchTime]);
-
   return (
     <>
-      <Text>
+      <Title level={3}>
         Today is {moment().format('YYYY-MM-DD dddd')}. <br />
         Nearest Deal Date: {optionDealDate.format('YYYY-MM-DD')} (
-        <Text type="danger">{optionDealDate.diff(moment(), 'days')}</Text>{' '}
+        <span style={{ color: 'red' }}>
+          {optionDealDate.diff(moment(), 'days')}
+        </span>{' '}
         Days).
-      </Text>
-      {/* <PositionFormList /> */}
-      <ETFTable dataSource={etfDataSource} fetchTime={fetchTime} />
-      <ETFOpTable etfPriceInfos={etfDataSource} fetchTime={fetchTime} />
-      <PositionTable etfPosInfos={etfPosInfos} />
-      <InvestTable etfPriceInfos={etfDataSource} etfPosInfos={etfPosInfos} />
-      <Checkbox.Group
-        options={checkboxOptions}
-        value={etfCodes}
-        onChange={(vals) => setEtfCodes(vals as string[])}
-      />
+      </Title>
       <Button
         type="primary"
         onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
       >
         REFRESH
       </Button>
+      {/* <PositionFormList /> */}
+      <Row gutter={16}>
+        <Col span={12}>
+          <ETFTable dataSource={etfPriceInfos} fetchTime={fetchTime} />
+        </Col>
+        <Col span={12}>
+          <IndexTable dataSource={indexPriceInfos} fetchTime={fetchTime} />
+        </Col>
+      </Row>
+      <ETFOpTable priceInfos={etfPriceInfos} fetchTime={fetchTime} />
+      <IndexOpTable priceInfos={indexPriceInfos} fetchTime={fetchTime} />
+      <PositionTable etfPosInfos={etfPosInfos} />
+      <InvestTable etfPriceInfos={etfPriceInfos} etfPosInfos={etfPosInfos} />
     </>
   );
 };

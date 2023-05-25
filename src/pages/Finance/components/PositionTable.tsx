@@ -53,7 +53,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
 const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
   const { etfPosInfos } = props;
   const [dataSource, setDataSource] = useState<ETFPosInfo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -69,7 +69,7 @@ const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
           );
           return {
             ...info,
-            name: ETF_INFOS[info.code].name,
+            name: ETF_INFOS.find((item) => item.code === info.code)?.name,
             investMonths,
             avgCost: avgPriceArr[index],
             actualReturnRate: actualReturnRate,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
-import type { ETFPosInfo, ETFPriceInfo, InvestInfo } from '../types';
+import type { ETFPosInfo, FinanceInfo, InvestInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
 import { getCount } from '../utils';
@@ -52,7 +52,7 @@ const columns: ColumnType<InvestInfo>[] = [
 ];
 
 const InvestTable: React.FC<{
-  etfPriceInfos: ETFPriceInfo[];
+  etfPriceInfos: FinanceInfo[];
   etfPosInfos: ETFPosInfo[];
 }> = (props) => {
   const { etfPriceInfos, etfPosInfos } = props;
@@ -71,7 +71,7 @@ const InvestTable: React.FC<{
       return {
         code: info.code,
         price,
-        name: ETF_INFOS[info.code].name,
+        name: ETF_INFOS.find((item) => item.code === info.code)?.name ?? '-',
         monthlyAmount: info.monthlyAmount,
         ...monthlyCount,
         scalingOptionCount: scalingCount.optionCount,

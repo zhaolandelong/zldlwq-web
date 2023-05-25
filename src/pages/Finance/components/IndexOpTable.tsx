@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type { FinanceInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { DEFAULT_ETF_CODES, ETF_INFOS } from '../constants';
+import { INDEX_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchEtfOpPrimaryDatas } from '../utils';
+import { fetchIndexOpPrimaryDatas } from '../utils';
 
 const { Title } = Typography;
 
@@ -31,7 +31,7 @@ const columns: ColumnType<OptionPnCData>[] = [
       (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, record) =>
       `¥ ${(
-        ((record.timeValueP - record.timeValueC) * 10000) /
+        ((record.timeValueP - record.timeValueC) * 10) /
         record.remainDays
       ).toFixed(2)}`,
   },
@@ -40,7 +40,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, record) =>
-      `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
+      `¥ ${((record.timeValueP - record.timeValueC) * 10).toFixed(2)}`,
   },
   {
     title: 'Strike Price',
@@ -48,7 +48,6 @@ const columns: ColumnType<OptionPnCData>[] = [
     key: 'strikePrice',
     align: 'right',
     sorter: (a, b) => a.strikePrice - b.strikePrice,
-    render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
     title: 'Time Value (P)',
@@ -56,7 +55,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     key: 'timeValueP',
     align: 'right',
     sorter: (a, b) => a.timeValueP - b.timeValueP,
-    render: (price) => `¥ ${price.toFixed(4)}`,
+    render: (price) => `¥ ${price.toFixed(2)}`,
   },
   {
     title: 'Time Value (C)',
@@ -64,7 +63,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     key: 'timeValueC',
     align: 'right',
     sorter: (a, b) => a.timeValueC - b.timeValueC,
-    render: (price) => `¥ ${price.toFixed(4)}`,
+    render: (price) => `¥ ${price.toFixed(2)}`,
   },
   {
     title: 'Remain Days',
@@ -78,7 +77,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     title: 'Code',
     dataIndex: 'code',
     key: 'code',
-    filters: Object.values(ETF_INFOS).map((info) => ({
+    filters: Object.values(INDEX_INFOS).map((info) => ({
       text: info.code,
       value: info.code,
     })),
@@ -86,13 +85,15 @@ const columns: ColumnType<OptionPnCData>[] = [
   },
 ];
 
-const ETFOpTable: React.FC<{
-  priceInfos: FinanceInfo[];
+const IndexOpTable: React.FC<{
+  priceInfos: Required<FinanceInfo>[];
   fetchTime: string;
 }> = (props) => {
   const { priceInfos, fetchTime } = props;
   const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
-  const [codes, setCodes] = useState<string[]>(DEFAULT_ETF_CODES);
+  const [codes, setCodes] = useState<string[]>(
+    INDEX_INFOS.map((info) => info.code)
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -100,7 +101,7 @@ const ETFOpTable: React.FC<{
     Promise.all(
       priceInfos
         .filter((info) => codes.includes(info.code))
-        .map(fetchEtfOpPrimaryDatas)
+        .map(fetchIndexOpPrimaryDatas)
     )
       .then((etfOpArr) => {
         setDataSource(flattenDeep(etfOpArr));
@@ -112,12 +113,11 @@ const ETFOpTable: React.FC<{
 
   return (
     <>
-      <Title level={2}>ETF Option Info ({fetchTime})</Title>
+      <Title level={2}>Index Option Info ({fetchTime})</Title>
       <Checkbox.Group
-        options={ETF_INFOS.map((info) => ({
+        options={INDEX_INFOS.map((info) => ({
           label: info.name,
           value: info.code,
-          disabled: DEFAULT_ETF_CODES.includes(info.code),
         }))}
         value={codes}
         onChange={(vals) => setCodes(vals as string[])}
@@ -135,4 +135,4 @@ const ETFOpTable: React.FC<{
   );
 };
 
-export default ETFOpTable;
+export default IndexOpTable;

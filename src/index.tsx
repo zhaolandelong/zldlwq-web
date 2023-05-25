@@ -29,7 +29,7 @@ root.render(
         <Content style={{ padding: '0 50px' }}>
           <Routes>
             {routes.map((route) => (
-              <Route {...route} />
+              <Route key={route.id} {...route} />
             ))}
           </Routes>
         </Content>

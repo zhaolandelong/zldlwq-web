@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment, { type Moment } from 'moment';
-import type { ETFPriceInfo, OptionNestData, OptionPnCData } from './types';
+import type { FinanceInfo, OptionNestData, OptionPnCData } from './types';
 import jsonp from 'jsonp';
 
 export const fetchAvgPrice = (
@@ -30,9 +30,9 @@ export const getDealDate = (date: Moment = moment()): Moment => {
   return firstWend.add(count, 'weeks');
 };
 
-export const fetchETFPrice = (
+export const fetchFinanceDatas = (
   opCodes: string[]
-): Promise<Pick<ETFPriceInfo, 'code' | 'price'>[]> =>
+): Promise<Pick<FinanceInfo, 'code' | 'price'>[]> =>
   axios.get<string>(`https://qt.gtimg.cn/q=${opCodes.join(',')}`).then((res) =>
     res.data
       .split(';')
@@ -101,7 +101,7 @@ const formatOpDatas = (data: string) =>
     return result;
   }) ?? [];
 
-export const fetchOpDataByMonth = async (payload: {
+const fetchEtfOpByMonth = async (payload: {
   code: string;
   yearMonth: string;
 }) => {
@@ -143,22 +143,23 @@ export const fetchOpMonths = () =>
     )
   );
 
-export const fetchEtfOpPrimaryDatas = async (etfInfo: ETFPriceInfo) => {
+export const fetchEtfOpPrimaryDatas = async (etfInfo: FinanceInfo) => {
   const months = await fetchOpMonths();
-  const codeMonthArr: Array<ETFPriceInfo & { month: string }> = [];
+  const codeMonthArr: Array<FinanceInfo & { month: string }> = [];
   months.forEach((month) => {
     codeMonthArr.push({ ...etfInfo, month });
   });
   const result: OptionPnCData[] = await Promise.all(
     codeMonthArr.map(({ code, month, name, price }) =>
-      fetchOpDataByMonth({ code, yearMonth: month }).then(
+      fetchEtfOpByMonth({ code, yearMonth: month }).then(
         ({ opUpDatas = [], opDownDatas = [] }) => {
           let primaryUpIndex = 0;
           let primaryDownIndex = 0;
           let abs = Infinity;
-          opDownDatas.forEach((upData, index) => {
-            if (Math.abs(upData.strikePrice - price) < abs) {
-              abs = Math.abs(upData.strikePrice - price);
+          opUpDatas.forEach((upData, index) => {
+            const _abs = Math.abs(upData.strikePrice - Number(price));
+            if (_abs < abs) {
+              abs = _abs;
               primaryUpIndex = index;
               primaryDownIndex = opDownDatas.findIndex(
                 (downData) => downData.strikePrice === upData.strikePrice
@@ -186,6 +187,85 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: ETFPriceInfo) => {
       )
     )
   );
-  // console.log('🚀 ~ file: App.tsx:53 ~ Promise.all ~ resArr:', resArr);
+  return result;
+};
+
+const formatIndexOpDatas = (
+  ups: (string | number)[][],
+  downs: (string | number)[][]
+) => {
+  const result = [];
+  for (let i = 0; i < ups.length; i++) {
+    result.push({
+      currPriceC: Number(ups[i][2]),
+      currPriceP: Number(downs[i][2]),
+      strikePrice: Number(ups[i][7]),
+    });
+  }
+  return result;
+};
+
+const fetchIndexOpByMonth = async (params: { op: string; month: string }) =>
+  new Promise((rev, rej) => {
+    const { op, month } = params;
+    jsonp(
+      `https://stock.finance.sina.com.cn/futures/api/openapi.php/OptionService.getOptionData?type=futures&product=${op}&exchange=cffex&pinzhong=${
+        op + month
+      }`,
+      (err, data) => {
+        if (err) {
+          rej(err);
+        } else {
+          rev(data);
+        }
+      }
+    );
+  }).then((res: any) => {
+    const { up, down } = res?.result?.data ?? {};
+    return formatIndexOpDatas(up, down);
+  });
+
+export const fetchIndexOpPrimaryDatas = async (
+  indexInfo: Required<FinanceInfo>
+) => {
+  // TODO: 处理月份
+  const months = ['2306', '2307', '2308', '2309'];
+  const codeMonthArr: Array<typeof indexInfo & { month: string }> = [];
+  months.forEach((month) => {
+    codeMonthArr.push({ ...indexInfo, month });
+  });
+  const result: OptionPnCData[] = await Promise.all(
+    codeMonthArr.map(({ code, month, name, price, op }) =>
+      fetchIndexOpByMonth({ op, month }).then((opArr) => {
+        let primaryIndex = 0;
+        let abs = Infinity;
+        opArr.forEach((opData, index) => {
+          const _abs = Math.abs(opData.strikePrice - Number(price));
+          if (_abs < abs) {
+            abs = _abs;
+            primaryIndex = index;
+          }
+        });
+        const { strikePrice, currPriceC, currPriceP } = opArr[primaryIndex];
+        const innerValueC = Math.max(price - strikePrice, 0);
+        const innerValueP = Math.max(strikePrice - price, 0);
+        return {
+          code,
+          name,
+          month,
+          isPrimary: true,
+          strikePrice,
+          dealDate: '-',
+          remainDays: 1,
+          currPriceC,
+          currPriceP,
+          innerValueC,
+          innerValueP,
+          timeValueC: currPriceC - innerValueC,
+          timeValueP: currPriceP - innerValueP,
+        };
+      })
+    )
+  );
   return result;
 };

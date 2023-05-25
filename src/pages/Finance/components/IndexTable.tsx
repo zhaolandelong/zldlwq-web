@@ -17,22 +17,22 @@ const columns: ColumnType<FinanceInfo>[] = [
     key: 'code',
   },
   {
-    title: 'Price',
+    title: 'Point',
     dataIndex: 'price',
     key: 'price',
     align: 'right',
-    render: (price) => `¥ ${price.toFixed(3)}`,
+    render: (price) => price.toFixed(2),
   },
 ];
 
-const ETFTable: React.FC<{ dataSource: FinanceInfo[]; fetchTime: string }> = (
+const IndexTable: React.FC<{ dataSource: FinanceInfo[]; fetchTime: string }> = (
   props
 ) => {
   const { dataSource, fetchTime } = props;
 
   return (
     <>
-      <Title level={2}>ETF Info ({fetchTime})</Title>
+      <Title level={2}>Index Info ({fetchTime})</Title>
       <Table
         size="small"
         columns={columns}
@@ -44,4 +44,4 @@ const ETFTable: React.FC<{ dataSource: FinanceInfo[]; fetchTime: string }> = (
   );
 };
 
-export default ETFTable;
+export default IndexTable;

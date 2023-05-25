@@ -1,8 +1,9 @@
-export interface ETFPriceInfo {
+export interface FinanceInfo {
   code: string;
   name: string;
   opCode: string;
   price: number;
+  op?: string;
 }
 
 export interface ETFPosInfo {
