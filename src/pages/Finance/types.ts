@@ -56,3 +56,8 @@ export interface OptionPnCData {
   timeValueP: number;
   timeValueC: number;
 }
+
+export interface DealDate {
+  expireDay: string | null;
+  remainderDays: number;
+}

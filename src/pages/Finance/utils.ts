@@ -1,6 +1,11 @@
 import axios from 'axios';
 import moment, { type Moment } from 'moment';
-import type { FinanceInfo, OptionNestData, OptionPnCData } from './types';
+import type {
+  DealDate,
+  FinanceInfo,
+  OptionNestData,
+  OptionPnCData,
+} from './types';
 import jsonp from 'jsonp';
 
 export const fetchAvgPrice = (
@@ -23,6 +28,36 @@ export const fetchAvgPrice = (
       return Number(avgPrice);
     });
 };
+
+/**
+ *
+ * @param date '2023-06'
+ */
+export const fetchOpDealDate = (
+  date: string,
+  cate: string = '300ETF'
+): Promise<DealDate> =>
+  new Promise((rev, rej) => {
+    jsonp(
+      `https://stock.finance.sina.com.cn/futures/api/openapi.php/StockOptionService.getRemainderDay?exchange=null&cate=${cate}&date=${date}&dpc=1`,
+      (err, data) => {
+        if (err) {
+          rej(err);
+        } else {
+          rev(data);
+        }
+      }
+    );
+  }).then((res: any) => {
+    const { expireDay, remainderDays } = res?.result?.data ?? {};
+    if (expireDay === null) {
+      return fetchOpDealDate(moment(date).add(1, 'month').format('YYYY-MM'));
+    }
+    return {
+      expireDay,
+      remainderDays,
+    };
+  });
 
 export const getDealDate = (date: Moment = moment()): Moment => {
   const firstWend = date.startOf('month').day(3);
@@ -56,12 +91,6 @@ export const getAnualReturnRate = (
   return Number(((investMonths / 12) * expectedReturnRate).toFixed(4));
 };
 
-export const getOptionDealDate = (date: Moment = moment()): Moment => {
-  const firstWend = date.startOf('month').day(3);
-  const count = firstWend.date() > 7 ? 4 : 3;
-  return firstWend.add(count, 'weeks');
-};
-
 export const getCount = (amount: number, price: number) => {
   // if (type === OptionType.scaling) {
   //   amount *= this.scalingTimes;
@@ -75,7 +104,7 @@ const fetchSinaFinance = (query: string) =>
   axios
     .get(
       // `https://a28c74f8c23a43c8a36364498baae175.apig.cn-north-1.huaweicloudapis.com/?query=${query}`
-      `http://api.1to10.zldlwq.top/api?query=${query}`
+      `http://api.1to10.zldlwq.top/api/sina?query=${query}`
     )
     .then((res) => res.data);
 
@@ -269,3 +298,8 @@ export const fetchIndexOpPrimaryDatas = async (
   );
   return result;
 };
+
+export const fetchCffex = (id: number) =>
+  axios
+    .get(`http://api.1to10.zldlwq.top/api/cffex?id=${id}`)
+    .then((res) => res.data);
