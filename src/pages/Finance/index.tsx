@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import { Button, Typography, Col, Row } from 'antd';
 import { fetchOpDealDate } from './utils';
@@ -12,6 +12,7 @@ import IndexOpTable from './components/IndexOpTable';
 // import PositionFormList from './components/PositionFormList';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
+import useFeatureDealDates from './hooks/useFeatureDealDates';
 import { DealDate } from './types';
 
 const { Title } = Typography;
@@ -22,6 +23,12 @@ const Finance: React.FC = () => {
 
   const etfPriceInfos = useEtfPriceInfos(fetchTime);
   const indexPriceInfos = useIndexPriceInfos(fetchTime);
+  const featureDealDates = useFeatureDealDates(fetchTime);
+
+  const firstFeature = useMemo(() => {
+    if (typeof featureDealDates === 'undefined') return void 0;
+    return Object.values(featureDealDates)[0];
+  }, [featureDealDates]);
 
   useEffect(() => {
     fetchOpDealDate(moment().format('YYYY-MM')).then(setDealDate);
@@ -33,6 +40,12 @@ const Finance: React.FC = () => {
         Today is {moment().format('YYYY-MM-DD dddd')}. <br />
         ETF Option Deal Date: {dealDate?.expireDay} (
         <span style={{ color: 'red' }}>{dealDate?.remainderDays}</span> Days).
+        <br />
+        Index Option Deal Date: {moment(firstFeature).format('YYYY-MM-DD')} (
+        <span style={{ color: 'red' }}>
+          {moment(firstFeature).diff(moment(), 'days')}
+        </span>{' '}
+        Days).
       </Title>
       <Button
         type="primary"
@@ -50,7 +63,11 @@ const Finance: React.FC = () => {
         </Col>
       </Row>
       <ETFOpTable priceInfos={etfPriceInfos} fetchTime={fetchTime} />
-      <IndexOpTable priceInfos={indexPriceInfos} fetchTime={fetchTime} />
+      <IndexOpTable
+        priceInfos={indexPriceInfos}
+        featureDealDates={featureDealDates}
+        fetchTime={fetchTime}
+      />
       <PositionTable etfPosInfos={etfPosInfos} />
       <InvestTable etfPriceInfos={etfPriceInfos} etfPosInfos={etfPosInfos} />
     </>

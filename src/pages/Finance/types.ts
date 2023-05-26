@@ -3,7 +3,11 @@ export interface FinanceInfo {
   name: string;
   opCode: string;
   price: number;
-  op?: string;
+}
+
+export interface IndexOpInfo extends FinanceInfo {
+  op: string;
+  feat: string;
 }
 
 export interface ETFPosInfo {
@@ -61,3 +65,5 @@ export interface DealDate {
   expireDay: string | null;
   remainderDays: number;
 }
+
+export type FeatureDealDate = Record<string, string>; // { MO2309: 20230915 }

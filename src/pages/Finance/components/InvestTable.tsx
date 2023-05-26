@@ -3,7 +3,7 @@ import { Table, Typography } from 'antd';
 import type { ETFPosInfo, FinanceInfo, InvestInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
-import { getCount } from '../utils';
+import { getEtfOpCount } from '../utils';
 
 const { Title } = Typography;
 
@@ -63,8 +63,8 @@ const InvestTable: React.FC<{
       const price =
         etfPriceInfos.find((priceInfo) => priceInfo.code === info.code)
           ?.price ?? 0;
-      const monthlyCount = getCount(info.monthlyAmount, price);
-      const scalingCount = getCount(
+      const monthlyCount = getEtfOpCount(info.monthlyAmount, price);
+      const scalingCount = getEtfOpCount(
         info.monthlyAmount * info.scalingMutiple,
         price
       );

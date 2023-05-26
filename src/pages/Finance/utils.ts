@@ -1,8 +1,9 @@
 import axios from 'axios';
-import moment, { type Moment } from 'moment';
+import moment from 'moment';
 import type {
   DealDate,
   FinanceInfo,
+  IndexOpInfo,
   OptionNestData,
   OptionPnCData,
 } from './types';
@@ -59,12 +60,6 @@ export const fetchOpDealDate = (
     };
   });
 
-export const getDealDate = (date: Moment = moment()): Moment => {
-  const firstWend = date.startOf('month').day(3);
-  const count = firstWend.date() > 7 ? 4 : 3;
-  return firstWend.add(count, 'weeks');
-};
-
 export const fetchFinanceDatas = (
   opCodes: string[]
 ): Promise<Pick<FinanceInfo, 'code' | 'price'>[]> =>
@@ -91,10 +86,7 @@ export const getAnualReturnRate = (
   return Number(((investMonths / 12) * expectedReturnRate).toFixed(4));
 };
 
-export const getCount = (amount: number, price: number) => {
-  // if (type === OptionType.scaling) {
-  //   amount *= this.scalingTimes;
-  // }
+export const getEtfOpCount = (amount: number, price: number) => {
   const optionCount = Math.floor(amount / price / 10000);
   const etfCount = Math.floor(amount / price / 100 - optionCount * 100) * 100;
   return { optionCount, etfCount };
@@ -254,17 +246,18 @@ const fetchIndexOpByMonth = async (params: { op: string; month: string }) =>
     return formatIndexOpDatas(up, down);
   });
 
-export const fetchIndexOpPrimaryDatas = async (
-  indexInfo: Required<FinanceInfo>
-) => {
-  // TODO: 处理月份
-  const months = ['2306', '2307', '2308', '2309'];
+export const fetchIndexOpPrimaryDatas = async (params: {
+  indexInfo: IndexOpInfo;
+  months: string[];
+  dealDates: string[];
+}) => {
+  const { indexInfo, months, dealDates } = params;
   const codeMonthArr: Array<typeof indexInfo & { month: string }> = [];
   months.forEach((month) => {
     codeMonthArr.push({ ...indexInfo, month });
   });
   const result: OptionPnCData[] = await Promise.all(
-    codeMonthArr.map(({ code, month, name, price, op }) =>
+    codeMonthArr.map(({ code, month, name, price, op }, i) =>
       fetchIndexOpByMonth({ op, month }).then((opArr) => {
         let primaryIndex = 0;
         let abs = Infinity;
@@ -279,13 +272,13 @@ export const fetchIndexOpPrimaryDatas = async (
         const innerValueC = Math.max(price - strikePrice, 0);
         const innerValueP = Math.max(strikePrice - price, 0);
         return {
-          code,
+          code: op + month,
           name,
           month,
           isPrimary: true,
           strikePrice,
-          dealDate: '-',
-          remainDays: 1,
+          dealDate: dealDates[i],
+          remainDays: moment(dealDates[i]).diff(moment(), 'days'),
           currPriceC,
           currPriceP,
           innerValueC,
@@ -298,8 +291,3 @@ export const fetchIndexOpPrimaryDatas = async (
   );
   return result;
 };
-
-export const fetchCffex = (id: number) =>
-  axios
-    .get(`http://api.1to10.zldlwq.top/api/cffex?id=${id}`)
-    .then((res) => res.data);

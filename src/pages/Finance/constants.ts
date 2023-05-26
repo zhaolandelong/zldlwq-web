@@ -1,4 +1,4 @@
-import type { FinanceInfo, ETFPosInfo } from './types';
+import type { FinanceInfo, ETFPosInfo, IndexOpInfo } from './types';
 
 export const ETF_INFOS: Omit<FinanceInfo, 'price'>[] = [
   {
@@ -23,12 +23,13 @@ export const ETF_INFOS: Omit<FinanceInfo, 'price'>[] = [
   },
 ];
 
-export const INDEX_INFOS: Omit<Required<FinanceInfo>, 'price'>[] = [
+export const INDEX_INFOS: Omit<IndexOpInfo, 'price'>[] = [
   {
     code: '000300',
     opCode: 'sh000300',
     name: '沪深300',
-    op: 'io',
+    op: 'IO',
+    feat: 'IF',
   },
   // {
   //   code: '399006',
@@ -39,22 +40,25 @@ export const INDEX_INFOS: Omit<Required<FinanceInfo>, 'price'>[] = [
     code: '000016',
     opCode: 'sh000016',
     name: '上证50',
-    op: 'ho',
+    op: 'HO',
+    feat: 'IH',
   },
   // {
   //   code: '000905',
   //   opCode: 'sh000905',
   //   name: '中证500',
+  //   feat: 'IC',
   // },
   {
     code: '000852',
     opCode: 'sh000852',
     name: '中证1000',
-    op: 'mo',
+    op: 'MO',
+    feat: 'IM',
   },
 ];
 
-export const DEFAULT_ETF_CODES = ['510300', '159915'];
+export const DEFAULT_CODES = ['510300', '159915', '000300'];
 
 export const etfPosInfos: ETFPosInfo[] = [
   {

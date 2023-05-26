@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type { FinanceInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { DEFAULT_ETF_CODES, ETF_INFOS } from '../constants';
+import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../utils';
 
@@ -92,7 +92,7 @@ const ETFOpTable: React.FC<{
 }> = (props) => {
   const { priceInfos, fetchTime } = props;
   const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
-  const [codes, setCodes] = useState<string[]>(DEFAULT_ETF_CODES);
+  const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -117,7 +117,7 @@ const ETFOpTable: React.FC<{
         options={ETF_INFOS.map((info) => ({
           label: info.name,
           value: info.code,
-          disabled: DEFAULT_ETF_CODES.includes(info.code),
+          disabled: DEFAULT_CODES.includes(info.code),
         }))}
         value={codes}
         onChange={(vals) => setCodes(vals as string[])}
