@@ -58,7 +58,7 @@ const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
   useEffect(() => {
     setLoading(true);
     Promise.all(
-      etfPosInfos.map((info) => fetchAvgPrice(info.opCode, info.startDate))
+      etfPosInfos.map((info) => fetchAvgPrice(info.sCode, info.startDate))
     )
       .then((avgPriceArr) => {
         const posDataSource: ETFPosInfo[] = etfPosInfos.map((info, index) => {

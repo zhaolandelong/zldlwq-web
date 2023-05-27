@@ -7,7 +7,7 @@ const useEtfPriceInfos = (fetchTime: string) => {
   const [etfPriceInfos, setEtfPriceInfos] = useState<FinanceInfo[]>([]);
 
   useEffect(() => {
-    fetchFinanceDatas(ETF_INFOS.map((info) => info.opCode)).then((resArr) => {
+    fetchFinanceDatas(ETF_INFOS.map((info) => info.sCode)).then((resArr) => {
       setEtfPriceInfos(
         resArr.map(({ price }, i) => ({
           ...ETF_INFOS[i],

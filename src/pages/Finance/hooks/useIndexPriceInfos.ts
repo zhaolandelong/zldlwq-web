@@ -7,7 +7,7 @@ const useIndexPriceInfos = (fetchTime: string) => {
   const [priceInfos, setPriceInfos] = useState<IndexOpInfo[]>([]);
 
   useEffect(() => {
-    fetchFinanceDatas(INDEX_INFOS.map((info) => info.opCode)).then((resArr) => {
+    fetchFinanceDatas(INDEX_INFOS.map((info) => info.sCode)).then((resArr) => {
       setPriceInfos(
         resArr.map(({ price }, i) => ({
           ...INDEX_INFOS[i],

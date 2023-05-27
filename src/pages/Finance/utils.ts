@@ -10,19 +10,19 @@ import type {
 import jsonp from 'jsonp';
 
 export const fetchAvgPrice = (
-  opCode: string,
+  sCode: string,
   startDate: string,
   endDate: string = moment().format('YYYY-MM-DD')
 ): Promise<number> => {
   return axios
     .get(
-      `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${opCode},month,${moment(
+      `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${sCode},month,${moment(
         startDate
       )
         .subtract(1, 'month')
         .format('YYYY-MM-DD')},${endDate},999,qfq`
     )
-    .then((res) => res.data.data[opCode].qfqmonth)
+    .then((res) => res.data.data[sCode].qfqmonth)
     .then((arr: Array<string[]>) => {
       arr.pop();
       const avgPrice = arr.reduce((a, b) => a + Number(b[2]), 0) / arr.length;

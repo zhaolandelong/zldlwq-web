@@ -7,7 +7,7 @@ import { fetchFeatPointByMonths } from '../utils';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const columns: ColumnType<FeatureData>[] = [
   {
@@ -44,7 +44,7 @@ const columns: ColumnType<FeatureData>[] = [
     render: (discount) => `¥ ${(discount * 200).toFixed(2)}`,
   },
   {
-    title: '日均打折率',
+    title: '年化打折率',
     align: 'right',
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, record) =>
@@ -173,6 +173,13 @@ const IndexFeatTable: React.FC<{
         loading={loading}
         pagination={false}
       />
+      <Text type="secondary">
+        <ul>
+          <li>打折（1 手）= ( 股指 - 点数 ) * 200</li>
+          <li>日均打折 = 打折（1 手） / 剩余天数</li>
+          <li>年化打折率 = 日均打折 / 点数 * 365</li>
+        </ul>
+      </Text>
     </>
   );
 };

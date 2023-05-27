@@ -1,7 +1,7 @@
 export interface FinanceInfo {
   code: string;
   name: string;
-  opCode: string;
+  sCode: string;
   price: number;
 }
 
@@ -12,7 +12,7 @@ export interface IndexOpInfo extends FinanceInfo {
 
 export interface ETFPosInfo {
   code: string; // ETF 代码
-  opCode: string; // 完整代码
+  sCode: string; // 完整代码
   name?: string; // ETF 名称
   startDate: string; // 开始定投日期（打底仓的月份要折算进去）
   investMonths?: number; // 投资月数

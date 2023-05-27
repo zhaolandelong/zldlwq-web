@@ -6,7 +6,7 @@ import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../utils';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
@@ -43,15 +43,18 @@ const columns: ColumnType<OptionPnCData>[] = [
       `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
   },
   {
-    title: '日均打折率',
+    title: '年化打折率',
     align: 'right',
     sorter: (a, b) =>
-    (a.timeValueP - a.timeValueC) / a.remainDays -
-    (b.timeValueP - b.timeValueC) / b.remainDays,
+      (a.timeValueP - a.timeValueC) / a.remainDays -
+      (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, record) =>
-      `${(((record.timeValueP - record.timeValueC) / record.strikePrice / record.remainDays) * 36500).toFixed(
-        2
-      )}%`,
+      `${(
+        ((record.timeValueP - record.timeValueC) /
+          record.strikePrice /
+          record.remainDays) *
+        36500
+      ).toFixed(2)}%`,
   },
   {
     title: '行权价',
@@ -132,6 +135,13 @@ const ETFOpTable: React.FC<{
         loading={loading}
         pagination={false}
       />
+      <Text type="secondary">
+        <ul>
+          <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 10000</li>
+          <li>日均打折 = 打折（1 手） / 剩余天数</li>
+          <li>年化打折率 = 日均打折 / 行权价 * 365</li>
+        </ul>
+      </Text>
     </>
   );
 };
