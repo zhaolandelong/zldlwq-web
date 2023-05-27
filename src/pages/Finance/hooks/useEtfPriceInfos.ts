@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { FinanceInfo } from '../types';
+import type { StockInfo } from '../types';
 import { ETF_INFOS } from '../constants';
 import { fetchFinanceDatas } from '../utils';
 
 const useEtfPriceInfos = (fetchTime: string) => {
-  const [etfPriceInfos, setEtfPriceInfos] = useState<FinanceInfo[]>([]);
+  const [etfPriceInfos, setEtfPriceInfos] = useState<StockInfo[]>([]);
 
   useEffect(() => {
     fetchFinanceDatas(ETF_INFOS.map((info) => info.sCode)).then((resArr) => {

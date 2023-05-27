@@ -1,11 +1,11 @@
 import React from 'react';
 import { Table, Typography } from 'antd';
-import type { FinanceInfo } from '../types';
+import type { StockInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 
 const { Title } = Typography;
 
-const columns: ColumnType<FinanceInfo>[] = [
+const columns: ColumnType<StockInfo>[] = [
   {
     title: '名称',
     dataIndex: 'name',
@@ -25,14 +25,14 @@ const columns: ColumnType<FinanceInfo>[] = [
   },
 ];
 
-const ETFTable: React.FC<{ dataSource: FinanceInfo[]; fetchTime: string }> = (
+const ETFTable: React.FC<{ dataSource: StockInfo[]; }> = (
   props
 ) => {
-  const { dataSource, fetchTime } = props;
+  const { dataSource } = props;
 
   return (
     <>
-      <Title level={2}>ETF 信息({fetchTime})</Title>
+      <Title level={2}>ETF 信息</Title>
       <Table
         size="small"
         columns={columns}

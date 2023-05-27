@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
-import type { ETFPosInfo, FinanceInfo, InvestInfo } from '../types';
+import type { ETFPosInfo, StockInfo, InvestInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
 import { getEtfOpCount } from '../utils';
@@ -52,7 +52,7 @@ const columns: ColumnType<InvestInfo>[] = [
 ];
 
 const InvestTable: React.FC<{
-  etfPriceInfos: FinanceInfo[];
+  etfPriceInfos: StockInfo[];
   etfPosInfos: ETFPosInfo[];
 }> = (props) => {
   const { etfPriceInfos, etfPosInfos } = props;

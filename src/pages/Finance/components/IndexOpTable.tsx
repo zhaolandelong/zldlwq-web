@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { FeatureDealDate, IndexOpInfo, OptionPnCData } from '../types';
+import type { ProdDealDateKV, StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_OP_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchIndexOpPrimaryDatas } from '../utils';
+import { fetchIndexOpPrimaryDatas, filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
 
@@ -93,58 +93,33 @@ const columns: ColumnType<OptionPnCData>[] = [
   },
 ];
 
+const opCodes = INDEX_OP_INFOS.map((info) => info.op);
+
 const IndexOpTable: React.FC<{
-  priceInfos: IndexOpInfo[];
-  featureDealDates?: FeatureDealDate;
-  fetchTime: string;
+  stockInfos: StockInfo[];
+  featureDealDates?: ProdDealDateKV;
 }> = (props) => {
-  const { priceInfos, fetchTime, featureDealDates } = props;
-
-  const opCodes: string[] = [];
-  for (const info of INDEX_OP_INFOS) {
-    opCodes.push(info.op);
-  }
-
-  const filteredDealDates = useMemo(() => {
-    if (typeof featureDealDates === 'undefined') {
-      return null;
-    }
-    const result: Record<string, { months: string[]; dealDates: string[] }> =
-      {};
-
-    for (let key in featureDealDates) {
-      const prod = key.slice(0, 2);
-      if (!opCodes.includes(prod)) {
-        continue;
-      }
-      if (!result[prod]) {
-        result[prod] = { months: [], dealDates: [] };
-      }
-      result[prod].months.push(key.slice(-4));
-      result[prod].dealDates.push(featureDealDates[key]);
-    }
-    return result;
-  }, [featureDealDates]);
+  const { stockInfos, featureDealDates } = props;
 
   const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (
-      typeof filteredDealDates !== 'undefined' &&
-      filteredDealDates !== null
-    ) {
+    const monthDealDates = filterDealDates(opCodes, featureDealDates);
+    if (monthDealDates) {
       setLoading(true);
       Promise.all(
-        priceInfos
-          .filter((info) => codes.includes(info.code))
-          .map((indexInfo) =>
+        INDEX_OP_INFOS.filter(({ code }) => codes.includes(code)).map(
+          ({ code, op }) =>
             fetchIndexOpPrimaryDatas({
-              indexInfo,
-              ...filteredDealDates[indexInfo.op],
+              indexInfo: stockInfos.find(
+                (info) => info.code === code
+              ) as StockInfo,
+              op,
+              ...monthDealDates[op],
             })
-          )
+        )
       )
         .then((etfOpArr) => {
           setDataSource(flattenDeep(etfOpArr));
@@ -153,11 +128,11 @@ const IndexOpTable: React.FC<{
           setLoading(false);
         });
     }
-  }, [priceInfos, filteredDealDates]);
+  }, [stockInfos, featureDealDates]);
 
   return (
     <>
-      <Title level={2}>股指期权 ({fetchTime})</Title>
+      <Title level={2}>股指期权</Title>
       <Checkbox.Group
         options={INDEX_OP_INFOS.map((info) => ({
           label: info.name,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import { Button, Typography, Col, Row } from 'antd';
-import { fetchOpDealDate } from './utils';
+import { fetchFeatureDealDates, fetchOpDealDate } from './utils';
 import { etfPosInfos } from './constants';
 import ETFTable from './components/ETFTable';
 import ETFOpTable from './components/ETFOpTable';
@@ -13,18 +13,17 @@ import IndexFeatTable from './components/IndexFeatTable';
 // import PositionFormList from './components/PositionFormList';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
-import useFeatureDealDates from './hooks/useFeatureDealDates';
-import { DealDate } from './types';
+import { DealDate, ProdDealDateKV } from './types';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const Finance: React.FC = () => {
   const [fetchTime, setfetchTime] = useState(moment().format('HH:mm:ss'));
   const [dealDate, setDealDate] = useState<DealDate>();
+  const [featureDealDates, setFeatureDealDates] = useState<ProdDealDateKV>();
 
   const etfPriceInfos = useEtfPriceInfos(fetchTime);
   const indexPriceInfos = useIndexPriceInfos(fetchTime);
-  const featureDealDates = useFeatureDealDates(fetchTime);
 
   const firstFeature = useMemo(() => {
     if (typeof featureDealDates === 'undefined') return void 0;
@@ -33,6 +32,7 @@ const Finance: React.FC = () => {
 
   useEffect(() => {
     fetchOpDealDate(moment().format('YYYY-MM')).then(setDealDate);
+    fetchFeatureDealDates().then(setFeatureDealDates);
   }, []);
 
   return (
@@ -52,24 +52,26 @@ const Finance: React.FC = () => {
         type="primary"
         onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
       >
-        刷新
+        刷新 ({fetchTime})
       </Button>
       {/* <PositionFormList /> */}
       <Row gutter={16}>
         <Col span={24} md={12}>
-          <ETFTable dataSource={etfPriceInfos} fetchTime={fetchTime} />
+          <ETFTable dataSource={etfPriceInfos} />
         </Col>
         <Col span={24} md={12}>
-          <IndexTable dataSource={indexPriceInfos} fetchTime={fetchTime} />
+          <IndexTable dataSource={indexPriceInfos} />
         </Col>
       </Row>
-      <ETFOpTable priceInfos={etfPriceInfos} fetchTime={fetchTime} />
+      <ETFOpTable stockInfos={etfPriceInfos} />
       <IndexOpTable
-        priceInfos={indexPriceInfos}
+        stockInfos={indexPriceInfos}
         featureDealDates={featureDealDates}
-        fetchTime={fetchTime}
       />
-      <IndexFeatTable fetchTime={fetchTime} priceInfos={indexPriceInfos} featureDealDates={featureDealDates}/>
+      <IndexFeatTable
+        stockInfos={indexPriceInfos}
+        featureDealDates={featureDealDates}
+      />
       <PositionTable etfPosInfos={etfPosInfos} />
       <InvestTable etfPriceInfos={etfPriceInfos} etfPosInfos={etfPosInfos} />
     </>

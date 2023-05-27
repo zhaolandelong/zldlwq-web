@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { IndexOpInfo } from '../types';
+import type { StockInfo } from '../types';
 import { INDEX_INFOS } from '../constants';
 import { fetchFinanceDatas } from '../utils';
 
 const useIndexPriceInfos = (fetchTime: string) => {
-  const [priceInfos, setPriceInfos] = useState<IndexOpInfo[]>([]);
+  const [stockInfos, setPriceInfos] = useState<StockInfo[]>([]);
 
   useEffect(() => {
     fetchFinanceDatas(INDEX_INFOS.map((info) => info.sCode)).then((resArr) => {
@@ -17,7 +17,7 @@ const useIndexPriceInfos = (fetchTime: string) => {
     });
   }, [fetchTime]);
 
-  return priceInfos;
+  return stockInfos;
 };
 
 export default useIndexPriceInfos;

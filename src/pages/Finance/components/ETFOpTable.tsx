@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { FinanceInfo, OptionPnCData } from '../types';
+import type { StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
@@ -91,10 +91,9 @@ const columns: ColumnType<OptionPnCData>[] = [
 ];
 
 const ETFOpTable: React.FC<{
-  priceInfos: FinanceInfo[];
-  fetchTime: string;
+  stockInfos: StockInfo[];
 }> = (props) => {
-  const { priceInfos, fetchTime } = props;
+  const { stockInfos } = props;
   const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
@@ -102,7 +101,7 @@ const ETFOpTable: React.FC<{
   useEffect(() => {
     setLoading(true);
     Promise.all(
-      priceInfos
+      stockInfos
         .filter((info) => codes.includes(info.code))
         .map(fetchEtfOpPrimaryDatas)
     )
@@ -112,11 +111,11 @@ const ETFOpTable: React.FC<{
       .finally(() => {
         setLoading(false);
       });
-  }, [priceInfos]);
+  }, [stockInfos]);
 
   return (
     <>
-      <Title level={2}>ETF 期权 ({fetchTime})</Title>
+      <Title level={2}>ETF 期权</Title>
       <Checkbox.Group
         options={ETF_INFOS.map((info) => ({
           label: info.name,

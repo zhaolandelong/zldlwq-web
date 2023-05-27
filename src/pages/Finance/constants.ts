@@ -1,6 +1,6 @@
-import type { FinanceInfo, ETFPosInfo, IndexOpInfo } from './types';
+import type { StockInfo, ETFPosInfo } from './types';
 
-export const ETF_INFOS: Omit<FinanceInfo, 'price'>[] = [
+export const ETF_INFOS: Omit<StockInfo, 'price'>[] = [
   {
     code: '510300',
     sCode: 'sh510300',
@@ -23,46 +23,47 @@ export const ETF_INFOS: Omit<FinanceInfo, 'price'>[] = [
   },
 ];
 
-export const INDEX_INFOS: Omit<IndexOpInfo, 'price'>[] = [
+export const INDEX_INFOS: Omit<StockInfo, 'price'>[] = [
   {
     code: '000300',
     sCode: 'sh000300',
     name: '沪深300',
-    op: 'IO',
-    feat: 'IF',
+  },
+  {
+    code: '399006',
+    sCode: 'sz399006',
+    name: '创业板',
   },
   {
     code: '000016',
     sCode: 'sh000016',
     name: '上证50',
-    op: 'HO',
-    feat: 'IH',
+  },
+  {
+    code: '000905',
+    sCode: 'sh000905',
+    name: '中证500',
   },
   {
     code: '000852',
     sCode: 'sh000852',
     name: '中证1000',
-    op: 'MO',
-    feat: 'IM',
   },
 ];
 
 export const INDEX_OP_INFOS = [
   {
     code: '000300',
-    sCode: 'sh000300',
     name: '沪深300',
     op: 'IO',
   },
   {
     code: '000016',
-    sCode: 'sh000016',
     name: '上证50',
     op: 'HO',
   },
   {
     code: '000852',
-    sCode: 'sh000852',
     name: '中证1000',
     op: 'MO',
   },
@@ -71,25 +72,21 @@ export const INDEX_OP_INFOS = [
 export const INDEX_FEAT_INFOS = [
   {
     code: '000300',
-    sCode: 'sh000300',
     name: '沪深300',
     feat: 'IF',
   },
   {
     code: '000016',
-    sCode: 'sh000016',
     name: '上证50',
     feat: 'IH',
   },
   {
-    code: '510500',
-    sCode: 'sh510500',
+    code: '000905',
     name: '中证500',
     feat: 'IC',
   },
   {
     code: '000852',
-    sCode: 'sh000852',
     name: '中证1000',
     feat: 'IM',
   },

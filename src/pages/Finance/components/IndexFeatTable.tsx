@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { FeatureDealDate, IndexOpInfo, FeatureData } from '../types';
+import type { ProdDealDateKV, StockInfo, FeatureData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_FEAT_INFOS } from '../constants';
-import { fetchFeatPointByMonths } from '../utils';
+import { fetchFeatPointByMonths, filterDealDates } from '../utils';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
 
@@ -70,75 +70,46 @@ const columns: ColumnType<FeatureData>[] = [
   },
 ];
 
-const featCodes: string[] = [];
-for (const info of INDEX_FEAT_INFOS) {
-  featCodes.push(info.feat);
-}
+const featCodes = INDEX_FEAT_INFOS.map((info) => info.feat);
 
 const IndexFeatTable: React.FC<{
-  priceInfos: IndexOpInfo[];
-  featureDealDates?: FeatureDealDate;
-  fetchTime: string;
+  stockInfos: StockInfo[];
+  featureDealDates?: ProdDealDateKV;
 }> = (props) => {
-  const { priceInfos, fetchTime, featureDealDates } = props;
-
-  const filteredDealDates = useMemo(() => {
-    if (typeof featureDealDates === 'undefined') {
-      return null;
-    }
-    const result: Record<string, { months: string[]; dealDates: string[] }> =
-      {};
-
-    for (let key in featureDealDates) {
-      const prod = key.slice(0, 2);
-      if (!featCodes.includes(prod)) {
-        continue;
-      }
-      if (!result[prod]) {
-        result[prod] = { months: [], dealDates: [] };
-      }
-      result[prod].months.push(key.slice(-4));
-      result[prod].dealDates.push(featureDealDates[key]);
-    }
-    return result;
-  }, [featureDealDates]);
+  const { stockInfos, featureDealDates } = props;
 
   const [dataSource, setDataSource] = useState<FeatureData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
-  const filteredInfos = useMemo(
-    () => priceInfos.filter((info) => codes.includes(info.code)),
-    [priceInfos, codes]
-  );
-
   useEffect(() => {
-    if (
-      typeof filteredDealDates !== 'undefined' &&
-      filteredDealDates !== null
-    ) {
+    const monthDealDates = filterDealDates(featCodes, featureDealDates);
+    if (monthDealDates) {
       setLoading(true);
       Promise.all(
-        filteredInfos.map((info) =>
-          fetchFeatPointByMonths(
-            info.feat,
-            filteredDealDates[info.feat].months
-          ).then((pointArr) =>
-            pointArr.map((point, i) => {
-              const month = filteredDealDates[info.feat].months[i];
-              const result: FeatureData = {
-                ...info,
-                point,
-                month,
-                discount: info.price - point,
-                featCode: info.feat + month,
-                remainDays: moment(
-                  filteredDealDates[info.feat].dealDates[i]
-                ).diff(moment(), 'days'),
-              };
-              return result;
-            })
-          )
+        INDEX_FEAT_INFOS.filter(({ code }) => codes.includes(code)).map(
+          ({ feat, code }) =>
+            fetchFeatPointByMonths(feat, monthDealDates[feat].months).then(
+              (pointArr) =>
+                pointArr.map((point, i) => {
+                  const indexInfo = stockInfos.find(
+                    (info) => info.code === code
+                  ) as StockInfo;
+                  const month = monthDealDates[feat].months[i];
+                  const result: FeatureData = {
+                    ...indexInfo,
+                    point,
+                    month,
+                    discount: indexInfo.price - point,
+                    featCode: feat + month,
+                    remainDays: moment(monthDealDates[feat].dealDates[i]).diff(
+                      moment(),
+                      'days'
+                    ),
+                  };
+                  return result;
+                })
+            )
         )
       )
         .then((pointArr) => {
@@ -148,11 +119,11 @@ const IndexFeatTable: React.FC<{
           setLoading(false);
         });
     }
-  }, [priceInfos, filteredDealDates]);
+  }, [stockInfos, featureDealDates]);
 
   return (
     <>
-      <Title level={2}>股指期货 ({fetchTime})</Title>
+      <Title level={2}>股指期货</Title>
       <Checkbox.Group
         options={INDEX_FEAT_INFOS.map((info) => ({
           label: info.name,

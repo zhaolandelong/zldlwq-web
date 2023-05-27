@@ -2,10 +2,10 @@ import axios from 'axios';
 import moment from 'moment';
 import type {
   DealDate,
-  FinanceInfo,
-  IndexOpInfo,
+  StockInfo,
   OptionNestData,
   OptionPnCData,
+  ProdDealDateKV,
 } from './types';
 import jsonp from 'jsonp';
 
@@ -62,7 +62,7 @@ export const fetchOpDealDate = (
 
 export const fetchFinanceDatas = (
   opCodes: string[]
-): Promise<Pick<FinanceInfo, 'code' | 'price'>[]> =>
+): Promise<Pick<StockInfo, 'code' | 'price'>[]> =>
   axios.get<string>(`https://qt.gtimg.cn/q=${opCodes.join(',')}`).then((res) =>
     res.data
       .split(';')
@@ -164,9 +164,9 @@ export const fetchOpMonths = () =>
     )
   );
 
-export const fetchEtfOpPrimaryDatas = async (etfInfo: FinanceInfo) => {
+export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
   const months = await fetchOpMonths();
-  const codeMonthArr: Array<FinanceInfo & { month: string }> = [];
+  const codeMonthArr: Array<StockInfo & { month: string }> = [];
   months.forEach((month) => {
     codeMonthArr.push({ ...etfInfo, month });
   });
@@ -247,17 +247,18 @@ const fetchIndexOpByMonth = async (params: { op: string; month: string }) =>
   });
 
 export const fetchIndexOpPrimaryDatas = async (params: {
-  indexInfo: IndexOpInfo;
+  indexInfo: StockInfo;
+  op: string;
   months: string[];
   dealDates: string[];
 }) => {
-  const { indexInfo, months, dealDates } = params;
+  const { indexInfo, months, dealDates, op } = params;
   const codeMonthArr: Array<typeof indexInfo & { month: string }> = [];
   months.forEach((month) => {
     codeMonthArr.push({ ...indexInfo, month });
   });
   const result: OptionPnCData[] = await Promise.all(
-    codeMonthArr.map(({ code, month, name, price, op }, i) =>
+    codeMonthArr.map(({ month, name, price }, i) =>
       fetchIndexOpByMonth({ op, month }).then((opArr) => {
         let primaryIndex = 0;
         let abs = Infinity;
@@ -303,3 +304,31 @@ export const fetchFeatPointByMonths = async (
     .map((x: string) => Number(x.replace(/"/g, '').split(',')[3]));
   return result;
 };
+
+export const filterDealDates = (
+  filterProds: string[],
+  prodDealDateKV?: ProdDealDateKV
+) => {
+  if (typeof prodDealDateKV === 'undefined') {
+    return null;
+  }
+  const result: Record<string, { months: string[]; dealDates: string[] }> = {};
+
+  for (let key in prodDealDateKV) {
+    const prod = key.slice(0, 2);
+    if (!filterProds.includes(prod)) {
+      continue;
+    }
+    if (!result[prod]) {
+      result[prod] = { months: [], dealDates: [] };
+    }
+    result[prod].months.push(key.slice(-4));
+    result[prod].dealDates.push(prodDealDateKV[key]);
+  }
+  return result;
+};
+
+export const fetchFeatureDealDates = () =>
+axios
+  .get<ProdDealDateKV>('http://api.1to10.zldlwq.top/api/cffex')
+  .then((res) => res.data);
