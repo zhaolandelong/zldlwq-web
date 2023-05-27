@@ -10,40 +10,40 @@ const { Title } = Typography;
 
 const columns: ColumnType<ETFPosInfo>[] = [
   {
-    title: 'Name',
+    title: '名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: 'Start Date',
+    title: '开始日期',
     dataIndex: 'startDate',
     key: 'startDate',
   },
   {
-    title: 'Invest Months',
+    title: '已投（月）',
     dataIndex: 'investMonths',
     key: 'investMonths',
   },
   {
-    title: 'Avg Cost',
+    title: '平均成本',
     dataIndex: 'avgCost',
     key: 'avgCost',
     render: (avgCost) => `¥ ${avgCost.toFixed(3)}`,
   },
   {
-    title: 'Expected Rate',
+    title: '预期收益率',
     dataIndex: 'expectedReturnRate',
     key: 'expectedReturnRate',
     render: (rate) => `${rate * 100}%`,
   },
   {
-    title: 'Actual Rate',
+    title: '年化收益率',
     dataIndex: 'actualReturnRate',
     key: 'actualReturnRate',
     render: (rate) => `${rate * 100}%`,
   },
   {
-    title: 'Expected Return Price',
+    title: '收益价格',
     dataIndex: 'expectedReturnPrice',
     key: 'expectedReturnPrice',
     render: (price) => `¥ ${price.toFixed(3)}`,

@@ -10,20 +10,20 @@ const { Title } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
-    title: 'Name',
+    title: '名称',
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
   },
   {
-    title: 'Month',
+    title: '月份',
     dataIndex: 'month',
     key: 'month',
     fixed: 'left',
     sorter: (a, b) => Number(a.month) - Number(b.month),
   },
   {
-    title: 'Diff / Days',
+    title: '日均打折',
     align: 'right',
     fixed: 'left',
     sorter: (a, b) =>
@@ -36,14 +36,14 @@ const columns: ColumnType<OptionPnCData>[] = [
       ).toFixed(2)}`,
   },
   {
-    title: 'Value Diff (1 hand)',
+    title: '打折（1 手）',
     align: 'right',
     sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, record) =>
       `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
   },
   {
-    title: 'Strike Price',
+    title: '行权价',
     dataIndex: 'strikePrice',
     key: 'strikePrice',
     align: 'right',
@@ -51,7 +51,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     render: (price) => `¥ ${price.toFixed(3)}`,
   },
   {
-    title: 'Time Value (P)',
+    title: '时间价值(P)',
     dataIndex: 'timeValueP',
     key: 'timeValueP',
     align: 'right',
@@ -59,7 +59,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     render: (price) => `¥ ${price.toFixed(4)}`,
   },
   {
-    title: 'Time Value (C)',
+    title: '时间价值(C)',
     dataIndex: 'timeValueC',
     key: 'timeValueC',
     align: 'right',
@@ -67,7 +67,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     render: (price) => `¥ ${price.toFixed(4)}`,
   },
   {
-    title: 'Remain Days',
+    title: '剩余天数',
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
@@ -75,7 +75,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     render: (d) => `${d} days`,
   },
   {
-    title: 'Code',
+    title: '代码',
     dataIndex: 'code',
     key: 'code',
     filters: Object.values(ETF_INFOS).map((info) => ({
@@ -112,7 +112,7 @@ const ETFOpTable: React.FC<{
 
   return (
     <>
-      <Title level={2}>ETF Option Info ({fetchTime})</Title>
+      <Title level={2}>ETF 期权 ({fetchTime})</Title>
       <Checkbox.Group
         options={ETF_INFOS.map((info) => ({
           label: info.name,
@@ -125,7 +125,7 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 800 }}
+        // scroll={{ x: 800 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}

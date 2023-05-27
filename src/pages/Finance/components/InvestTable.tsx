@@ -9,42 +9,42 @@ const { Title } = Typography;
 
 const columns: ColumnType<InvestInfo>[] = [
   {
-    title: 'Name',
+    title: '名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: 'Current Price',
+    title: '当前价',
     dataIndex: 'price',
     key: 'price',
     render: (price) => `¥ ${price}`,
   },
   {
-    title: 'Monthly Amount',
+    title: '月定投',
     dataIndex: 'monthlyAmount',
     key: 'monthlyAmount',
     render: (price) => `¥ ${price}`,
   },
   {
-    title: 'Option Hands',
+    title: '期权（手）',
     dataIndex: 'optionCount',
     key: 'optionCount',
     render: (count) => `${count} OR (${count + 1})`,
   },
   {
-    title: 'ETF Count',
+    title: 'ETF 补充',
     dataIndex: 'etfCount',
     key: 'etfCount',
     render: (count) => `${count} OR (${count - 10000})`,
   },
   {
-    title: 'Scaling Option Hands',
+    title: '加仓期权（手）',
     key: 'scalingOptionCount',
     dataIndex: 'scalingOptionCount',
     render: (count) => `${count} OR (${count + 1})`,
   },
   {
-    title: 'Scaling ETF Count',
+    title: '加仓 ETF 补充',
     key: 'scalingEtfCount',
     dataIndex: 'scalingEtfCount',
     render: (count) => `${count} OR (${count - 10000})`,

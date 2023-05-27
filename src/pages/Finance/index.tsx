@@ -38,10 +38,10 @@ const Finance: React.FC = () => {
     <>
       <Title level={3}>
         Today is {moment().format('YYYY-MM-DD dddd')}. <br />
-        ETF Option Deal Date: {dealDate?.expireDay} (
+        ETF 期权到期日： {dealDate?.expireDay} (
         <span style={{ color: 'red' }}>{dealDate?.remainderDays}</span> Days).
         <br />
-        Index Option Deal Date: {moment(firstFeature).format('YYYY-MM-DD')} (
+        股指期权到期日： {moment(firstFeature).format('YYYY-MM-DD')} (
         <span style={{ color: 'red' }}>
           {moment(firstFeature).diff(moment(), 'days')}
         </span>{' '}
@@ -51,14 +51,14 @@ const Finance: React.FC = () => {
         type="primary"
         onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
       >
-        REFRESH
+        刷新
       </Button>
       {/* <PositionFormList /> */}
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={24} md={12}>
           <ETFTable dataSource={etfPriceInfos} fetchTime={fetchTime} />
         </Col>
-        <Col span={12}>
+        <Col span={24} md={12}>
           <IndexTable dataSource={indexPriceInfos} fetchTime={fetchTime} />
         </Col>
       </Row>

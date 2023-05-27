@@ -7,17 +7,17 @@ const { Title } = Typography;
 
 const columns: ColumnType<FinanceInfo>[] = [
   {
-    title: 'Name',
+    title: '名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: 'Code',
+    title: '代码',
     dataIndex: 'code',
     key: 'code',
   },
   {
-    title: 'Price',
+    title: '价格',
     dataIndex: 'price',
     key: 'price',
     align: 'right',
@@ -32,7 +32,7 @@ const ETFTable: React.FC<{ dataSource: FinanceInfo[]; fetchTime: string }> = (
 
   return (
     <>
-      <Title level={2}>ETF Info ({fetchTime})</Title>
+      <Title level={2}>ETF 信息({fetchTime})</Title>
       <Table
         size="small"
         columns={columns}

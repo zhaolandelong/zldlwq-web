@@ -32,7 +32,7 @@ const IndexTable: React.FC<{ dataSource: FinanceInfo[]; fetchTime: string }> = (
 
   return (
     <>
-      <Title level={2}>Index Info ({fetchTime})</Title>
+      <Title level={2}>股指信息 ({fetchTime})</Title>
       <Table
         size="small"
         columns={columns}
