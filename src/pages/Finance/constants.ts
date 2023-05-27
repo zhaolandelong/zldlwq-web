@@ -31,11 +31,6 @@ export const INDEX_INFOS: Omit<IndexOpInfo, 'price'>[] = [
     op: 'IO',
     feat: 'IF',
   },
-  // {
-  //   code: '399006',
-  //   opCode: 'sz399006',
-  //   name: '创业板指',
-  // },
   {
     code: '000016',
     opCode: 'sh000016',
@@ -43,17 +38,48 @@ export const INDEX_INFOS: Omit<IndexOpInfo, 'price'>[] = [
     op: 'HO',
     feat: 'IH',
   },
-  // {
-  //   code: '000905',
-  //   opCode: 'sh000905',
-  //   name: '中证500',
-  //   feat: 'IC',
-  // },
   {
     code: '000852',
     opCode: 'sh000852',
     name: '中证1000',
     op: 'MO',
+    feat: 'IM',
+  },
+];
+
+export const INDEX_OP_INFOS = [
+  {
+    opCode: 'sh000300',
+    name: '沪深300',
+    op: 'IO',
+  },
+  {
+    opCode: 'sh000016',
+    name: '上证50',
+    op: 'HO',
+  },
+  {
+    opCode: 'sh000852',
+    name: '中证1000',
+    op: 'MO',
+  },
+];
+
+export const INDEX_FEAT_INFOS = [
+  {
+    name: '沪深300',
+    feat: 'IF',
+  },
+  {
+    name: '上证50',
+    feat: 'IH',
+  },
+  {
+    name: '中证500',
+    feat: 'IC',
+  },
+  {
+    name: '中证1000',
     feat: 'IM',
   },
 ];

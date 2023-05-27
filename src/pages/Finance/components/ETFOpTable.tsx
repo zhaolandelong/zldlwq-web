@@ -43,6 +43,17 @@ const columns: ColumnType<OptionPnCData>[] = [
       `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
   },
   {
+    title: '日均打折率',
+    align: 'right',
+    sorter: (a, b) =>
+    (a.timeValueP - a.timeValueC) / a.remainDays -
+    (b.timeValueP - b.timeValueC) / b.remainDays,
+    render: (text, record) =>
+      `${(((record.timeValueP - record.timeValueC) / record.strikePrice / record.remainDays) * 36500).toFixed(
+        2
+      )}%`,
+  },
+  {
     title: '行权价',
     dataIndex: 'strikePrice',
     key: 'strikePrice',
@@ -73,16 +84,6 @@ const columns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
-  },
-  {
-    title: '代码',
-    dataIndex: 'code',
-    key: 'code',
-    filters: Object.values(ETF_INFOS).map((info) => ({
-      text: info.code,
-      value: info.code,
-    })),
-    onFilter: (value, record) => value === record.code,
   },
 ];
 

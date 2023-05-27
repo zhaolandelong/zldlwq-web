@@ -291,3 +291,15 @@ export const fetchIndexOpPrimaryDatas = async (params: {
   );
   return result;
 };
+
+export const fetchFeatPointByMonths = async (
+  prod: string,
+  months: string[]
+) => {
+  const query = months.map((month) => `nf_${prod}${month}`).join(',');
+  const dataStr = await fetchSinaFinance(query);
+  const result: number[] = dataStr
+    .match(/"(.*?)"/g)
+    .map((x: string) => Number(x.replace(/"/g, '').split(',')[3]));
+  return result;
+};

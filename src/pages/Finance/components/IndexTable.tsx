@@ -7,17 +7,17 @@ const { Title } = Typography;
 
 const columns: ColumnType<FinanceInfo>[] = [
   {
-    title: 'Name',
+    title: '名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: 'Code',
+    title: '代码',
     dataIndex: 'code',
     key: 'code',
   },
   {
-    title: 'Point',
+    title: '点数',
     dataIndex: 'price',
     key: 'price',
     align: 'right',

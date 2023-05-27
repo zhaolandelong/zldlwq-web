@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { FeatureDealDate, IndexOpInfo, OptionPnCData } from '../types';
+import type { FeatureDealDate, IndexOpInfo, FeatureData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
-import { flattenDeep } from 'lodash-es';
-import { fetchIndexOpPrimaryDatas } from '../utils';
+import { fetchFeatPointByMonths } from '../utils';
+import { flatten } from 'lodash-es';
+import moment from 'moment';
 
 const { Title } = Typography;
 
-const columns: ColumnType<OptionPnCData>[] = [
+const columns: ColumnType<FeatureData>[] = [
   {
     title: '名称',
     dataIndex: 'name',
@@ -17,68 +18,47 @@ const columns: ColumnType<OptionPnCData>[] = [
   },
   {
     title: '代码',
-    dataIndex: 'code',
-    key: 'code',
+    dataIndex: 'featCode',
+    key: 'featCode',
     sorter: (a, b) => Number(a.month) - Number(b.month),
     filters: Object.values(INDEX_INFOS).map((info) => ({
-      text: info.op,
-      value: info.op,
+      text: info.feat,
+      value: info.feat,
     })),
-    onFilter: (value, record) => record.code.startsWith(value as string),
+    onFilter: (value, record) => record.featCode.startsWith(value as string),
   },
   {
     title: '日均打折',
     align: 'right',
     fixed: 'left',
-    sorter: (a, b) =>
-      (a.timeValueP - a.timeValueC) / a.remainDays -
-      (b.timeValueP - b.timeValueC) / b.remainDays,
+    sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, record) =>
-      `¥ ${(
-        ((record.timeValueP - record.timeValueC) * 100) /
-        record.remainDays
-      ).toFixed(2)}`,
+      `¥ ${((record.discount * 200) / record.remainDays).toFixed(2)}`,
   },
   {
     title: '打折（1 手）',
+    dataIndex: 'discount',
+    key: 'discount',
     align: 'right',
-    sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
-    render: (text, record) =>
-      `¥ ${((record.timeValueP - record.timeValueC) * 100).toFixed(2)}`,
+    sorter: (a, b) => a.discount - b.discount,
+    render: (discount) => `¥ ${(discount * 200).toFixed(2)}`,
   },
   {
     title: '日均打折率',
     align: 'right',
-    sorter: (a, b) =>
-    (a.timeValueP - a.timeValueC) / a.remainDays -
-    (b.timeValueP - b.timeValueC) / b.remainDays,
+    sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, record) =>
-      `${(((record.timeValueP - record.timeValueC) / record.strikePrice / record.remainDays) * 36500).toFixed(
+      `${((record.discount / record.point / record.remainDays) * 36500).toFixed(
         2
       )}%`,
   },
   {
-    title: '行权价',
-    dataIndex: 'strikePrice',
-    key: 'strikePrice',
+    title: '点数',
+    dataIndex: 'point',
+    key: 'point',
     align: 'right',
-    sorter: (a, b) => a.strikePrice - b.strikePrice,
-  },
-  {
-    title: '时间价值(P)',
-    dataIndex: 'timeValueP',
-    key: 'timeValueP',
-    align: 'right',
-    sorter: (a, b) => a.timeValueP - b.timeValueP,
-    render: (price) => `¥ ${price.toFixed(2)}`,
-  },
-  {
-    title: '时间价值(C)',
-    dataIndex: 'timeValueC',
-    key: 'timeValueC',
-    align: 'right',
-    sorter: (a, b) => a.timeValueC - b.timeValueC,
-    render: (price) => `¥ ${price.toFixed(2)}`,
+    sorter: (a, b) => a.point - b.point,
+    render: (point) => point.toFixed(2),
   },
   {
     title: '剩余天数',
@@ -90,19 +70,19 @@ const columns: ColumnType<OptionPnCData>[] = [
   },
 ];
 
-const IndexOpTable: React.FC<{
+const indexCodes: string[] = [];
+const featCodes: string[] = [];
+for (const info of INDEX_INFOS) {
+  featCodes.push(info.feat);
+  indexCodes.push(info.code);
+}
+
+const IndexFeatTable: React.FC<{
   priceInfos: IndexOpInfo[];
   featureDealDates?: FeatureDealDate;
   fetchTime: string;
 }> = (props) => {
   const { priceInfos, fetchTime, featureDealDates } = props;
-
-  const indexCodes: string[] = [];
-  const opCodes: string[] = [];
-  for (const info of INDEX_INFOS) {
-    opCodes.push(info.op);
-    indexCodes.push(info.code);
-  }
 
   const filteredDealDates = useMemo(() => {
     if (typeof featureDealDates === 'undefined') {
@@ -113,7 +93,7 @@ const IndexOpTable: React.FC<{
 
     for (let key in featureDealDates) {
       const prod = key.slice(0, 2);
-      if (!opCodes.includes(prod)) {
+      if (!featCodes.includes(prod)) {
         continue;
       }
       if (!result[prod]) {
@@ -125,9 +105,14 @@ const IndexOpTable: React.FC<{
     return result;
   }, [featureDealDates]);
 
-  const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
+  const [dataSource, setDataSource] = useState<FeatureData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
+
+  const filteredInfos = useMemo(
+    () => priceInfos.filter((info) => codes.includes(info.code)),
+    [priceInfos, codes]
+  );
 
   useEffect(() => {
     if (
@@ -136,17 +121,30 @@ const IndexOpTable: React.FC<{
     ) {
       setLoading(true);
       Promise.all(
-        priceInfos
-          .filter((info) => codes.includes(info.code))
-          .map((indexInfo) =>
-            fetchIndexOpPrimaryDatas({
-              indexInfo,
-              ...filteredDealDates[indexInfo.op],
+        filteredInfos.map((info) =>
+          fetchFeatPointByMonths(
+            info.feat,
+            filteredDealDates[info.feat].months
+          ).then((pointArr) =>
+            pointArr.map((point, i) => {
+              const month = filteredDealDates[info.feat].months[i];
+              const result: FeatureData = {
+                ...info,
+                point,
+                month,
+                discount: info.price - point,
+                featCode: info.feat + month,
+                remainDays: moment(
+                  filteredDealDates[info.feat].dealDates[i]
+                ).diff(moment(), 'days'),
+              };
+              return result;
             })
           )
+        )
       )
-        .then((etfOpArr) => {
-          setDataSource(flattenDeep(etfOpArr));
+        .then((pointArr) => {
+          setDataSource(flatten(pointArr));
         })
         .finally(() => {
           setLoading(false);
@@ -156,7 +154,7 @@ const IndexOpTable: React.FC<{
 
   return (
     <>
-      <Title level={2}>股指期权 ({fetchTime})</Title>
+      <Title level={2}>股指期货 ({fetchTime})</Title>
       <Checkbox.Group
         options={INDEX_INFOS.map((info) => ({
           label: info.name,
@@ -171,7 +169,7 @@ const IndexOpTable: React.FC<{
         columns={columns}
         // scroll={{ x: 800 }}
         dataSource={dataSource}
-        rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
+        rowKey={(r) => `${r.code}-${r.month}-${r.point}`}
         loading={loading}
         pagination={false}
       />
@@ -179,4 +177,4 @@ const IndexOpTable: React.FC<{
   );
 };
 
-export default IndexOpTable;
+export default IndexFeatTable;

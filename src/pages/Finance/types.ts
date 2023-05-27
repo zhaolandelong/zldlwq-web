@@ -67,3 +67,12 @@ export interface DealDate {
 }
 
 export type FeatureDealDate = Record<string, string>; // { MO2309: 20230915 }
+
+export interface FeatureData extends IndexOpInfo {
+  featCode: string; // IF2306
+  month: string; // 2309
+  point: number;
+  discount: number;
+  // dealDate: string;
+  remainDays: number;
+}

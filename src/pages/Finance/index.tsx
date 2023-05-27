@@ -9,6 +9,7 @@ import PositionTable from './components/PositionTable';
 import InvestTable from './components/InvestTable';
 import IndexTable from './components/IndexTable';
 import IndexOpTable from './components/IndexOpTable';
+import IndexFeatTable from './components/IndexFeatTable';
 // import PositionFormList from './components/PositionFormList';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
@@ -68,6 +69,7 @@ const Finance: React.FC = () => {
         featureDealDates={featureDealDates}
         fetchTime={fetchTime}
       />
+      <IndexFeatTable fetchTime={fetchTime} priceInfos={indexPriceInfos} featureDealDates={featureDealDates}/>
       <PositionTable etfPosInfos={etfPosInfos} />
       <InvestTable etfPriceInfos={etfPriceInfos} etfPosInfos={etfPosInfos} />
     </>
