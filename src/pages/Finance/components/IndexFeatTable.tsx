@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type { FeatureDealDate, IndexOpInfo, FeatureData } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
+import { DEFAULT_CODES, INDEX_FEAT_INFOS } from '../constants';
 import { fetchFeatPointByMonths } from '../utils';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
@@ -21,7 +21,7 @@ const columns: ColumnType<FeatureData>[] = [
     dataIndex: 'featCode',
     key: 'featCode',
     sorter: (a, b) => Number(a.month) - Number(b.month),
-    filters: Object.values(INDEX_INFOS).map((info) => ({
+    filters: Object.values(INDEX_FEAT_INFOS).map((info) => ({
       text: info.feat,
       value: info.feat,
     })),
@@ -70,11 +70,9 @@ const columns: ColumnType<FeatureData>[] = [
   },
 ];
 
-const indexCodes: string[] = [];
 const featCodes: string[] = [];
-for (const info of INDEX_INFOS) {
+for (const info of INDEX_FEAT_INFOS) {
   featCodes.push(info.feat);
-  indexCodes.push(info.code);
 }
 
 const IndexFeatTable: React.FC<{
@@ -156,7 +154,7 @@ const IndexFeatTable: React.FC<{
     <>
       <Title level={2}>股指期货 ({fetchTime})</Title>
       <Checkbox.Group
-        options={INDEX_INFOS.map((info) => ({
+        options={INDEX_FEAT_INFOS.map((info) => ({
           label: info.name,
           value: info.code,
           disabled: DEFAULT_CODES.includes(info.code),

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type { FeatureDealDate, IndexOpInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
+import { DEFAULT_CODES, INDEX_OP_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchIndexOpPrimaryDatas } from '../utils';
 
@@ -20,7 +20,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'code',
     key: 'code',
     sorter: (a, b) => Number(a.month) - Number(b.month),
-    filters: Object.values(INDEX_INFOS).map((info) => ({
+    filters: Object.values(INDEX_OP_INFOS).map((info) => ({
       text: info.op,
       value: info.op,
     })),
@@ -50,12 +50,15 @@ const columns: ColumnType<OptionPnCData>[] = [
     title: '年化打折率',
     align: 'right',
     sorter: (a, b) =>
-    (a.timeValueP - a.timeValueC) / a.remainDays -
-    (b.timeValueP - b.timeValueC) / b.remainDays,
+      (a.timeValueP - a.timeValueC) / a.remainDays -
+      (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, record) =>
-      `${(((record.timeValueP - record.timeValueC) / record.strikePrice / record.remainDays) * 36500).toFixed(
-        2
-      )}%`,
+      `${(
+        ((record.timeValueP - record.timeValueC) /
+          record.strikePrice /
+          record.remainDays) *
+        36500
+      ).toFixed(2)}%`,
   },
   {
     title: '行权价',
@@ -97,11 +100,9 @@ const IndexOpTable: React.FC<{
 }> = (props) => {
   const { priceInfos, fetchTime, featureDealDates } = props;
 
-  const indexCodes: string[] = [];
   const opCodes: string[] = [];
-  for (const info of INDEX_INFOS) {
+  for (const info of INDEX_OP_INFOS) {
     opCodes.push(info.op);
-    indexCodes.push(info.code);
   }
 
   const filteredDealDates = useMemo(() => {
@@ -158,7 +159,7 @@ const IndexOpTable: React.FC<{
     <>
       <Title level={2}>股指期权 ({fetchTime})</Title>
       <Checkbox.Group
-        options={INDEX_INFOS.map((info) => ({
+        options={INDEX_OP_INFOS.map((info) => ({
           label: info.name,
           value: info.code,
           disabled: DEFAULT_CODES.includes(info.code),
