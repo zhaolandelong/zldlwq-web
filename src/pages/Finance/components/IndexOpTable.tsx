@@ -51,8 +51,8 @@ const columns: ColumnType<OptionPnCData>[] = [
     title: '年化打折率',
     align: 'right',
     sorter: (a, b) =>
-      (a.timeValueP - a.timeValueC) / a.remainDays -
-      (b.timeValueP - b.timeValueC) / b.remainDays,
+      (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
+      (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
     render: (text, record) =>
       `${(
         ((record.timeValueP - record.timeValueC) /
@@ -158,7 +158,7 @@ const IndexOpTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 100</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>年化打折率 = 日均打折 / 行权价 * 365</li>
+          <li>年化打折率 = 日均打折 / 100 / 行权价 * 365</li>
         </ul>
       </Text>
     </>

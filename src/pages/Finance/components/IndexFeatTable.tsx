@@ -21,7 +21,7 @@ const columns: ColumnType<FeatureData>[] = [
       text: info.feat,
       value: info.feat,
     })),
-    onFilter: (value, record) => record.featCode.startsWith(value as string),
+    onFilter: (value, r) => r.featCode.startsWith(value as string),
   },
   {
     title: '名称',
@@ -33,8 +33,10 @@ const columns: ColumnType<FeatureData>[] = [
     title: '日均打折',
     align: 'right',
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
-    render: (text, record) =>
-      `¥ ${((record.discount * 200) / record.remainDays).toFixed(2)}`,
+    render: (text, r) =>
+      `¥ ${((r.discount * r.pointPrice) / r.remainDays).toFixed(
+        2
+      )}`,
   },
   {
     title: '打折（1 手）',
@@ -42,14 +44,15 @@ const columns: ColumnType<FeatureData>[] = [
     key: 'discount',
     align: 'right',
     sorter: (a, b) => a.discount - b.discount,
-    render: (discount) => `¥ ${(discount * 200).toFixed(2)}`,
+    render: (discount, r) =>
+      `¥ ${(discount * r.pointPrice).toFixed(2)}`,
   },
   {
     title: '年化打折率',
     align: 'right',
-    sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
-    render: (text, record) =>
-      `${((record.discount / record.point / record.remainDays) * 36500).toFixed(
+    sorter: (a, b) => a.discount / a.remainDays / a.point - b.discount / b.remainDays / b.point,
+    render: (text, r) =>
+      `${((r.discount / r.point / r.remainDays) * 36500).toFixed(
         2
       )}%`,
   },
@@ -60,6 +63,13 @@ const columns: ColumnType<FeatureData>[] = [
     align: 'right',
     sorter: (a, b) => a.point - b.point,
     render: (point) => point.toFixed(2),
+  },
+  {
+    title: '点数价格',
+    dataIndex: 'pointPrice',
+    key: 'pointPrice',
+    align: 'right',
+    render: (pointPrice) => `¥ ${pointPrice}`,
   },
   {
     title: '剩余天数',
@@ -90,28 +100,31 @@ const IndexFeatTable: React.FC<{
       setLoading(true);
       Promise.all(
         INDEX_FEAT_INFOS.filter(({ code }) => codes.includes(code)).map(
-          ({ feat, code }) =>
-            fetchFeatPointByMonths(feat, monthDealDates[feat].months).then(
-              (pointArr) =>
-                pointArr.map((point, i) => {
-                  const indexInfo = stockInfos.find(
-                    (info) => info.code === code
-                  ) as StockInfo;
-                  const month = monthDealDates[feat].months[i];
-                  const result: FeatureData = {
-                    ...indexInfo,
-                    point,
-                    month,
-                    discount: indexInfo.price - point,
-                    featCode: feat + month,
-                    remainDays: moment(monthDealDates[feat].dealDates[i]).diff(
-                      moment(),
-                      'days'
-                    ),
-                  };
-                  return result;
-                })
-            )
+          (info) => {
+            const { feat, code } = info;
+            return fetchFeatPointByMonths(
+              feat,
+              monthDealDates[feat].months
+            ).then((pointArr) =>
+              pointArr.map((point, i) => {
+                const indexInfo = stockInfos.find(
+                  (info) => info.code === code
+                ) as StockInfo;
+                const month = monthDealDates[feat].months[i];
+                const result: FeatureData = {
+                  ...info,
+                  point,
+                  discount: indexInfo.price - point,
+                  featCode: feat + month,
+                  remainDays: moment(monthDealDates[feat].dealDates[i]).diff(
+                    moment(),
+                    'days'
+                  ),
+                };
+                return result;
+              })
+            );
+          }
         )
       )
         .then((pointArr) => {
@@ -147,9 +160,9 @@ const IndexFeatTable: React.FC<{
       />
       <Text type="secondary">
         <ul>
-          <li>打折（1 手）= ( 股指 - 点数 ) * 200</li>
+          <li>打折（1 手）= ( 股指 - 点数 ) * 点数价格</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>年化打折率 = 日均打折 / 点数 * 365</li>
+          <li>年化打折率 = 日均打折 / 点数价格 / 点数 * 365</li>
         </ul>
       </Text>
     </>

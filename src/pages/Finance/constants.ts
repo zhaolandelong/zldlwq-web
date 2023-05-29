@@ -1,4 +1,9 @@
-import type { StockInfo, ETFPosInfo } from './types';
+import type {
+  StockInfo,
+  ETFPosInfo,
+  IndexFeatInfo,
+  IndexOpInfo,
+} from './types';
 
 export const ETF_INFOS: Omit<StockInfo, 'price'>[] = [
   {
@@ -56,7 +61,7 @@ export const INDEX_INFOS: Omit<StockInfo, 'price'>[] = [
   },
 ];
 
-export const INDEX_OP_INFOS = [
+export const INDEX_OP_INFOS: IndexOpInfo[] = [
   {
     code: '000300',
     name: '沪深300',
@@ -74,26 +79,30 @@ export const INDEX_OP_INFOS = [
   },
 ];
 
-export const INDEX_FEAT_INFOS = [
+export const INDEX_FEAT_INFOS: IndexFeatInfo[] = [
   {
     code: '000300',
     name: '沪深300',
     feat: 'IF',
+    pointPrice: 300,
   },
   {
     code: '000016',
     name: '上证50',
     feat: 'IH',
+    pointPrice: 200,
   },
   {
     code: '000905',
     name: '中证500',
     feat: 'IC',
+    pointPrice: 200,
   },
   {
     code: '000852',
     name: '中证1000',
     feat: 'IM',
+    pointPrice: 200,
   },
 ];
 

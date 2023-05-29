@@ -5,7 +5,18 @@ export interface StockInfo {
   price: number;
 }
 
+export interface IndexOpInfo {
+  code: string;
+  name: string;
+  op: string;
+}
 
+export interface IndexFeatInfo {
+  code: string;
+  name: string;
+  feat: string;
+  pointPrice: number;
+}
 
 export interface ETFPosInfo {
   code: string; // ETF 代码
@@ -65,9 +76,8 @@ export interface DealDate {
 
 export type ProdDealDateKV = Record<string, string>; // { MO2309: 20230915 }
 
-export interface FeatureData extends StockInfo {
+export interface FeatureData extends IndexFeatInfo {
   featCode: string; // IF2306
-  month: string; // 2309
   point: number;
   discount: number;
   remainDays: number;
