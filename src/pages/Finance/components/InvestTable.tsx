@@ -12,6 +12,8 @@ const columns: ColumnType<InvestInfo>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
+    width: 95,
+    fixed: 'left',
   },
   {
     title: '当前价',
@@ -88,6 +90,8 @@ const InvestTable: React.FC<{
         size="small"
         columns={columns}
         dataSource={dataSource}
+        scroll={{ x: 810 }}
+        bordered
         rowKey="code"
         pagination={false}
       />

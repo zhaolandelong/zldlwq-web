@@ -21,11 +21,11 @@ export const ETF_INFOS: Omit<StockInfo, 'price'>[] = [
     sCode: 'sh510500',
     name: '中证500 ETF',
   },
-  {
-    code: '512100',
-    sCode: 'sh512100',
-    name: '中证1000 ETF',
-  },
+  // {
+  //   code: '512100',
+  //   sCode: 'sh512100',
+  //   name: '中证1000 ETF',
+  // },
 ];
 
 export const INDEX_INFOS: Omit<StockInfo, 'price'>[] = [

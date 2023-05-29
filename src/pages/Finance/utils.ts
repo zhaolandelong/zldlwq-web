@@ -189,6 +189,7 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
           });
           const primaryUp = opUpDatas[primaryUpIndex];
           const primaryDown = opDownDatas[primaryDownIndex];
+          console.log(code, month, primaryUp);
           return {
             code,
             name,

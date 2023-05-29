@@ -130,7 +130,7 @@ const AdditionTable: React.FC = () => {
         dataSource={dataSource}
         rowKey="code"
         pagination={false}
-        scroll={{ x: 590 }}
+        scroll={{ x: 600 }}
         size="small"
         bordered
       />

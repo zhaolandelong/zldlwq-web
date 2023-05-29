@@ -14,18 +14,19 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
+    width: 95,
   },
   {
     title: '月份',
     dataIndex: 'month',
     key: 'month',
     fixed: 'left',
+    width: 50,
     sorter: (a, b) => Number(a.month) - Number(b.month),
   },
   {
     title: '日均打折',
     align: 'right',
-    fixed: 'left',
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays -
       (b.timeValueP - b.timeValueC) / b.remainDays,
@@ -85,6 +86,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
+    width: 75,
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
   },
@@ -128,11 +130,12 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        // scroll={{ x: 800 }}
+        scroll={{ x: 720 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}
         pagination={false}
+        bordered
       />
       <Text type="secondary">
         <ul>

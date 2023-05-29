@@ -13,6 +13,8 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
+    width: 95,
+    fixed: 'left',
   },
   {
     title: '开始日期',
@@ -89,7 +91,9 @@ const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
         columns={columns}
         dataSource={dataSource}
         rowKey="code"
+        scroll={{ x: 650 }}
         loading={loading}
+        bordered
         pagination={false}
       />
     </>

@@ -11,15 +11,11 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<FeatureData>[] = [
   {
-    title: '名称',
-    dataIndex: 'name',
-    key: 'name',
-    fixed: 'left',
-  },
-  {
     title: '代码',
     dataIndex: 'featCode',
     key: 'featCode',
+    width: 72,
+    fixed: 'left',
     sorter: (a, b) => Number(a.month) - Number(b.month),
     filters: Object.values(INDEX_FEAT_INFOS).map((info) => ({
       text: info.feat,
@@ -28,9 +24,14 @@ const columns: ColumnType<FeatureData>[] = [
     onFilter: (value, record) => record.featCode.startsWith(value as string),
   },
   {
+    title: '名称',
+    dataIndex: 'name',
+    key: 'name',
+    width: 75,
+  },
+  {
     title: '日均打折',
     align: 'right',
-    fixed: 'left',
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, record) =>
       `¥ ${((record.discount * 200) / record.remainDays).toFixed(2)}`,
@@ -65,6 +66,7 @@ const columns: ColumnType<FeatureData>[] = [
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
+    width: 72,
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
   },
@@ -136,10 +138,11 @@ const IndexFeatTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        // scroll={{ x: 800 }}
+        scroll={{ x: 560 }}
         dataSource={dataSource}
-        rowKey={(r) => `${r.code}-${r.month}-${r.point}`}
+        rowKey="featCode"
         loading={loading}
+        bordered
         pagination={false}
       />
       <Text type="secondary">

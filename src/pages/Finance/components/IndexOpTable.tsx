@@ -10,15 +10,11 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
-    title: '名称',
-    dataIndex: 'name',
-    key: 'name',
-    fixed: 'left',
-  },
-  {
     title: '代码',
     dataIndex: 'code',
     key: 'code',
+    width: 72,
+    fixed: 'left',
     sorter: (a, b) => Number(a.month) - Number(b.month),
     filters: Object.values(INDEX_OP_INFOS).map((info) => ({
       text: info.op,
@@ -27,9 +23,14 @@ const columns: ColumnType<OptionPnCData>[] = [
     onFilter: (value, record) => record.code.startsWith(value as string),
   },
   {
+    title: '名称',
+    dataIndex: 'name',
+    key: 'name',
+    width: 75,
+  },
+  {
     title: '日均打折',
     align: 'right',
-    fixed: 'left',
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays -
       (b.timeValueP - b.timeValueC) / b.remainDays,
@@ -88,6 +89,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
+    width: 72,
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
   },
@@ -145,9 +147,10 @@ const IndexOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        // scroll={{ x: 800 }}
+        scroll={{ x: 730 }}
         dataSource={dataSource}
-        rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
+        rowKey="code"
+        bordered
         loading={loading}
         pagination={false}
       />
