@@ -26,7 +26,7 @@ root.render(
             ))}
           </Menu>
         </Header>
-        <Content style={{ padding: '0 50px' }}>
+        <Content style={{ padding: '0 8px' }}>
           <Routes>
             {routes.map((route) => (
               <Route key={route.id} {...route} />

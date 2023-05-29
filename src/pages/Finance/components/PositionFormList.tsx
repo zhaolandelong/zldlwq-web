@@ -62,10 +62,10 @@ const PositionFormList: React.FC = () => (
               </Form.Item>
               <Form.Item
                 {...restField}
-                name={[name, 'scalingMutiple']}
-                rules={[{ required: true, message: 'Missing Scaling Mutiple' }]}
+                name={[name, 'additionMutiple']}
+                rules={[{ required: true, message: 'Missing Addition Mutiple' }]}
               >
-                <InputNumber placeholder="Scaling Mutiple" />
+                <InputNumber placeholder="Addition Mutiple" />
               </Form.Item>
               <MinusCircleOutlined onClick={() => remove(name)} />
             </Space>

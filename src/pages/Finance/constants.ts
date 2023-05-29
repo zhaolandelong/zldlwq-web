@@ -21,6 +21,11 @@ export const ETF_INFOS: Omit<StockInfo, 'price'>[] = [
     sCode: 'sh510500',
     name: '中证500 ETF',
   },
+  {
+    code: '512100',
+    sCode: 'sh512100',
+    name: '中证1000 ETF',
+  },
 ];
 
 export const INDEX_INFOS: Omit<StockInfo, 'price'>[] = [
@@ -101,7 +106,7 @@ export const etfPosInfos: ETFPosInfo[] = [
     startDate: '2021-11-01',
     monthlyAmount: 25000,
     expectedReturnRate: 0.1,
-    scalingMutiple: 3,
+    additionMutiple: 3,
   },
   {
     code: '159915',
@@ -109,6 +114,6 @@ export const etfPosInfos: ETFPosInfo[] = [
     startDate: '2021-11-01',
     monthlyAmount: 25000,
     expectedReturnRate: 0.15,
-    scalingMutiple: 3,
+    additionMutiple: 3,
   },
 ];

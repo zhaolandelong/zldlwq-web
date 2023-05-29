@@ -18,7 +18,7 @@ export interface ETFPosInfo {
   actualReturnRate?: number; // 实际年化收益率
   expectedReturnPrice?: number; // 预期收益价格
   monthlyAmount: number; // 月定投额
-  scalingMutiple: number; // 加仓额是月定投额的倍数
+  additionMutiple: number; // 加仓额是月定投额的倍数
 }
 
 export interface InvestInfo {
@@ -28,8 +28,8 @@ export interface InvestInfo {
   monthlyAmount: number;
   optionCount: number;
   etfCount: number;
-  scalingOptionCount: number;
-  scalingEtfCount: number;
+  additionOptionCount: number;
+  additionEtfCount: number;
 }
 
 export interface OptionNestData {

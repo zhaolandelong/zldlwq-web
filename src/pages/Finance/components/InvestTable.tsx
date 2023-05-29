@@ -39,14 +39,14 @@ const columns: ColumnType<InvestInfo>[] = [
   },
   {
     title: '加仓期权（手）',
-    key: 'scalingOptionCount',
-    dataIndex: 'scalingOptionCount',
+    key: 'additionOptionCount',
+    dataIndex: 'additionOptionCount',
     render: (count) => `${count} OR (${count + 1})`,
   },
   {
     title: '加仓 ETF 补充',
-    key: 'scalingEtfCount',
-    dataIndex: 'scalingEtfCount',
+    key: 'additionEtfCount',
+    dataIndex: 'additionEtfCount',
     render: (count) => `${count} OR (${count - 10000})`,
   },
 ];
@@ -64,8 +64,8 @@ const InvestTable: React.FC<{
         etfPriceInfos.find((priceInfo) => priceInfo.code === info.code)
           ?.price ?? 0;
       const monthlyCount = getEtfOpCount(info.monthlyAmount, price);
-      const scalingCount = getEtfOpCount(
-        info.monthlyAmount * info.scalingMutiple,
+      const additionCount = getEtfOpCount(
+        info.monthlyAmount * info.additionMutiple,
         price
       );
       return {
@@ -74,8 +74,8 @@ const InvestTable: React.FC<{
         name: ETF_INFOS.find((item) => item.code === info.code)?.name ?? '-',
         monthlyAmount: info.monthlyAmount,
         ...monthlyCount,
-        scalingOptionCount: scalingCount.optionCount,
-        scalingEtfCount: scalingCount.etfCount,
+        additionOptionCount: additionCount.optionCount,
+        additionEtfCount: additionCount.etfCount,
       };
     });
     setDataSource(investDataSource);
