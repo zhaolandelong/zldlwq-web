@@ -52,7 +52,7 @@ const columns: ColumnType<Record>[] = [
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
-    width: 95,
+    width: 100,
   },
   {
     title: '第 1 次',
@@ -130,7 +130,7 @@ const AdditionTable: React.FC = () => {
         dataSource={dataSource}
         rowKey="code"
         pagination={false}
-        scroll={{ x: 600 }}
+        scroll={{ x: 650 }}
         size="small"
         bordered
       />

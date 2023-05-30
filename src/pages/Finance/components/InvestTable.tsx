@@ -12,21 +12,24 @@ const columns: ColumnType<InvestInfo>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
-    width: 95,
+    width: 100,
     fixed: 'left',
-  },
-  {
-    title: '当前价',
-    dataIndex: 'price',
-    key: 'price',
-    render: (price) => `¥ ${price}`,
   },
   {
     title: '月定投',
     dataIndex: 'monthlyAmount',
     key: 'monthlyAmount',
+    width: 100,
     render: (price) => `¥ ${price}`,
   },
+  {
+    title: '当前价',
+    dataIndex: 'price',
+    key: 'price',
+    width: 80,
+    render: (price) => `¥ ${price}`,
+  },
+
   {
     title: '期权（手）',
     dataIndex: 'optionCount',

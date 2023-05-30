@@ -14,14 +14,14 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
-    width: 95,
+    width: 100,
   },
   {
     title: '月份',
     dataIndex: 'month',
     key: 'month',
     fixed: 'left',
-    width: 50,
+    width: 55,
     sorter: (a, b) => Number(a.month) - Number(b.month),
   },
   {
@@ -41,7 +41,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, record) =>
-      `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(2)}`,
+      `¥ ${((record.timeValueP - record.timeValueC) * 10000).toFixed(1)}`,
   },
   {
     title: '年化打折率',
@@ -86,7 +86,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
-    width: 75,
+    width: 77,
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
   },
@@ -130,7 +130,7 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 720 }}
+        scroll={{ x: 760 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}

@@ -13,7 +13,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
-    width: 95,
+    width: 100,
     fixed: 'left',
   },
   {

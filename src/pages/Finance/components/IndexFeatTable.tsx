@@ -14,9 +14,8 @@ const columns: ColumnType<FeatureData>[] = [
     title: '代码',
     dataIndex: 'featCode',
     key: 'featCode',
-    width: 72,
+    width: 75,
     fixed: 'left',
-    sorter: (a, b) => Number(a.month) - Number(b.month),
     filters: Object.values(INDEX_FEAT_INFOS).map((info) => ({
       text: info.feat,
       value: info.feat,
@@ -27,7 +26,7 @@ const columns: ColumnType<FeatureData>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
-    width: 75,
+    width: 78,
   },
   {
     title: '日均打折',
@@ -45,7 +44,7 @@ const columns: ColumnType<FeatureData>[] = [
     align: 'right',
     sorter: (a, b) => a.discount - b.discount,
     render: (discount, r) =>
-      `¥ ${(discount * r.pointPrice).toFixed(2)}`,
+      `¥ ${(discount * r.pointPrice).toFixed(1)}`,
   },
   {
     title: '年化打折率',
@@ -76,7 +75,7 @@ const columns: ColumnType<FeatureData>[] = [
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
-    width: 72,
+    width: 77,
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
   },
@@ -151,7 +150,7 @@ const IndexFeatTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 560 }}
+        scroll={{ x: 690 }}
         dataSource={dataSource}
         rowKey="featCode"
         loading={loading}

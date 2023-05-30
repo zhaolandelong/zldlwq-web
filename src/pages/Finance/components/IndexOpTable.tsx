@@ -13,7 +13,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     title: '代码',
     dataIndex: 'code',
     key: 'code',
-    width: 72,
+    width: 75,
     fixed: 'left',
     sorter: (a, b) => Number(a.month) - Number(b.month),
     filters: Object.values(INDEX_OP_INFOS).map((info) => ({
@@ -26,7 +26,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
-    width: 75,
+    width: 78,
   },
   {
     title: '日均打折',
@@ -45,7 +45,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, record) =>
-      `¥ ${((record.timeValueP - record.timeValueC) * 100).toFixed(2)}`,
+      `¥ ${((record.timeValueP - record.timeValueC) * 100).toFixed(1)}`,
   },
   {
     title: '年化打折率',
@@ -89,7 +89,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
-    width: 72,
+    width: 77,
     sorter: (a, b) => a.remainDays - b.remainDays,
     render: (d) => `${d} days`,
   },
