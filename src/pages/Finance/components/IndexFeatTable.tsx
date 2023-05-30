@@ -142,7 +142,6 @@ const IndexFeatTable: React.FC<{
         options={INDEX_FEAT_INFOS.map((info) => ({
           label: info.name,
           value: info.code,
-          disabled: DEFAULT_CODES.includes(info.code),
         }))}
         value={codes}
         onChange={(vals) => setCodes(vals as string[])}

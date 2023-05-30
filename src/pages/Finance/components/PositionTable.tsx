@@ -3,7 +3,7 @@ import { Table, Typography } from 'antd';
 import type { ETFPosInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
-import { fetchAvgPrice, getAnualReturnRate } from '../utils';
+import { fetchAvgPrice2, getAnualReturnRate } from '../utils';
 import moment from 'moment';
 
 const { Title } = Typography;
@@ -60,7 +60,7 @@ const PositionTable: React.FC<{ etfPosInfos: ETFPosInfo[] }> = (props) => {
   useEffect(() => {
     setLoading(true);
     Promise.all(
-      etfPosInfos.map((info) => fetchAvgPrice(info.sCode, info.startDate))
+      etfPosInfos.map((info) => fetchAvgPrice2(info.sCode, info.startDate))
     )
       .then((avgPriceArr) => {
         const posDataSource: ETFPosInfo[] = etfPosInfos.map((info, index) => {

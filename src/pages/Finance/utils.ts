@@ -30,6 +30,34 @@ export const fetchAvgPrice = (
     });
 };
 
+export const fetchAvgPrice2 = (
+  sCode: string,
+  startDate: string,
+  endDate: string = moment().format('YYYY-MM-DD'),
+  amount: number = 25000
+): Promise<number> => {
+  return axios
+    .get(
+      `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${sCode},month,${moment(
+        startDate
+      ).format('YYYY-MM-DD')},${endDate},999,qfq`
+    )
+    .then((res) => res.data.data[sCode].qfqmonth)
+    .then((arr: Array<string[]>) => {
+      let price;
+      let _count;
+      let count = 0;
+      let sum = 0;
+      arr.forEach((x) => {
+        price = Number(x[1]);
+        _count = Math.floor(amount / price / 100) * 100;
+        count += _count;
+        sum += _count * price;
+      });
+      return sum / count;
+    });
+};
+
 /**
  *
  * @param date '2023-06'
@@ -189,7 +217,6 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
           });
           const primaryUp = opUpDatas[primaryUpIndex];
           const primaryDown = opDownDatas[primaryDownIndex];
-          console.log(code, month, primaryUp);
           return {
             code,
             name,
@@ -330,6 +357,6 @@ export const filterDealDates = (
 };
 
 export const fetchFeatureDealDates = () =>
-axios
-  .get<ProdDealDateKV>('http://api.1to10.zldlwq.top/api/cffex')
-  .then((res) => res.data);
+  axios
+    .get<ProdDealDateKV>('http://api.1to10.zldlwq.top/api/cffex')
+    .then((res) => res.data);
