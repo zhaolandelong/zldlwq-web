@@ -124,6 +124,14 @@ const formatOpDatas = (data: string) =>
     return result;
   }) ?? [];
 
+const opQueryCache: Record<
+  string,
+  {
+    opUpQuery: string;
+    opDownQuery: string;
+  }
+> = {};
+
 const fetchEtfOpByMonth = async (payload: {
   code: string;
   yearMonth: string;
@@ -137,7 +145,10 @@ const fetchEtfOpByMonth = async (payload: {
   const [opUpQuery, opDownQuery] = opQueryString
     .match(/"(.*?)"/g)
     .map((x: string) => x.replace(/"/g, ''));
-
+  opQueryCache[mark] = {
+    opUpQuery,
+    opDownQuery,
+  };
   const [upRes, downRes] = await Promise.all([
     fetchSinaFinance(opUpQuery),
     fetchSinaFinance(opDownQuery),
@@ -161,51 +172,145 @@ export const fetchOpMonths = () =>
     )
   );
 
+const etfOpCodePrimaryIndexCache: {
+  code: string;
+  month: string;
+  upIndex: number;
+  downIndex: number;
+}[] = [];
+
+const setEtfOpCodePrimaryIndexCache = (
+  data: (typeof etfOpCodePrimaryIndexCache)[0]
+) => {
+  if (
+    etfOpCodePrimaryIndexCache.findIndex(
+      (x) => x.code === data.code && x.month === data.month
+    ) === -1
+  ) {
+    etfOpCodePrimaryIndexCache.push(data);
+  }
+};
+
+const getEtfOpCodePrimaryIndexCache = (code: string, month: string) =>
+  etfOpCodePrimaryIndexCache.find((x) => x.code === code && x.month === month);
+
+const formatEtfOpPrimaryData = (data: {
+  code: string;
+  name: string;
+  month: string;
+  primaryUp: OptionNestData;
+  primaryDown: OptionNestData;
+}) => {
+  const { code, name, month, primaryUp, primaryDown } = data;
+  return {
+    code,
+    name,
+    month,
+    isPrimary: true,
+    strikePrice: primaryUp.strikePrice,
+    dealDate: primaryUp.dealDate,
+    remainDays: primaryUp.remainDays,
+    currPriceC: primaryUp.currPrice,
+    currPriceP: primaryDown.currPrice,
+    innerValueC: primaryUp.innerValue,
+    innerValueP: primaryDown.innerValue,
+    timeValueC: primaryUp.timeValue,
+    timeValueP: primaryDown.timeValue,
+  };
+};
+
+const getCachedOpQuery = (codeMonthArr: Array<StockInfo & { month: string }>) =>
+  codeMonthArr
+    .map(({ code, month }) => {
+      const opQuery = opQueryCache[code + month];
+      const primaryIndexData = getEtfOpCodePrimaryIndexCache(code, month);
+      if (!primaryIndexData) return '';
+      return (
+        opQuery.opUpQuery.split(',')[primaryIndexData.upIndex] +
+        ',' +
+        opQuery.opDownQuery.split(',')[primaryIndexData.downIndex]
+      );
+    })
+    .join(',');
+
+const getPrimaryIndex = (
+  opUpDatas: OptionNestData[],
+  opDownDatas: OptionNestData[],
+  price: number | string
+) => {
+  let primaryUpIndex = 0;
+  let primaryDownIndex = 0;
+  let abs = Infinity;
+  opUpDatas.forEach((upData, index) => {
+    const _abs = Math.abs(upData.strikePrice - Number(price));
+    if (_abs < abs) {
+      abs = _abs;
+      primaryUpIndex = index;
+      primaryDownIndex = opDownDatas.findIndex(
+        (downData) => downData.strikePrice === upData.strikePrice
+      );
+    }
+  });
+  return {
+    primaryUpIndex,
+    primaryDownIndex,
+  };
+};
+
 export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
   const months = await fetchOpMonths();
+  const cachedCodeMonthArr: Array<StockInfo & { month: string }> = [];
   const codeMonthArr: Array<StockInfo & { month: string }> = [];
   months.forEach((month) => {
-    codeMonthArr.push({ ...etfInfo, month });
+    if (getEtfOpCodePrimaryIndexCache(etfInfo.code, month)) {
+      cachedCodeMonthArr.push({ ...etfInfo, month });
+    } else {
+      codeMonthArr.push({ ...etfInfo, month });
+    }
   });
+  const cachedResult = await fetchSinaFinance(
+    getCachedOpQuery(cachedCodeMonthArr)
+  ).then((res) => {
+    const arr = formatOpDatas(res);
+    let index = -1;
+    return cachedCodeMonthArr.map(({ code, month, name }) =>
+      formatEtfOpPrimaryData({
+        code,
+        name,
+        month,
+        primaryUp: arr[++index],
+        primaryDown: arr[++index],
+      })
+    );
+  });
+
   const result: OptionPnCData[] = await Promise.all(
     codeMonthArr.map(({ code, month, name, price }) =>
       fetchEtfOpByMonth({ code, yearMonth: month }).then(
         ({ opUpDatas = [], opDownDatas = [] }) => {
-          let primaryUpIndex = 0;
-          let primaryDownIndex = 0;
-          let abs = Infinity;
-          opUpDatas.forEach((upData, index) => {
-            const _abs = Math.abs(upData.strikePrice - Number(price));
-            if (_abs < abs) {
-              abs = _abs;
-              primaryUpIndex = index;
-              primaryDownIndex = opDownDatas.findIndex(
-                (downData) => downData.strikePrice === upData.strikePrice
-              );
-            }
+          const { primaryUpIndex, primaryDownIndex } = getPrimaryIndex(
+            opUpDatas,
+            opDownDatas,
+            price
+          );
+          setEtfOpCodePrimaryIndexCache({
+            code,
+            month,
+            upIndex: primaryUpIndex,
+            downIndex: primaryDownIndex,
           });
-          const primaryUp = opUpDatas[primaryUpIndex];
-          const primaryDown = opDownDatas[primaryDownIndex];
-          return {
+          return formatEtfOpPrimaryData({
             code,
             name,
             month,
-            isPrimary: true,
-            strikePrice: primaryUp.strikePrice,
-            dealDate: primaryUp.dealDate,
-            remainDays: primaryUp.remainDays,
-            currPriceC: primaryUp.currPrice,
-            currPriceP: primaryDown.currPrice,
-            innerValueC: primaryUp.innerValue,
-            innerValueP: primaryDown.innerValue,
-            timeValueC: primaryUp.timeValue,
-            timeValueP: primaryDown.timeValue,
-          };
+            primaryUp: opUpDatas[primaryUpIndex],
+            primaryDown: opDownDatas[primaryDownIndex],
+          });
         }
       )
     )
   );
-  return result;
+  return [...cachedResult, ...result];
 };
 
 const formatIndexOpDatas = (
