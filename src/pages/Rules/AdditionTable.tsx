@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Typography } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 // 2023-04-09 Data
 const rate = 13 / 12.21; // 000300 PE 12.21
@@ -125,6 +125,7 @@ const dataSource = etfInfos.map(({ name, code, price }) => ({
 const AdditionTable: React.FC = () => {
   return (
     <>
+      <Title level={2} style={{ marginTop: 16 }}>加仓表</Title>
       <Table
         columns={columns}
         dataSource={dataSource}

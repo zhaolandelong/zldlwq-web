@@ -1,6 +1,7 @@
 import type { RouteProps } from 'react-router-dom';
 import Finance from './pages/Finance';
-import AdditionTable from './pages/AdditionTable';
+import Rules from './pages/Rules';
+import ActionTable from './pages/Rules/ActionTable';
 import Test from './pages/Test';
 
 const routes: RouteProps[] = [
@@ -10,9 +11,14 @@ const routes: RouteProps[] = [
     Component: Finance,
   },
   {
-    id: 'Addition',
-    path: 'addition',
-    Component: AdditionTable,
+    id: 'Actions',
+    path: 'action',
+    Component: ActionTable,
+  },
+  {
+    id: 'Rules',
+    path: 'rules',
+    Component: Rules,
   },
   {
     id: 'Test',
