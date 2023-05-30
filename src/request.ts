@@ -1,7 +1,8 @@
 import axios from 'axios';
 import jsonp from 'jsonp';
 
-const isLocal = window.location.host.includes('localhost');
+// const isLocal = window.location.host.includes('localhost');
+const isLocal = true;
 const caches: Record<string, any> = {};
 const cachedPromise: Record<string, Promise<any>> = {};
 
