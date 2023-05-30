@@ -3,8 +3,9 @@ import { Table, Typography } from 'antd';
 import type { ETFPosInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { ETF_INFOS } from '../constants';
-import { fetchAvgPrice2, getAnualReturnRate } from '../utils';
+import { fetchAvgPrice2 } from '../services';
 import moment from 'moment';
+import { getAnualReturnRate } from '../utils';
 
 const { Title } = Typography;
 

@@ -4,7 +4,7 @@ import type { StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchEtfOpPrimaryDatas } from '../utils';
+import { fetchEtfOpPrimaryDatas } from '../services';
 
 const { Title, Text } = Typography;
 
@@ -101,18 +101,20 @@ const ETFOpTable: React.FC<{
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    Promise.all(
-      stockInfos
-        .filter((info) => codes.includes(info.code))
-        .map(fetchEtfOpPrimaryDatas)
-    )
-      .then((etfOpArr) => {
-        setDataSource(flattenDeep(etfOpArr));
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    if (Array.isArray(stockInfos) && stockInfos.length) {
+      setLoading(true);
+      Promise.all(
+        stockInfos
+          .filter((info) => codes.includes(info.code))
+          .map(fetchEtfOpPrimaryDatas)
+      )
+        .then((etfOpArr) => {
+          setDataSource(flattenDeep(etfOpArr));
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   }, [stockInfos]);
 
   return (

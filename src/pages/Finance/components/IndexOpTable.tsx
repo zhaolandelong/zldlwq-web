@@ -4,7 +4,8 @@ import type { ProdDealDateKV, StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_OP_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchIndexOpPrimaryDatas, filterDealDates } from '../utils';
+import { fetchIndexOpPrimaryDatas } from '../services';
+import { filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
 
@@ -109,7 +110,7 @@ const IndexOpTable: React.FC<{
 
   useEffect(() => {
     const monthDealDates = filterDealDates(opCodes, featureDealDates);
-    if (monthDealDates) {
+    if (monthDealDates && Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
       Promise.all(
         INDEX_OP_INFOS.filter(({ code }) => codes.includes(code)).map(

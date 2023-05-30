@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import { Button, Typography, Col, Row } from 'antd';
-import { fetchFeatureDealDates, fetchOpDealDate } from './utils';
+import { fetchFeatureDealDates, fetchOpDealDate } from './services';
 import { etfPosInfos } from './constants';
 import ETFTable from './components/ETFTable';
 import ETFOpTable from './components/ETFOpTable';

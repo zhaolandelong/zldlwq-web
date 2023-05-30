@@ -3,9 +3,10 @@ import { Checkbox, Table, Typography } from 'antd';
 import type { ProdDealDateKV, StockInfo, FeatureData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_FEAT_INFOS } from '../constants';
-import { fetchFeatPointByMonths, filterDealDates } from '../utils';
+import { fetchFeatPointByMonths } from '../services';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
+import { filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
 
@@ -33,9 +34,7 @@ const columns: ColumnType<FeatureData>[] = [
     align: 'right',
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, r) =>
-      `¥ ${((r.discount * r.pointPrice) / r.remainDays).toFixed(
-        2
-      )}`,
+      `¥ ${((r.discount * r.pointPrice) / r.remainDays).toFixed(2)}`,
   },
   {
     title: '打折（1 手）',
@@ -43,17 +42,15 @@ const columns: ColumnType<FeatureData>[] = [
     key: 'discount',
     align: 'right',
     sorter: (a, b) => a.discount - b.discount,
-    render: (discount, r) =>
-      `¥ ${(discount * r.pointPrice).toFixed(1)}`,
+    render: (discount, r) => `¥ ${(discount * r.pointPrice).toFixed(1)}`,
   },
   {
     title: '年化打折率',
     align: 'right',
-    sorter: (a, b) => a.discount / a.remainDays / a.point - b.discount / b.remainDays / b.point,
+    sorter: (a, b) =>
+      a.discount / a.remainDays / a.point - b.discount / b.remainDays / b.point,
     render: (text, r) =>
-      `${((r.discount / r.point / r.remainDays) * 36500).toFixed(
-        2
-      )}%`,
+      `${((r.discount / r.point / r.remainDays) * 36500).toFixed(2)}%`,
   },
   {
     title: '点数',
@@ -95,7 +92,7 @@ const IndexFeatTable: React.FC<{
 
   useEffect(() => {
     const monthDealDates = filterDealDates(featCodes, featureDealDates);
-    if (monthDealDates) {
+    if (monthDealDates && Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
       Promise.all(
         INDEX_FEAT_INFOS.filter(({ code }) => codes.includes(code)).map(
