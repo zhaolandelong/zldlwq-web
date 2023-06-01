@@ -14,7 +14,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
-    width: 100,
+    width: 110,
   },
   {
     title: '月份',

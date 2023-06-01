@@ -12,7 +12,7 @@ const columns: ColumnType<InvestInfo>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
-    width: 100,
+    width: 110,
     fixed: 'left',
   },
   {

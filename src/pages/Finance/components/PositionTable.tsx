@@ -14,7 +14,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '名称',
     dataIndex: 'name',
     key: 'name',
-    width: 100,
+    width: 110,
     fixed: 'left',
   },
   {
@@ -43,7 +43,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '年化收益率',
     dataIndex: 'actualReturnRate',
     key: 'actualReturnRate',
-    render: (rate) => `${rate * 100}%`,
+    render: (rate) => `${(rate * 100).toFixed(2)}%`,
   },
   {
     title: '收益价格',

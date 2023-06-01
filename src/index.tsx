@@ -33,7 +33,7 @@ root.render(
             ))}
           </Routes>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>Powered by Dylan</Footer>
+        <Footer style={{ textAlign: 'center', paddingTop: 30 }}>Powered by Dylan</Footer>
       </Layout>
     </Router>
   </React.StrictMode>

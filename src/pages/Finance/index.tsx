@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
-import { Button, Typography, Col, Row } from 'antd';
+import { FloatButton, Typography, Col, Row } from 'antd';
 import { fetchFeatureDealDates, fetchOpDealDate } from './services';
 import { etfPosInfos } from './constants';
 import ETFTable from './components/ETFTable';
@@ -48,12 +48,13 @@ const Finance: React.FC = () => {
         </span>{' '}
         Days).
       </Title>
-      <Button
-        type="primary"
+      <FloatButton
+        description={`刷新\n${fetchTime}`}
+        type='primary'
+        shape="square"
+        style={{width: 60, bottom: 20}}
         onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
-      >
-        刷新 ({fetchTime})
-      </Button>
+      />
       {/* <PositionFormList /> */}
       <Row gutter={16}>
         <Col span={24} md={12}>
