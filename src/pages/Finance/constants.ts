@@ -90,7 +90,7 @@ export const INDEX_FEAT_INFOS: IndexFeatInfo[] = [
     code: '000016',
     name: '上证50',
     feat: 'IH',
-    pointPrice: 200,
+    pointPrice: 300,
   },
   {
     code: '000905',
