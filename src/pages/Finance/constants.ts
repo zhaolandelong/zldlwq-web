@@ -1,6 +1,6 @@
 import type {
   StockInfo,
-  ETFPosInfo,
+  InvestBaseInfo,
   IndexFeatInfo,
   IndexOpInfo,
 } from './types';
@@ -108,21 +108,3 @@ export const INDEX_FEAT_INFOS: IndexFeatInfo[] = [
 
 export const DEFAULT_CODES = ['510300', '159915', '000300'];
 
-export const etfPosInfos: ETFPosInfo[] = [
-  {
-    code: '510300',
-    sCode: 'sh510300',
-    startDate: '2021-11-01',
-    monthlyAmount: 25000,
-    expectedReturnRate: 0.1,
-    additionMutiple: 3,
-  },
-  {
-    code: '159915',
-    sCode: 'sz159915',
-    startDate: '2021-11-01',
-    monthlyAmount: 25000,
-    expectedReturnRate: 0.15,
-    additionMutiple: 3,
-  },
-];

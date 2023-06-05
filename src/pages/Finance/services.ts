@@ -49,8 +49,8 @@ export const fetchAvgPrice = (
 export const fetchAvgPrice2 = (
   sCode: string,
   startDate: string,
+  amount: number = 25000,
   endDate: string = moment().format('YYYY-MM-DD'),
-  amount: number = 25000
 ): Promise<number> =>
   fetchEtfMonthK(sCode, startDate, endDate).then((arr) => {
     let _count;
