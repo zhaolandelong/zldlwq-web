@@ -16,7 +16,6 @@ const columns: ColumnType<OptionPnCData>[] = [
     key: 'code',
     width: 75,
     fixed: 'left',
-    sorter: (a, b) => Number(a.month) - Number(b.month),
     filters: Object.values(INDEX_OP_INFOS).map((info) => ({
       text: info.op,
       value: info.op,
@@ -86,13 +85,13 @@ const columns: ColumnType<OptionPnCData>[] = [
     render: (price) => `¥ ${price.toFixed(2)}`,
   },
   {
-    title: '剩余天数',
+    title: '剩余',
     dataIndex: 'remainDays',
     key: 'remainDays',
     align: 'right',
-    width: 77,
+    width: 70,
     sorter: (a, b) => a.remainDays - b.remainDays,
-    render: (d) => `${d} days`,
+    render: (d) => `${d} 天`,
   },
 ];
 
