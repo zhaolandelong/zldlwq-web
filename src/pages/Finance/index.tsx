@@ -52,16 +52,15 @@ const Finance: React.FC = () => {
 
   return (
     <>
-      <Title level={3}>
+      <Title level={4}>
         Today is {moment().format('YYYY-MM-DD dddd')}. <br />
         ETF 期权到期日： {dealDate?.expireDay} (
-        <span style={{ color: 'red' }}>{dealDate?.remainderDays}</span> Days).
+        <span style={{ color: 'red' }}>{dealDate?.remainderDays}</span> 天)
         <br />
         股指期权到期日： {moment(firstFeature).format('YYYY-MM-DD')} (
         <span style={{ color: 'red' }}>
           {moment(firstFeature).diff(moment(), 'days')}
-        </span>{' '}
-        Days).
+        </span> 天)
       </Title>
       <FloatButton
         description={`刷新\n${fetchTime}`}

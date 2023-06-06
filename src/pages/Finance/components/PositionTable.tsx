@@ -32,7 +32,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     render: (name, record) => (
       <>
         <div>{name}</div>
-        <div style={{ color: '#f00' }}>{record.investMonths} 个月</div>
+        <div style={{ color: '#f00' }}>{record.sCode}</div>
       </>
     ),
   },
@@ -44,9 +44,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     render: (rate, record) => (
       <>
         <div>{(rate * 100).toFixed(2)}%</div>
-        <div style={{ color: '#f00' }}>
-          {(record.expectedReturnRate * 100).toFixed(2)}%
-        </div>
+        <div style={{ color: '#f00' }}>{record.investMonths} 个月</div>
       </>
     ),
   },

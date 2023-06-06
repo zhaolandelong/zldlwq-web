@@ -9,27 +9,27 @@ export const ETF_INFOS: Omit<StockInfo, 'price'>[] = [
   {
     code: '510300',
     sCode: 'sh510300',
-    name: '沪深300 ETF',
+    name: '沪深300',
   },
   {
     code: '159915',
     sCode: 'sz159915',
-    name: '创业板 ETF',
+    name: '创业板',
   },
   {
     code: '510050',
     sCode: 'sh510050',
-    name: '上证50 ETF',
+    name: '上证50',
   },
   {
     code: '510500',
     sCode: 'sh510500',
-    name: '中证500 ETF',
+    name: '中证500',
   },
   // {
   //   code: '512100',
   //   sCode: 'sh512100',
-  //   name: '中证1000 ETF',
+  //   name: '中证1000',
   // },
 ];
 
