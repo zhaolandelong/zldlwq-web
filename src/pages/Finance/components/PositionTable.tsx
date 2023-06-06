@@ -40,6 +40,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '收益率',
     dataIndex: 'actualReturnRate',
     key: 'actualReturnRate',
+    align: 'center',
     render: (rate, record) => (
       <>
         <div>{(rate * 100).toFixed(2)}%</div>
@@ -68,7 +69,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     dataIndex: 'fixedOpCount',
     key: 'fixedOpCount',
     align: 'center',
-    width: 130,
+    width: 140,
     render: (count, record) => (
       <>
         <div>
@@ -99,7 +100,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     dataIndex: 'additionOpCount',
     key: 'additionOpCount',
     align: 'center',
-    width: 130,
+    width: 140,
     render: (count, record) => (
       <>
         <div>
@@ -113,6 +114,49 @@ const columns: ColumnType<ETFPosInfo>[] = [
   },
 ];
 
+const fetchAndFormatPosData = (
+  investInfos: InvestBaseInfo[],
+  eftPriceInfos: StockInfo[]
+) =>
+  Promise.all(
+    investInfos.map((info) =>
+      Promise.all([
+        fetchAvgPrice(info.sCode, info.startDate),
+        fetchAvgPrice2(info.sCode, info.startDate, info.monthlyAmount),
+      ])
+    )
+  ).then((avgPricesArr) =>
+    investInfos.map((info, index) => {
+      const investMonths = moment().diff(info.startDate, 'month') + 1;
+      const actualReturnRate = getAnualReturnRate(
+        info.expectedReturnRate,
+        investMonths
+      );
+      const { price = 0, name = info.sCode } =
+        eftPriceInfos.find((item) => item.sCode === info.sCode) ?? {};
+      const avgPrices = avgPricesArr[index];
+      const monthlyCount = getEtfOpCount(info.monthlyAmount, price);
+      const additionCount = getEtfOpCount(
+        info.monthlyAmount * info.additionMutiple,
+        price
+      );
+      const result: ETFPosInfo = {
+        ...info,
+        name,
+        investMonths,
+        avgCost: avgPrices[0],
+        avgCost2: avgPrices[1],
+        actualReturnRate,
+        price,
+        fixedOpCount: monthlyCount.optionCount,
+        fixedEtfCount: monthlyCount.etfCount,
+        additionOpCount: additionCount.optionCount,
+        additionEtfCount: additionCount.etfCount,
+      };
+      return result;
+    })
+  );
+
 const PositionTable: React.FC<{
   investInfos: InvestBaseInfo[];
   eftPriceInfos: StockInfo[];
@@ -123,47 +167,8 @@ const PositionTable: React.FC<{
 
   useEffect(() => {
     setLoading(true);
-    Promise.all(
-      investInfos.map((info) =>
-        Promise.all([
-          fetchAvgPrice(info.sCode, info.startDate),
-          fetchAvgPrice2(info.sCode, info.startDate, info.monthlyAmount),
-        ])
-      )
-    )
-      .then((avgPricesArr) => {
-        const posDataSource: ETFPosInfo[] = investInfos.map((info, index) => {
-          const investMonths = moment().diff(info.startDate, 'month') + 1;
-          const actualReturnRate = getAnualReturnRate(
-            info.expectedReturnRate,
-            investMonths
-          );
-          const price =
-            eftPriceInfos.find((item) => item.sCode === info.sCode)?.price ?? 0;
-          const avgPrices = avgPricesArr[index];
-          const monthlyCount = getEtfOpCount(info.monthlyAmount, price);
-          const additionCount = getEtfOpCount(
-            info.monthlyAmount * info.additionMutiple,
-            price
-          );
-          return {
-            ...info,
-            name:
-              ETF_INFOS.find((item) => item.sCode === info.sCode)?.name ??
-              info.sCode,
-            investMonths,
-            avgCost: avgPrices[0],
-            avgCost2: avgPrices[1],
-            actualReturnRate,
-            price,
-            fixedOpCount: monthlyCount.optionCount,
-            fixedEtfCount: monthlyCount.etfCount,
-            additionOpCount: additionCount.optionCount,
-            additionEtfCount: additionCount.etfCount,
-          };
-        });
-        setDataSource(posDataSource);
-      })
+    fetchAndFormatPosData(investInfos, eftPriceInfos)
+      .then(setDataSource)
       .finally(() => setLoading(false));
   }, [investInfos, eftPriceInfos]);
 
@@ -180,10 +185,13 @@ const PositionTable: React.FC<{
         bordered
         pagination={false}
       />
-       <Text type="secondary">
+      <Text type="secondary">
         <ul>
           <li>估算成本：上个月 n 月均线价格</li>
-          <li>精算成本：根据月定投额和每月开盘价，算出每月买入份数；求和（每月份数 * 每月开盘价）；求和（每月买入分数）；二者相除</li>
+          <li>
+            精算成本：根据月定投额和每月开盘价，算出每月买入份数；求和（每月份数
+            * 每月开盘价）；求和（每月买入分数）；二者相除
+          </li>
         </ul>
       </Text>
     </>
