@@ -59,7 +59,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     render: (text, record) => (
       <Row>
         <Col span={12}>
-          ¥ {((record.timeValueP - record.timeValueC) * 10000).toFixed(1)}
+          ¥ {((record.timeValueP - record.timeValueC) * 10000).toFixed(0)}
         </Col>
         <Col span={12} style={{ color: '#f00' }}>
           ({record.remainDays} 天)

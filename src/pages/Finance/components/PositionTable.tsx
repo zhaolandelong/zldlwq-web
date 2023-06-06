@@ -65,7 +65,6 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '定投期权/ETF',
     dataIndex: 'fixedOpCount',
     key: 'fixedOpCount',
-    align: 'center',
     width: 140,
     render: (count, record) => (
       <>
@@ -96,7 +95,6 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '加仓期权 / ETF',
     dataIndex: 'additionOpCount',
     key: 'additionOpCount',
-    align: 'center',
     width: 140,
     render: (count, record) => (
       <>

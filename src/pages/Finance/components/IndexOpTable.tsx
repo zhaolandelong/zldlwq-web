@@ -45,7 +45,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, record) =>
-      `¥ ${((record.timeValueP - record.timeValueC) * 100).toFixed(1)}`,
+      `¥ ${((record.timeValueP - record.timeValueC) * 100).toFixed(0)}`,
   },
   {
     title: '年化打折率',

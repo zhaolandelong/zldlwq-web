@@ -42,7 +42,7 @@ const columns: ColumnType<FeatureData>[] = [
     key: 'discount',
     align: 'right',
     sorter: (a, b) => a.discount - b.discount,
-    render: (discount, r) => `¥ ${(discount * r.pointPrice).toFixed(1)}`,
+    render: (discount, r) => `¥ ${(discount * r.pointPrice).toFixed(0)}`,
   },
   {
     title: '年化打折率',

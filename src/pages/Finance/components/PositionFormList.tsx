@@ -95,6 +95,7 @@ const PositionFormList: React.FC<{
       <Title level={2}>参数</Title>
       <EditableProTable<InvestBaseInfo>
         rowKey="sCode"
+        className='position-form-list'
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
