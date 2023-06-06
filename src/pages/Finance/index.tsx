@@ -8,34 +8,29 @@ import PositionTable from './components/PositionTable';
 import IndexTable from './components/IndexTable';
 import IndexOpTable from './components/IndexOpTable';
 import IndexFeatTable from './components/IndexFeatTable';
-// import PositionFormList from './components/PositionFormList';
+import PositionFormList from './components/PositionFormList';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import { DealDate, InvestBaseInfo, ProdDealDateKV } from './types';
+import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
 
 const { Title } = Typography;
 
-const investInfos: InvestBaseInfo[] = [
-  {
-    sCode: 'sh510300',
-    startDate: '2021-11-01',
-    monthlyAmount: 25000,
-    expectedReturnRate: 0.1,
-    additionMutiple: 3,
-  },
-  {
-    sCode: 'sz159915',
-    startDate: '2021-11-01',
-    monthlyAmount: 25000,
-    expectedReturnRate: 0.15,
-    additionMutiple: 3,
-  },
-];
+const getDefaultInvestInfos = (): InvestBaseInfo[] => {
+  const storage = localStorage.getItem(STORAGE_KEY);
+  if (storage) {
+    return JSON.parse(storage);
+  }
+  return DEFAULT_INVEST_INFOS;
+};
 
 const Finance: React.FC = () => {
+  const defaultInvestInfos = getDefaultInvestInfos();
   const [fetchTime, setfetchTime] = useState(moment().format('HH:mm:ss'));
   const [dealDate, setDealDate] = useState<DealDate>();
   const [featureDealDates, setFeatureDealDates] = useState<ProdDealDateKV>();
+  const [investInfos, setInvestInfos] =
+    useState<InvestBaseInfo[]>(defaultInvestInfos);
 
   const etfPriceInfos = useEtfPriceInfos(fetchTime);
   const indexPriceInfos = useIndexPriceInfos(fetchTime);
@@ -50,6 +45,11 @@ const Finance: React.FC = () => {
     fetchFeatureDealDates().then(setFeatureDealDates);
   }, []);
 
+  const handleInvestChange = (vals: InvestBaseInfo[]) => {
+    setInvestInfos(vals);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(vals));
+  };
+
   return (
     <>
       <Title level={4}>
@@ -60,7 +60,8 @@ const Finance: React.FC = () => {
         股指期权到期日： {moment(firstFeature).format('YYYY-MM-DD')} (
         <span style={{ color: 'red' }}>
           {moment(firstFeature).diff(moment(), 'days')}
-        </span> 天)
+        </span>{' '}
+        天)
       </Title>
       <FloatButton
         description={`刷新\n${fetchTime}`}
@@ -69,7 +70,6 @@ const Finance: React.FC = () => {
         style={{ width: 60, bottom: 20 }}
         onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
       />
-      {/* <PositionFormList /> */}
       <Row gutter={16}>
         <Col span={24} md={12}>
           <ETFTable dataSource={etfPriceInfos} />
@@ -88,6 +88,10 @@ const Finance: React.FC = () => {
         featureDealDates={featureDealDates}
       />
       <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
+      <PositionFormList
+        defaultValues={defaultInvestInfos}
+        onChange={handleInvestChange}
+      />
     </>
   );
 };

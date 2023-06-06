@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
 import type { ColumnType } from 'antd/es/table';
-import { ETF_INFOS } from '../constants';
 import { fetchAvgPrice, fetchAvgPrice2 } from '../services';
 import moment from 'moment';
 import { getAnualReturnRate, getEtfOpCount } from '../utils';
@@ -43,7 +42,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     align: 'center',
     render: (rate, record) => (
       <>
-        <div>{(rate * 100).toFixed(2)}%</div>
+        <div>{rate.toFixed(2)}%</div>
         <div style={{ color: '#f00' }}>{record.investMonths} 个月</div>
       </>
     ),
@@ -57,7 +56,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
       <>
         <div>¥ {cost.toFixed(3)}</div>
         <div style={{ color: '#f00' }}>
-          ¥ {((1 + record.actualReturnRate) * cost).toFixed(3)}
+          ¥ {((1 + record.actualReturnRate/100) * cost).toFixed(3)}
         </div>
       </>
     ),
@@ -88,7 +87,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
       <>
         <div>¥ {cost.toFixed(3)}</div>
         <div style={{ color: '#f00' }}>
-          ¥ {((1 + record.actualReturnRate) * cost).toFixed(3)}
+          ¥ {((1 + record.actualReturnRate/100) * cost).toFixed(3)}
         </div>
       </>
     ),
@@ -172,7 +171,7 @@ const PositionTable: React.FC<{
 
   return (
     <>
-      <Title level={2}>Position Info</Title>
+      <Title level={2}>指标</Title>
       <Table
         size="small"
         columns={columns}

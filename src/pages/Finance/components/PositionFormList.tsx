@@ -1,94 +1,125 @@
-import React from 'react';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Space, Select, InputNumber, Input } from 'antd';
+import React, { useState } from 'react';
+import { EditableProTable, type ProColumns } from '@ant-design/pro-components';
+import { Button, Typography } from 'antd';
+import { InvestBaseInfo } from '../types';
 import { ETF_INFOS } from '../constants';
 
-const onFinish = (values: any) => {
-  console.log('Received values of form:', values);
-};
+const { Title } = Typography;
 
-const PositionFormList: React.FC = () => (
-  <Form
-    name="dynamic_form_nest_item"
-    onFinish={onFinish}
-    style={{ maxWidth: 600 }}
-    autoComplete="off"
-    initialValues={{ posInfos: [] }}
-  >
-    <Form.List name="posInfos">
-      {(fields, { add, remove }) => (
-        <>
-          {fields.map(({ key, name, ...restField }) => (
-            <Space
-              key={key}
-              style={{ display: 'flex', marginBottom: 8 }}
-              align="baseline"
-            >
-              <Form.Item
-                {...restField}
-                name={[name, 'code']}
-                rules={[{ required: true, message: 'Missing first name' }]}
-              >
-                <Select
-                  placeholder="code"
-                  options={Object.values(ETF_INFOS).map((info) => ({
-                    label: info.name,
-                    value: info.code,
-                  }))}
-                />
-              </Form.Item>
-              <Form.Item
-                {...restField}
-                name={[name, 'startDate']}
-                rules={[{ required: true, message: 'Missing Start Date' }]}
-              >
-                <Input placeholder="Start Date" />
-              </Form.Item>
-              <Form.Item
-                {...restField}
-                name={[name, 'monthlyAmount']}
-                rules={[{ required: true, message: 'Missing Monthly Amount' }]}
-              >
-                <InputNumber placeholder="Monthly Amount" />
-              </Form.Item>
-              <Form.Item
-                {...restField}
-                name={[name, 'expectedReturnRate']}
-                rules={[
-                  { required: true, message: 'Missing Expected Return Rate' },
-                ]}
-              >
-                <InputNumber placeholder="Expected Return Rate" />
-              </Form.Item>
-              <Form.Item
-                {...restField}
-                name={[name, 'additionMutiple']}
-                rules={[{ required: true, message: 'Missing Addition Mutiple' }]}
-              >
-                <InputNumber placeholder="Addition Mutiple" />
-              </Form.Item>
-              <MinusCircleOutlined onClick={() => remove(name)} />
-            </Space>
-          ))}
-          <Form.Item>
-            <Button
-              type="dashed"
-              onClick={() => add()}
-              block
-              icon={<PlusOutlined />}
-            >
-              Add field
-            </Button>
-          </Form.Item>
-        </>
-      )}
-    </Form.List>
-    <Form.Item>
-      <Button type="primary" htmlType="submit">
-        Submit
-      </Button>
-    </Form.Item>
-  </Form>
-);
+const baseColumns: ProColumns<InvestBaseInfo>[] = [
+  {
+    title: 'ETF',
+    dataIndex: 'sCode',
+    valueType: 'select',
+    valueEnum: ETF_INFOS.reduce((acc, item) => {
+      acc[item.sCode] = item.name;
+      return acc;
+    }, {} as Record<string, string>),
+  },
+  {
+    title: '起投日期',
+    dataIndex: 'startDate',
+    valueType: 'date',
+  },
+  {
+    title: '月定投额',
+    dataIndex: 'monthlyAmount',
+    valueType: 'money',
+  },
+  {
+    title: '预期收益率',
+    dataIndex: 'expectedReturnRate',
+    valueType: 'percent',
+  },
+];
+
+const PositionFormList: React.FC<{
+  defaultValues: InvestBaseInfo[];
+  onChange: (values: InvestBaseInfo[]) => void;
+}> = (props) => {
+  const { defaultValues, onChange } = props;
+  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
+  const [dataSource, setDataSource] =
+    useState<readonly InvestBaseInfo[]>(defaultValues);
+  const columns: ProColumns<InvestBaseInfo>[] = [
+    ...baseColumns,
+    {
+      title: '操作',
+      valueType: 'option',
+      width: 150,
+      align: 'center',
+      render: (text, record, _, action) => [
+        <Button
+          key="editable"
+          type="link"
+          onClick={() => {
+            action?.startEditable?.(record.sCode);
+          }}
+        >
+          编辑
+        </Button>,
+        <Button
+          type="link"
+          key="delete"
+          onClick={() => {
+            const result = dataSource.filter(
+              (item) => item.sCode !== record.sCode
+            );
+            setDataSource(result);
+            onChange(result);
+          }}
+        >
+          删除
+        </Button>,
+      ],
+    },
+  ];
+
+  const getOtherKey = () => {
+    const alreadyKeys = dataSource.map((item) => item.sCode);
+    for (let i = 0; i < ETF_INFOS.length; i++) {
+      const sCode = ETF_INFOS[i].sCode;
+      if (!alreadyKeys.includes(sCode)) {
+        return sCode;
+      }
+    }
+    return '';
+  };
+
+  const handleChange = (value: readonly InvestBaseInfo[]) => {
+    setDataSource(value);
+    onChange(value as InvestBaseInfo[]);
+  };
+  return (
+    <>
+      <Title level={2}>参数</Title>
+      <EditableProTable<InvestBaseInfo>
+        rowKey="sCode"
+        maxLength={ETF_INFOS.length}
+        bordered
+        scroll={{
+          x: 550,
+        }}
+        recordCreatorProps={{
+          record: () => ({
+            sCode: getOtherKey(),
+            startDate: '2021-11-01',
+            monthlyAmount: 25000,
+            expectedReturnRate: 10,
+            additionMutiple: 3,
+          }),
+        }}
+        columns={columns}
+        value={dataSource}
+        onChange={handleChange}
+        editable={{
+          type: 'single',
+          editableKeys,
+          onChange: setEditableRowKeys,
+        }}
+      />
+    </>
+  );
+};
 
 export default PositionFormList;

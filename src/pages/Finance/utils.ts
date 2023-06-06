@@ -1,4 +1,4 @@
-import type { ProdDealDateKV } from "./types";
+import type { ProdDealDateKV } from './types';
 
 export const getAnualReturnRate = (
   expectedReturnRate: number,
@@ -7,7 +7,7 @@ export const getAnualReturnRate = (
   if (investMonths <= 12) {
     return expectedReturnRate;
   }
-  return Number(((investMonths / 12) * expectedReturnRate).toFixed(4));
+  return (investMonths / 12) * expectedReturnRate;
 };
 
 export const getEtfOpCount = (amount: number, price: number) => {

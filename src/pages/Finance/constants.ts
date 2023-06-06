@@ -1,8 +1,8 @@
 import type {
   StockInfo,
-  InvestBaseInfo,
   IndexFeatInfo,
   IndexOpInfo,
+  InvestBaseInfo,
 } from './types';
 
 export const ETF_INFOS: Omit<StockInfo, 'price'>[] = [
@@ -108,3 +108,21 @@ export const INDEX_FEAT_INFOS: IndexFeatInfo[] = [
 
 export const DEFAULT_CODES = ['510300', '159915', '000300'];
 
+export const STORAGE_KEY = '1to10-local-storage';
+
+export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
+  {
+    sCode: 'sh510300',
+    startDate: '2021-11-01',
+    monthlyAmount: 25000,
+    expectedReturnRate: 10,
+    additionMutiple: 3,
+  },
+  {
+    sCode: 'sz159915',
+    startDate: '2021-11-01',
+    monthlyAmount: 25000,
+    expectedReturnRate: 15,
+    additionMutiple: 3,
+  },
+];
