@@ -19,17 +19,27 @@ const columns: ProColumns<InvestBaseInfo>[] = [
   {
     title: '起投日期',
     dataIndex: 'startDate',
-    valueType: 'date',
+    valueType: 'text',
+    width: 140,
+    fieldProps: {
+      allowClear: false,
+    },
   },
   {
     title: '月定投额',
     dataIndex: 'monthlyAmount',
     valueType: 'money',
+    fieldProps: {
+      step: 1000,
+    },
   },
   {
     title: '预期收益率%',
     dataIndex: 'expectedReturnRate',
-    valueType: 'percent',
+    valueType: () => ({
+      type: 'percent',
+      precision: 0,
+    }),
   },
   {
     title: '操作',
@@ -75,7 +85,7 @@ const PositionFormList: React.FC<{
           return [
             <Button
               key="save"
-              type='primary'
+              type="primary"
               onClick={() => {
                 onChange(dataSource as InvestBaseInfo[]);
               }}

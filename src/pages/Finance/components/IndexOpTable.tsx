@@ -42,7 +42,7 @@ const columns: ColumnType<OptionPnCData>[] = [
         打折率
       </div>
     ),
-    width: 90,
+    width: 95,
     align: 'right',
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays -

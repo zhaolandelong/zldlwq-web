@@ -44,6 +44,7 @@ const columns: ColumnType<FeatureData>[] = [
       </div>
     ),
     align: 'right',
+    width: 95,
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, r) => (
       <>

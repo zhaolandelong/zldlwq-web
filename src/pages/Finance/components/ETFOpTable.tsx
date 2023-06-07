@@ -37,7 +37,7 @@ const columns: ColumnType<OptionPnCData>[] = [
       </div>
     ),
     align: 'right',
-    width: 90,
+    width: 95,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
       (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
