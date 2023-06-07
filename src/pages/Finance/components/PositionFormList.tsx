@@ -48,12 +48,12 @@ const PositionFormList: React.FC<{
       valueType: 'option',
       width: 150,
       align: 'center',
-      render: (text, record, _, action) => [
+      render: (text, r, _, action) => [
         <Button
           key="editable"
           type="link"
           onClick={() => {
-            action?.startEditable?.(record.sCode);
+            action?.startEditable?.(r.sCode);
           }}
         >
           编辑
@@ -63,7 +63,7 @@ const PositionFormList: React.FC<{
           key="delete"
           onClick={() => {
             const result = dataSource.filter(
-              (item) => item.sCode !== record.sCode
+              (item) => item.sCode !== r.sCode
             );
             setDataSource(result);
             onChange(result);
@@ -99,7 +99,7 @@ const PositionFormList: React.FC<{
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
-          x: 550,
+          x: 570,
         }}
         recordCreatorProps={{
           record: () => ({

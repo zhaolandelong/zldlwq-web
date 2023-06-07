@@ -10,41 +10,43 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
-    title: 'ETF 期权 | 月份',
+    title: 'ETF 期权|月份',
     dataIndex: 'name',
     key: 'name',
-    align: 'center',
     fixed: 'left',
     width: 120,
-    render: (name, record) => (
+    align:'center',
+    render: (name, r) => (
       <Row>
-        <Col span={14}>{name}</Col>
-        <Col span={10}>{record.month}</Col>
+        <Col style={{ textAlign: 'right' }} span={14}>
+          {name}
+        </Col>
+        <Col span={10}>{r.month}</Col>
       </Row>
     ),
   },
   {
-    title: '日均打折 | 打折率',
+    title: '日均打折|打折率',
     align: 'right',
-    width: 150,
+    width: 170,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
       (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
-    render: (text, record) => (
+    render: (text, r) => (
       <Row>
         <Col span={12}>
-          ¥{' '}
+          ¥
           {(
-            ((record.timeValueP - record.timeValueC) * 10000) /
-            record.remainDays
+            ((r.timeValueP - r.timeValueC) * 10000) /
+            r.remainDays
           ).toFixed(2)}
         </Col>
         <Col span={12} style={{ color: '#f00' }}>
           (
           {(
-            ((record.timeValueP - record.timeValueC) /
-              record.strikePrice /
-              record.remainDays) *
+            ((r.timeValueP - r.timeValueC) /
+              r.strikePrice /
+              r.remainDays) *
             36500
           ).toFixed(2)}
           %)
@@ -53,16 +55,16 @@ const columns: ColumnType<OptionPnCData>[] = [
     ),
   },
   {
-    title: '1 手打折 | 剩余',
+    title: '1 手打折|剩余',
     align: 'right',
-    width: 140,
-    render: (text, record) => (
+    width: 160,
+    render: (text, r) => (
       <Row>
         <Col span={12}>
-          ¥ {((record.timeValueP - record.timeValueC) * 10000).toFixed(0)}
+          ¥{((r.timeValueP - r.timeValueC) * 10000).toFixed(0)}
         </Col>
         <Col span={12} style={{ color: '#f00' }}>
-          ({record.remainDays} 天)
+          ({r.remainDays} 天)
         </Col>
       </Row>
     ),
@@ -72,18 +74,19 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'strikePrice',
     key: 'strikePrice',
     align: 'center',
-    render: (price, record) => `¥ ${price.toFixed(3)}`,
+    render: (price, r) => `¥${price.toFixed(3)}`,
   },
   {
-    title: '时间价值(P | C)',
+    title: '时间价值(P|C)',
     dataIndex: 'timeValueP',
     key: 'timeValueP',
     align: 'center',
-    render: (price, record) => (
+    width: 180,
+    render: (price, r) => (
       <Row>
-        <Col span={12}>¥ {price.toFixed(4)}</Col>
+        <Col span={12}>¥{price.toFixed(4)}</Col>
         <Col span={12} style={{ color: '#f00' }}>
-          ¥ {record.timeValueC.toFixed(4)}
+          ¥{r.timeValueC.toFixed(4)}
         </Col>
       </Row>
     ),
@@ -129,7 +132,7 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 700 }}
+        scroll={{ x: 720 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}

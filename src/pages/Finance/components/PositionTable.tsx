@@ -28,10 +28,10 @@ const columns: ColumnType<ETFPosInfo>[] = [
     key: 'name',
     fixed: 'left',
     width: 110,
-    render: (name, record) => (
+    render: (name, r) => (
       <>
         <div>{name}</div>
-        <div style={{ color: '#f00' }}>{record.sCode}</div>
+        <div style={{ color: '#f00' }}>¥{r.price}</div>
       </>
     ),
   },
@@ -40,10 +40,10 @@ const columns: ColumnType<ETFPosInfo>[] = [
     dataIndex: 'actualReturnRate',
     key: 'actualReturnRate',
     align: 'center',
-    render: (rate, record) => (
+    render: (rate, r) => (
       <>
         <div>{rate.toFixed(2)}%</div>
-        <div style={{ color: '#f00' }}>{record.investMonths} 个月</div>
+        <div style={{ color: '#f00' }}>{r.investMonths} 个月</div>
       </>
     ),
   },
@@ -52,11 +52,11 @@ const columns: ColumnType<ETFPosInfo>[] = [
     dataIndex: 'avgCost',
     key: 'avgCost',
     align: 'right',
-    render: (cost, record) => (
+    render: (cost, r) => (
       <>
-        <div>¥ {cost.toFixed(3)}</div>
+        <div>¥{cost.toFixed(3)}</div>
         <div style={{ color: '#f00' }}>
-          ¥ {((1 + record.actualReturnRate/100) * cost).toFixed(3)}
+          ¥{((1 + r.actualReturnRate/100) * cost).toFixed(3)}
         </div>
       </>
     ),
@@ -65,14 +65,14 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '定投期权/ETF',
     dataIndex: 'fixedOpCount',
     key: 'fixedOpCount',
-    width: 140,
-    render: (count, record) => (
+    width: 160,
+    render: (count, r) => (
       <>
         <div>
-          {count} OP / {record.fixedEtfCount} ETF
+          {count} OP / {r.fixedEtfCount} ETF
         </div>
         <div style={{ color: '#f00' }}>
-          {count + 1} OP / {record.fixedEtfCount - 10000} ETF
+          {count + 1} OP / {r.fixedEtfCount - 10000} ETF
         </div>
       </>
     ),
@@ -82,11 +82,11 @@ const columns: ColumnType<ETFPosInfo>[] = [
     dataIndex: 'avgCost2',
     key: 'avgCost2',
     align: 'right',
-    render: (cost, record) => (
+    render: (cost, r) => (
       <>
-        <div>¥ {cost.toFixed(3)}</div>
+        <div>¥{cost.toFixed(3)}</div>
         <div style={{ color: '#f00' }}>
-          ¥ {((1 + record.actualReturnRate/100) * cost).toFixed(3)}
+          ¥{((1 + r.actualReturnRate/100) * cost).toFixed(3)}
         </div>
       </>
     ),
@@ -95,14 +95,14 @@ const columns: ColumnType<ETFPosInfo>[] = [
     title: '加仓期权 / ETF',
     dataIndex: 'additionOpCount',
     key: 'additionOpCount',
-    width: 140,
-    render: (count, record) => (
+    width: 160,
+    render: (count, r) => (
       <>
         <div>
-          {count} OP / {record.additionEtfCount} ETF
+          {count} OP / {r.additionEtfCount} ETF
         </div>
         <div style={{ color: '#f00' }}>
-          {count + 1} OP / {record.additionEtfCount - 10000} ETF
+          {count + 1} OP / {r.additionEtfCount - 10000} ETF
         </div>
       </>
     ),
@@ -175,7 +175,7 @@ const PositionTable: React.FC<{
         columns={columns}
         dataSource={dataSource}
         rowKey="sCode"
-        scroll={{ x: 620 }}
+        scroll={{ x: 680 }}
         loading={loading}
         bordered
         pagination={false}

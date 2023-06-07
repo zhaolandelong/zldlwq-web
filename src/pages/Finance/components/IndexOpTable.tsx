@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Table, Typography } from 'antd';
+import { Checkbox, Col, Row, Table, Typography } from 'antd';
 import type { ProdDealDateKV, StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_OP_INFOS } from '../constants';
@@ -11,87 +11,90 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
-    title: '代码',
+    title: '名称 | 代码',
     dataIndex: 'code',
     key: 'code',
-    width: 75,
+    width: 150,
     fixed: 'left',
+    align:'center',
     filters: Object.values(INDEX_OP_INFOS).map((info) => ({
       text: info.op,
       value: info.op,
     })),
-    onFilter: (value, record) => record.code.startsWith(value as string),
+    onFilter: (value, r) => r.code.startsWith(value as string),
+    render: (code, r) => (
+      <Row>
+        <Col span={12} style={{ textAlign: 'right' }}>
+          {r.name}
+        </Col>
+        <Col span={12}>{code}</Col>
+      </Row>
+    ),
   },
   {
-    title: '名称',
-    dataIndex: 'name',
-    key: 'name',
-    width: 78,
-  },
-  {
-    title: '日均打折',
+    title: '日均打折|打折率',
     align: 'right',
+    width: 170,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays -
       (b.timeValueP - b.timeValueC) / b.remainDays,
-    render: (text, record) =>
-      `¥ ${(
-        ((record.timeValueP - record.timeValueC) * 100) /
-        record.remainDays
-      ).toFixed(2)}`,
+    render: (text, r) => (
+      <Row>
+        <Col span={12}>
+          ¥
+          {(
+            ((r.timeValueP - r.timeValueC) * 100) /
+            r.remainDays
+          ).toFixed(2)}
+        </Col>
+        <Col span={12} style={{ color: '#f00' }}>
+          (
+          {(
+            ((r.timeValueP - r.timeValueC) /
+              r.strikePrice /
+              r.remainDays) *
+            36500
+          ).toFixed(2)}
+          %)
+        </Col>
+      </Row>
+    ),
   },
   {
-    title: '打折（1 手）',
+    title: '1 手打折|剩余',
     align: 'right',
+    width: 160,
     sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
-    render: (text, record) =>
-      `¥ ${((record.timeValueP - record.timeValueC) * 100).toFixed(0)}`,
-  },
-  {
-    title: '年化打折率',
-    align: 'right',
-    sorter: (a, b) =>
-      (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
-      (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
-    render: (text, record) =>
-      `${(
-        ((record.timeValueP - record.timeValueC) /
-          record.strikePrice /
-          record.remainDays) *
-        36500
-      ).toFixed(2)}%`,
+    render: (text, r) => (
+      <Row>
+        <Col span={12}>
+          ¥{((r.timeValueP - r.timeValueC) * 100).toFixed(0)}
+        </Col>
+        <Col span={12} style={{ color: '#f00' }}>
+          ({r.remainDays} 天)
+        </Col>
+      </Row>
+    ),
   },
   {
     title: '行权价',
     dataIndex: 'strikePrice',
     key: 'strikePrice',
-    align: 'right',
-    sorter: (a, b) => a.strikePrice - b.strikePrice,
+    align: 'center',
   },
   {
-    title: '时间价值(P)',
+    title: '时间价值(P|C)',
     dataIndex: 'timeValueP',
     key: 'timeValueP',
-    align: 'right',
+    align: 'center',
+    width: 160,
     sorter: (a, b) => a.timeValueP - b.timeValueP,
-    render: (price) => `¥ ${price.toFixed(2)}`,
-  },
-  {
-    title: '时间价值(C)',
-    dataIndex: 'timeValueC',
-    key: 'timeValueC',
-    align: 'right',
-    sorter: (a, b) => a.timeValueC - b.timeValueC,
-    render: (price) => `¥ ${price.toFixed(2)}`,
-  },
-  {
-    title: '剩余',
-    dataIndex: 'remainDays',
-    key: 'remainDays',
-    align: 'right',
-    width: 70,
-    sorter: (a, b) => a.remainDays - b.remainDays,
-    render: (d) => `${d} 天`,
+    render: (price,r) => <Row>
+    <Col span={12}>¥{price.toFixed(2)}</Col>
+    <Col span={12} style={{ color: '#f00' }}>
+      ¥{r.timeValueC.toFixed(2)}
+    </Col>
+  </Row>,
   },
 ];
 

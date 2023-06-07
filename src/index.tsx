@@ -16,7 +16,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Router>
-      <Layout className="layout">
+      <Layout className="root-layout">
         <Header style={{ height: 30, lineHeight: '30px' }}>
           <Menu theme="dark" mode="horizontal">
             {routes.map((route) => (
