@@ -6,7 +6,7 @@ import { ETF_INFOS } from '../constants';
 
 const { Title } = Typography;
 
-const baseColumns: ProColumns<InvestBaseInfo>[] = [
+const columns: ProColumns<InvestBaseInfo>[] = [
   {
     title: 'ETF',
     dataIndex: 'sCode',
@@ -27,9 +27,14 @@ const baseColumns: ProColumns<InvestBaseInfo>[] = [
     valueType: 'money',
   },
   {
-    title: '预期收益率',
+    title: '预期收益率%',
     dataIndex: 'expectedReturnRate',
     valueType: 'percent',
+  },
+  {
+    title: '操作',
+    width: 50,
+    valueType: 'option',
   },
 ];
 
@@ -38,42 +43,12 @@ const PositionFormList: React.FC<{
   onChange: (values: InvestBaseInfo[]) => void;
 }> = (props) => {
   const { defaultValues, onChange } = props;
-  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
-  const [dataSource, setDataSource] =
-    useState<readonly InvestBaseInfo[]>(defaultValues);
-  const columns: ProColumns<InvestBaseInfo>[] = [
-    ...baseColumns,
-    {
-      title: '操作',
-      valueType: 'option',
-      width: 150,
-      align: 'center',
-      render: (text, r, _, action) => [
-        <Button
-          key="editable"
-          type="link"
-          onClick={() => {
-            action?.startEditable?.(r.sCode);
-          }}
-        >
-          编辑
-        </Button>,
-        <Button
-          type="link"
-          key="delete"
-          onClick={() => {
-            const result = dataSource.filter(
-              (item) => item.sCode !== r.sCode
-            );
-            setDataSource(result);
-            onChange(result);
-          }}
-        >
-          删除
-        </Button>,
-      ],
-    },
-  ];
+  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(
+    defaultValues.map((item) => item.sCode)
+  );
+  const [dataSource, setDataSource] = useState<readonly InvestBaseInfo[]>(
+    () => defaultValues
+  );
 
   const getOtherKey = () => {
     const alreadyKeys = dataSource.map((item) => item.sCode);
@@ -86,22 +61,30 @@ const PositionFormList: React.FC<{
     return '';
   };
 
-  const handleChange = (value: readonly InvestBaseInfo[]) => {
-    setDataSource(value);
-    onChange(value as InvestBaseInfo[]);
-  };
   return (
     <>
       <Title level={2}>参数</Title>
       <EditableProTable<InvestBaseInfo>
         rowKey="sCode"
-        className='position-form-list'
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
           x: 570,
         }}
+        toolBarRender={() => {
+          return [
+            <Button
+              key="save"
+              onClick={() => {
+                onChange(dataSource as InvestBaseInfo[]);
+              }}
+            >
+              计算指标
+            </Button>,
+          ];
+        }}
         recordCreatorProps={{
+          newRecordType: 'dataSource',
           record: () => ({
             sCode: getOtherKey(),
             startDate: '2021-11-01',
@@ -112,11 +95,17 @@ const PositionFormList: React.FC<{
         }}
         columns={columns}
         value={dataSource}
-        onChange={handleChange}
+        onChange={setDataSource}
         editable={{
-          type: 'single',
+          type: 'multiple',
           editableKeys,
+          actionRender: (row, config, defaultDoms) => {
+            return [defaultDoms.delete];
+          },
           onChange: setEditableRowKeys,
+          onValuesChange: (record, recordList) => {
+            setDataSource(recordList);
+          },
         }}
       />
     </>

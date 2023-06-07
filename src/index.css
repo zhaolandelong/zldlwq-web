@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* font-variant-numeric: tabular-nums; */
+  font-variant-numeric: tabular-nums;
 }
 
 code {
@@ -13,15 +13,16 @@ code {
     monospace;
 }
 
-.position-form-list {
-  :where(.css-dev-only-do-not-override-lwcp1s).ant-pro-card .ant-pro-card-body {
-    padding: 0;
-  }
+.root-layout
+  :where(.css-dev-only-do-not-override-lwcp1s).ant-pro-card
+  .ant-pro-card-body {
+  padding: 0;
 }
 
 .root-layout :where(.css-dev-only-do-not-override-15rg2km)[class^='ant-col'],
-.root-layout  :where(.css-dev-only-do-not-override-15rg2km)[class*=' ant-col'],
-.root-layout :where(.css-dev-only-do-not-override-15rg2km).ant-table-wrapper .ant-table {
+.root-layout :where(.css-dev-only-do-not-override-15rg2km)[class*=' ant-col'],
+.root-layout
+  :where(.css-dev-only-do-not-override-15rg2km).ant-table-wrapper
+  .ant-table {
   font-family: ource-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
