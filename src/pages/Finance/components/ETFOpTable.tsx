@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Table, Typography, Col, Row } from 'antd';
+import { Checkbox, Table, Typography } from 'antd';
 import type { StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, ETF_INFOS } from '../constants';
@@ -10,63 +10,66 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
-    title: 'ETF 期权|月份',
+    title: (
+      <div>
+        ETF期权
+        <br />
+        月份
+      </div>
+    ),
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
-    width: 120,
-    align:'center',
+    align: 'center',
     render: (name, r) => (
-      <Row>
-        <Col style={{ textAlign: 'right' }} span={14}>
-          {name}
-        </Col>
-        <Col span={10}>{r.month}</Col>
-      </Row>
+      <>
+        <div>{name}</div>
+        <div style={{ color: '#f00' }}>{r.month}</div>
+      </>
     ),
   },
   {
-    title: '日均打折|打折率',
+    title: (
+      <div>
+        日均打折
+        <br />
+        打折率
+      </div>
+    ),
     align: 'right',
-    width: 170,
+    width: 90,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
       (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
     render: (text, r) => (
-      <Row>
-        <Col span={12}>
-          ¥
+      <>
+        <div>
+          ¥{(((r.timeValueP - r.timeValueC) * 10000) / r.remainDays).toFixed(2)}
+        </div>
+        <div style={{ color: '#f00' }}>
           {(
-            ((r.timeValueP - r.timeValueC) * 10000) /
-            r.remainDays
-          ).toFixed(2)}
-        </Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          (
-          {(
-            ((r.timeValueP - r.timeValueC) /
-              r.strikePrice /
-              r.remainDays) *
+            ((r.timeValueP - r.timeValueC) / r.strikePrice / r.remainDays) *
             36500
           ).toFixed(2)}
-          %)
-        </Col>
-      </Row>
+          %
+        </div>
+      </>
     ),
   },
   {
-    title: '1 手打折|剩余',
+    title: (
+      <div>
+        1手打折
+        <br />
+        剩余天数
+      </div>
+    ),
     align: 'right',
-    width: 160,
     render: (text, r) => (
-      <Row>
-        <Col span={12}>
-          ¥{((r.timeValueP - r.timeValueC) * 10000).toFixed(0)}
-        </Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          ({r.remainDays} 天)
-        </Col>
-      </Row>
+      <>
+        <div>¥{((r.timeValueP - r.timeValueC) * 10000).toFixed(0)}</div>
+        <div style={{ color: '#f00' }}>{r.remainDays}天</div>
+      </>
     ),
   },
   {
@@ -81,14 +84,11 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'timeValueP',
     key: 'timeValueP',
     align: 'center',
-    width: 180,
     render: (price, r) => (
-      <Row>
-        <Col span={12}>¥{price.toFixed(4)}</Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          ¥{r.timeValueC.toFixed(4)}
-        </Col>
-      </Row>
+      <>
+        <div>¥{price.toFixed(4)}</div>
+        <div style={{ color: '#f00' }}>¥{r.timeValueC.toFixed(4)}</div>
+      </>
     ),
   },
 ];
@@ -132,7 +132,7 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 720 }}
+        scroll={{ x: 400 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}

@@ -75,11 +75,12 @@ const PositionFormList: React.FC<{
           return [
             <Button
               key="save"
+              type='primary'
               onClick={() => {
                 onChange(dataSource as InvestBaseInfo[]);
               }}
             >
-              计算指标
+              保存并计算
             </Button>,
           ];
         }}

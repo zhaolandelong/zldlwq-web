@@ -79,14 +79,21 @@ const Finance: React.FC = () => {
         </Col>
       </Row>
       <ETFOpTable stockInfos={etfPriceInfos} />
-      <IndexOpTable
-        stockInfos={indexPriceInfos}
-        featureDealDates={featureDealDates}
-      />
-      <IndexFeatTable
-        stockInfos={indexPriceInfos}
-        featureDealDates={featureDealDates}
-      />
+      <Row gutter={16}>
+        <Col span={24} md={12}>
+          <IndexOpTable
+            stockInfos={indexPriceInfos}
+            featureDealDates={featureDealDates}
+          />
+        </Col>
+        <Col span={24} md={12}>
+          <IndexFeatTable
+            stockInfos={indexPriceInfos}
+            featureDealDates={featureDealDates}
+          />
+        </Col>
+      </Row>
+
       <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
       <PositionFormList
         defaultValues={defaultInvestInfos}

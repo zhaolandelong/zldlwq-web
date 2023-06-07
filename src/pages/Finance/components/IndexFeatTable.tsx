@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Col, Row, Table, Typography } from 'antd';
+import { Checkbox, Table, Typography } from 'antd';
 import type { ProdDealDateKV, StockInfo, FeatureData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_FEAT_INFOS } from '../constants';
@@ -12,10 +12,15 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<FeatureData>[] = [
   {
-    title: '名称 | 代码',
+    title: (
+      <div>
+        名称
+        <br />
+        代码
+      </div>
+    ),
     dataIndex: 'featCode',
     key: 'featCode',
-    width: 150,
     fixed: 'left',
     align: 'center',
     filters: Object.values(INDEX_FEAT_INFOS).map((info) => ({
@@ -24,59 +29,66 @@ const columns: ColumnType<FeatureData>[] = [
     })),
     onFilter: (value, r) => r.featCode.startsWith(value as string),
     render: (code, r) => (
-      <Row>
-        <Col span={12} style={{ textAlign: 'right' }}>
-          {r.name}
-        </Col>
-        <Col span={12}>{code}</Col>
-      </Row>
+      <>
+        <div>{r.name}</div>
+        <div style={{ color: '#f00' }}>{code}</div>
+      </>
     ),
   },
   {
-    title: '日均打折|打折率',
+    title: (
+      <div>
+        日均打折
+        <br />
+        打折率
+      </div>
+    ),
     align: 'right',
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
-    width: 170,
     render: (text, r) => (
-      <Row>
-        <Col span={12}>
-          ¥{((r.discount * r.pointPrice) / r.remainDays).toFixed(2)}
-        </Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          ({((r.discount / r.point / r.remainDays) * 36500).toFixed(2)}%)
-        </Col>
-      </Row>
+      <>
+        <div>¥{((r.discount * r.pointPrice) / r.remainDays).toFixed(2)}</div>
+        <div style={{ color: '#f00' }}>
+          {((r.discount / r.point / r.remainDays) * 36500).toFixed(2)}%
+        </div>
+      </>
     ),
   },
   {
-    title: '1 手打折|剩余',
+    title: (
+      <div>
+        1手打折
+        <br />
+        剩余天数
+      </div>
+    ),
     dataIndex: 'discount',
     key: 'discount',
     align: 'right',
-    width: 160,
-    sorter: (a, b) => a.discount - b.discount,
     render: (discount, r) => (
-      <Row>
-        <Col span={12}>¥{(discount * r.pointPrice).toFixed(0)}</Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          ({r.remainDays} 天)
-        </Col>
-      </Row>
+      <>
+        <div>¥{(discount * r.pointPrice).toFixed(0)}</div>
+        <div style={{ color: '#f00' }}>{r.remainDays}天</div>
+      </>
     ),
   },
   {
-    title: '点数|价格',
+    title: (
+      <div>
+        点数
+        <br />
+        价格
+      </div>
+    ),
     dataIndex: 'point',
     key: 'point',
     align: 'right',
     sorter: (a, b) => a.point - b.point,
     render: (point, r) => (
-      <Row>
-        <Col span={12}>{point.toFixed(2)}</Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          (¥{r.pointPrice})
-        </Col>
-      </Row>
+      <>
+        <div>{point.toFixed(2)}</div>
+        <div style={{ color: '#f00' }}>¥{r.pointPrice}</div>
+      </>
     ),
   },
 ];
@@ -149,7 +161,7 @@ const IndexFeatTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 630 }}
+        scroll={{ x: 320 }}
         dataSource={dataSource}
         rowKey="featCode"
         loading={loading}

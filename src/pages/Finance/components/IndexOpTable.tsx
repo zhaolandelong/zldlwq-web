@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Checkbox, Col, Row, Table, Typography } from 'antd';
+import { Checkbox, Table, Typography } from 'antd';
 import type { ProdDealDateKV, StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_OP_INFOS } from '../constants';
@@ -11,69 +11,71 @@ const { Title, Text } = Typography;
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
-    title: '名称 | 代码',
+    title: (
+      <div>
+        名称
+        <br />
+        代码
+      </div>
+    ),
     dataIndex: 'code',
     key: 'code',
-    width: 150,
     fixed: 'left',
-    align:'center',
+    align: 'center',
     filters: Object.values(INDEX_OP_INFOS).map((info) => ({
       text: info.op,
       value: info.op,
     })),
     onFilter: (value, r) => r.code.startsWith(value as string),
     render: (code, r) => (
-      <Row>
-        <Col span={12} style={{ textAlign: 'right' }}>
-          {r.name}
-        </Col>
-        <Col span={12}>{code}</Col>
-      </Row>
+      <>
+        <div>{r.name}</div>
+        <div style={{ color: '#f00' }}>{code}</div>
+      </>
     ),
   },
   {
-    title: '日均打折|打折率',
+    title: (
+      <div>
+        日均打折
+        <br />
+        打折率
+      </div>
+    ),
+    width: 90,
     align: 'right',
-    width: 170,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays -
       (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, r) => (
-      <Row>
-        <Col span={12}>
-          ¥
+      <>
+        <div>
+          ¥{(((r.timeValueP - r.timeValueC) * 100) / r.remainDays).toFixed(2)}
+        </div>
+        <div style={{ color: '#f00' }}>
           {(
-            ((r.timeValueP - r.timeValueC) * 100) /
-            r.remainDays
-          ).toFixed(2)}
-        </Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          (
-          {(
-            ((r.timeValueP - r.timeValueC) /
-              r.strikePrice /
-              r.remainDays) *
+            ((r.timeValueP - r.timeValueC) / r.strikePrice / r.remainDays) *
             36500
           ).toFixed(2)}
-          %)
-        </Col>
-      </Row>
+          %
+        </div>
+      </>
     ),
   },
   {
-    title: '1 手打折|剩余',
+    title: (
+      <div>
+        1手打折
+        <br />
+        剩余天数
+      </div>
+    ),
     align: 'right',
-    width: 160,
-    sorter: (a, b) => a.timeValueP - a.timeValueC - b.timeValueP + b.timeValueC,
     render: (text, r) => (
-      <Row>
-        <Col span={12}>
-          ¥{((r.timeValueP - r.timeValueC) * 100).toFixed(0)}
-        </Col>
-        <Col span={12} style={{ color: '#f00' }}>
-          ({r.remainDays} 天)
-        </Col>
-      </Row>
+      <>
+        <div>¥{((r.timeValueP - r.timeValueC) * 100).toFixed(0)}</div>
+        <div style={{ color: '#f00' }}>{r.remainDays}天</div>
+      </>
     ),
   },
   {
@@ -87,14 +89,12 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'timeValueP',
     key: 'timeValueP',
     align: 'center',
-    width: 160,
-    sorter: (a, b) => a.timeValueP - b.timeValueP,
-    render: (price,r) => <Row>
-    <Col span={12}>¥{price.toFixed(2)}</Col>
-    <Col span={12} style={{ color: '#f00' }}>
-      ¥{r.timeValueC.toFixed(2)}
-    </Col>
-  </Row>,
+    render: (price, r) => (
+      <>
+        <div>¥{price.toFixed(2)}</div>
+        <div style={{ color: '#f00' }}>¥{r.timeValueC.toFixed(2)}</div>
+      </>
+    ),
   },
 ];
 
@@ -149,7 +149,7 @@ const IndexOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 730 }}
+        scroll={{ x: 400 }}
         dataSource={dataSource}
         rowKey="code"
         bordered
