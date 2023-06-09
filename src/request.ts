@@ -1,14 +1,17 @@
 import axios from 'axios';
 import jsonp from 'jsonp';
+import ls from 'localstorage-slim';
 
-// const isLocal = window.location.host.includes('localhost');
-const isLocal = true;
+const shouldUseStorage = true;
 const caches: Record<string, any> = {};
 const cachedPromise: Record<string, Promise<any>> = {};
 
+const secondsUntilMidnight = () =>
+  ((new Date().setHours(24, 0, 0, 0) - Date.now()) / 1000) | 0;
+
 const setCache = (key: string, data: any) => {
-  if (isLocal) {
-    sessionStorage.setItem(key, JSON.stringify(data));
+  if (shouldUseStorage) {
+    ls.set(key, data, { ttl: secondsUntilMidnight() });
   } else {
     caches[key] = data;
   }
@@ -16,12 +19,9 @@ const setCache = (key: string, data: any) => {
 };
 
 const getCache = (key: string) => {
-  if (isLocal) {
-    const local = sessionStorage.getItem(key);
-    if (local) {
-      return JSON.parse(local);
-    }
-    return null;
+  if (shouldUseStorage) {
+    const local = ls.get(key);
+    return local || null;
   }
   return caches[key];
 };

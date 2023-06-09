@@ -170,7 +170,7 @@ const IndexOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 400 }}
+        scroll={{ x: 430 }}
         dataSource={dataSource}
         rowKey="code"
         bordered
