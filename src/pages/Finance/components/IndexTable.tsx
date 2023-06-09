@@ -7,7 +7,7 @@ const { Title } = Typography;
 
 const columns: ColumnType<StockInfo>[] = [
   {
-    title: '名称',
+    title: '股指',
     dataIndex: 'name',
     key: 'name',
   },

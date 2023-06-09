@@ -8,27 +8,27 @@ const { Text, Title } = Typography;
 const rate = 13 / 12.21; // 000300 PE 12.21
 const etfInfos = [
   {
-    name: '沪深300 ETF',
+    name: '沪深300',
     code: '510300',
     price: 4.117,
   },
   {
-    name: '上证50 ETF',
+    name: '上证50',
     code: '510050',
     price: 2.689,
   },
   {
-    name: '红利 ETF',
+    name: '红利',
     code: '510880',
     price: 2.912,
   },
   {
-    name: '中证500 ETF',
+    name: '中证500',
     code: '510500',
     price: 6.475,
   },
   {
-    name: '创业板 ETF',
+    name: '创业板',
     code: '159915',
     price: 2.369,
   },
@@ -48,11 +48,11 @@ interface Record {
 
 const columns: ColumnType<Record>[] = [
   {
-    title: '名称',
+    title: 'ETF',
     dataIndex: 'name',
     key: 'name',
     fixed: 'left',
-    width: 100,
+    width: 80,
   },
   {
     title: '第 1 次',
@@ -131,7 +131,7 @@ const AdditionTable: React.FC = () => {
         dataSource={dataSource}
         rowKey="code"
         pagination={false}
-        scroll={{ x: 650 }}
+        scroll={{ x: 700 }}
         size="small"
         bordered
       />

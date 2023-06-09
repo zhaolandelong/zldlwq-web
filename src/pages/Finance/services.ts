@@ -50,7 +50,7 @@ export const fetchAvgPrice2 = (
   sCode: string,
   startDate: string,
   amount: number = 25000,
-  endDate: string = moment().format('YYYY-MM-DD'),
+  endDate: string = moment().format('YYYY-MM-DD')
 ): Promise<number> =>
   fetchEtfMonthK(sCode, startDate, endDate).then((arr) => {
     let _count;
@@ -198,14 +198,13 @@ const formatEtfOpPrimaryData = (data: {
   code: string;
   name: string;
   month: string;
+  stockPrice: number;
   primaryUp: OptionNestData;
   primaryDown: OptionNestData;
 }) => {
-  const { code, name, month, primaryUp, primaryDown } = data;
+  const { primaryUp, primaryDown, ...rest } = data;
   return {
-    code,
-    name,
-    month,
+    ...rest,
     isPrimary: true,
     strikePrice: primaryUp.strikePrice,
     dealDate: primaryUp.dealDate,
@@ -273,11 +272,12 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
   ).then((res) => {
     const arr = formatOpDatas(res);
     let index = -1;
-    return cachedCodeMonthArr.map(({ code, month, name }) =>
+    return cachedCodeMonthArr.map(({ code, month, name, price }) =>
       formatEtfOpPrimaryData({
         code,
         name,
         month,
+        stockPrice: price,
         primaryUp: arr[++index],
         primaryDown: arr[++index],
       })
@@ -303,6 +303,7 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
             code,
             name,
             month,
+            stockPrice: price,
             primaryUp: opUpDatas[primaryUpIndex],
             primaryDown: opDownDatas[primaryDownIndex],
           });
@@ -357,7 +358,7 @@ export const fetchIndexOpPrimaryDatas = async (params: {
         let primaryIndex = 0;
         let abs = Infinity;
         opArr.forEach((opData, index) => {
-          const _abs = Math.abs(opData.strikePrice - Number(price));
+          const _abs = Math.abs(opData.strikePrice - price);
           if (_abs < abs) {
             abs = _abs;
             primaryIndex = index;
@@ -370,6 +371,7 @@ export const fetchIndexOpPrimaryDatas = async (params: {
           code: op + month,
           name,
           month,
+          stockPrice: price,
           isPrimary: true,
           strikePrice,
           dealDate: dealDates[i],

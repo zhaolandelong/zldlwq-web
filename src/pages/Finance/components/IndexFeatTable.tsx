@@ -50,7 +50,11 @@ const columns: ColumnType<FeatureData>[] = [
       <>
         <div>¥{((r.discount * r.pointPrice) / r.remainDays).toFixed(2)}</div>
         <div style={{ color: '#f00' }}>
-          {((r.discount / r.point / r.remainDays) * 36500).toFixed(2)}%
+          {(
+            (r.discount / (r.point + r.discount) / r.remainDays) *
+            36500
+          ).toFixed(2)}
+          %
         </div>
       </>
     ),
@@ -78,7 +82,7 @@ const columns: ColumnType<FeatureData>[] = [
       <div>
         点数
         <br />
-        价格
+        单价
       </div>
     ),
     dataIndex: 'point',
@@ -173,7 +177,7 @@ const IndexFeatTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 股指 - 点数 ) * 点数价格</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>年化打折率 = 日均打折 / 点数价格 / 点数 * 365</li>
+          <li>年化打折率 = 日均打折 / 点数价格 / 股指点数 * 365</li>
         </ul>
       </Text>
     </>

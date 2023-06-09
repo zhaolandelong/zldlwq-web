@@ -54,7 +54,7 @@ const columns: ColumnType<OptionPnCData>[] = [
         </div>
         <div style={{ color: '#f00' }}>
           {(
-            ((r.timeValueP - r.timeValueC) / r.strikePrice / r.remainDays) *
+            ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
             36500
           ).toFixed(2)}
           %
@@ -79,10 +79,22 @@ const columns: ColumnType<OptionPnCData>[] = [
     ),
   },
   {
-    title: '行权价',
+    title: (
+      <div>
+        行权价
+        <br />
+        股指点数
+      </div>
+    ),
     dataIndex: 'strikePrice',
     key: 'strikePrice',
     align: 'center',
+    render: (price, r) => (
+      <>
+        <div>{price}</div>
+        <div style={{ color: '#f00' }}>{r.stockPrice}</div>
+      </>
+    ),
   },
   {
     title: '时间价值(P|C)',
@@ -160,7 +172,7 @@ const IndexOpTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 100</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>年化打折率 = 日均打折 / 100 / 行权价 * 365</li>
+          <li>年化打折率 = 日均打折 / 100 / 股指点数 * 365</li>
         </ul>
       </Text>
     </>

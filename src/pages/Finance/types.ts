@@ -33,6 +33,7 @@ export interface OptionPnCData {
   name: string;
   month: string;
   isPrimary: boolean;
+  stockPrice: number;
   strikePrice: number;
   dealDate: string;
   remainDays: number;

@@ -48,7 +48,7 @@ const columns: ColumnType<OptionPnCData>[] = [
         </div>
         <div style={{ color: '#f00' }}>
           {(
-            ((r.timeValueP - r.timeValueC) / r.strikePrice / r.remainDays) *
+            ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
             36500
           ).toFixed(2)}
           %
@@ -73,11 +73,22 @@ const columns: ColumnType<OptionPnCData>[] = [
     ),
   },
   {
-    title: '行权价',
+    title: (
+      <div>
+        行权价
+        <br />
+        现价
+      </div>
+    ),
     dataIndex: 'strikePrice',
     key: 'strikePrice',
     align: 'center',
-    render: (price, r) => `¥${price.toFixed(3)}`,
+    render: (price, r) =>(
+      <>
+        <div>¥{price.toFixed(3)}</div>
+        <div style={{ color: '#f00' }}>¥{r.stockPrice.toFixed(3)}</div>
+      </>
+    ),
   },
   {
     title: '时间价值(P|C)',
@@ -143,7 +154,7 @@ const ETFOpTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 10000</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>打折率 = 日均打折 / 10000 / 行权价 * 365</li>
+          <li>打折率 = 日均打折 / 10000 / 现价 * 365</li>
         </ul>
       </Text>
     </>
