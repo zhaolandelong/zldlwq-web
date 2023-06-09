@@ -4,18 +4,14 @@ export interface StockInfo {
   sCode: string;
   price: number;
 }
-
-export interface IndexOpInfo {
+export interface IndexInfo {
   code: string;
   name: string;
-  op: string;
-}
-
-export interface IndexFeatInfo {
-  code: string;
-  name: string;
-  feat: string;
-  pointPrice: number;
+  sCode: string;
+  // price: number;
+  op?: string;
+  feat?: string;
+  featPointPrice?: number;
 }
 
 export interface OptionNestData {
@@ -52,7 +48,7 @@ export interface DealDate {
 
 export type ProdDealDateKV = Record<string, string>; // { MO2309: 20230915 }
 
-export interface FeatureData extends IndexFeatInfo {
+export interface FeatureData extends Required<IndexInfo> {
   featCode: string; // IF2306
   point: number;
   discount: number;

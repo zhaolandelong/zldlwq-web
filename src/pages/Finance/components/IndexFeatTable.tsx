@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { ProdDealDateKV, StockInfo, FeatureData } from '../types';
+import type {
+  ProdDealDateKV,
+  StockInfo,
+  FeatureData,
+  IndexInfo,
+} from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { DEFAULT_CODES, INDEX_FEAT_INFOS } from '../constants';
+import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
 import { fetchFeatPointByMonths } from '../services';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
 import { filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
+
+const INDEX_FEAT_INFOS = INDEX_INFOS.filter(
+  ({ op }) => op
+) as Required<IndexInfo>[];
 
 const columns: ColumnType<FeatureData>[] = [
   {
@@ -48,7 +57,7 @@ const columns: ColumnType<FeatureData>[] = [
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, r) => (
       <>
-        <div>¥{((r.discount * r.pointPrice) / r.remainDays).toFixed(2)}</div>
+        <div>¥{((r.discount * r.featPointPrice) / r.remainDays).toFixed(2)}</div>
         <div style={{ color: '#f00' }}>
           {(
             (r.discount / (r.point + r.discount) / r.remainDays) *
@@ -72,7 +81,7 @@ const columns: ColumnType<FeatureData>[] = [
     align: 'right',
     render: (discount, r) => (
       <>
-        <div>¥{(discount * r.pointPrice).toFixed(0)}</div>
+        <div>¥{(discount * r.featPointPrice).toFixed(0)}</div>
         <div style={{ color: '#f00' }}>{r.remainDays}天</div>
       </>
     ),
@@ -92,7 +101,7 @@ const columns: ColumnType<FeatureData>[] = [
     render: (point, r) => (
       <>
         <div>{point.toFixed(2)}</div>
-        <div style={{ color: '#f00' }}>¥{r.pointPrice}</div>
+        <div style={{ color: '#f00' }}>¥{r.featPointPrice}</div>
       </>
     ),
   },

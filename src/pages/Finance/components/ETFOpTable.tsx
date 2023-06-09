@@ -83,7 +83,7 @@ const columns: ColumnType<OptionPnCData>[] = [
     dataIndex: 'strikePrice',
     key: 'strikePrice',
     align: 'center',
-    render: (price, r) =>(
+    render: (price, r) => (
       <>
         <div>¥{price.toFixed(3)}</div>
         <div style={{ color: '#f00' }}>¥{r.stockPrice.toFixed(3)}</div>
@@ -133,7 +133,7 @@ const ETFOpTable: React.FC<{
     <>
       <Title level={2}>ETF 期权</Title>
       <Checkbox.Group
-        options={ETF_INFOS.map((info) => ({
+        options={ETF_INFOS.filter(({ hasOp }) => hasOp).map((info) => ({
           label: info.name,
           value: info.code,
         }))}

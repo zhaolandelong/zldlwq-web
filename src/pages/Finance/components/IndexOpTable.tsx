@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { ProdDealDateKV, StockInfo, OptionPnCData } from '../types';
+import type {
+  ProdDealDateKV,
+  StockInfo,
+  OptionPnCData,
+  IndexInfo,
+} from '../types';
 import type { ColumnType } from 'antd/es/table';
-import { DEFAULT_CODES, INDEX_OP_INFOS } from '../constants';
+import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchIndexOpPrimaryDatas } from '../services';
 import { filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
+
+const INDEX_OP_INFOS = INDEX_INFOS.filter(
+  ({ op }) => op
+) as Required<IndexInfo>[];
 
 const columns: ColumnType<OptionPnCData>[] = [
   {
