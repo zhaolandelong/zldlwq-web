@@ -41,8 +41,17 @@ const Finance: React.FC = () => {
   }, [featureDealDates]);
 
   useEffect(() => {
-    fetchOpDealDate(moment().format('YYYY-MM')).then(setDealDate);
-    fetchFeatureDealDates().then(setFeatureDealDates);
+    const nowMoment = moment();
+    fetchOpDealDate(nowMoment.format('YYYY-MM')).then(setDealDate);
+    fetchFeatureDealDates().then((res) => {
+      const result: typeof res = {};
+      Object.entries(res).forEach(([key, val]) => {
+        if (nowMoment.isBefore(moment(val))) {
+          result[key] = val;
+        }
+      });
+      setFeatureDealDates(result);
+    });
   }, []);
 
   const handleInvestChange = (vals: InvestBaseInfo[]) => {

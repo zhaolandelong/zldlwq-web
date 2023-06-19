@@ -401,5 +401,5 @@ export const fetchFeatPointByMonths = async (
   return result;
 };
 
-export const fetchFeatureDealDates = () =>
+export const fetchFeatureDealDates = (): Promise<Record<string, string>> =>
   axiosGet('http://api.1to10.zldlwq.top/api/cffex', true);
