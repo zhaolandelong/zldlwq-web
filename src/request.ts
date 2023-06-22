@@ -3,6 +3,7 @@ import jsonp from 'jsonp';
 import ls from 'localstorage-slim';
 
 const shouldUseStorage = true;
+const isDev = window.location.hostname === 'localhost';
 const caches: Record<string, any> = {};
 const cachedPromise: Record<string, Promise<any>> = {};
 
@@ -30,7 +31,7 @@ export const axiosGet = (url: string, cached: boolean = false) => {
   if (Object.prototype.hasOwnProperty.call(cachedPromise, url)) {
     return cachedPromise[url];
   }
-  if (cached) {
+  if (isDev || cached) {
     const cachedData = getCache(url);
     if (cachedData) {
       return Promise.resolve(cachedData);
@@ -43,7 +44,7 @@ export const axiosGet = (url: string, cached: boolean = false) => {
       return res;
     })
     .then((res) => {
-      if (cached) {
+      if (isDev || cached) {
         return setCache(url, res.data);
       }
       return res.data;
@@ -55,7 +56,7 @@ export const jsonpPromise = (url: string, cached: boolean = false) => {
   if (Object.prototype.hasOwnProperty.call(cachedPromise, url)) {
     return cachedPromise[url];
   }
-  if (cached) {
+  if (isDev || cached) {
     const cachedData = getCache(url);
     if (cachedData) {
       return Promise.resolve(cachedData);
@@ -67,7 +68,7 @@ export const jsonpPromise = (url: string, cached: boolean = false) => {
       if (err) {
         reject(err);
       } else {
-        if (cached) {
+        if (isDev || cached) {
           resolve(setCache(url, data));
         } else {
           resolve(data);

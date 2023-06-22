@@ -50,9 +50,9 @@ const columns: ColumnType<ETFPosInfo>[] = [
   {
     title: (
       <div>
-        估算成本
+        估算卖价
         <br />
-        卖价
+        估算成本
       </div>
     ),
     dataIndex: 'avgCost',
@@ -60,10 +60,8 @@ const columns: ColumnType<ETFPosInfo>[] = [
     align: 'center',
     render: (cost, r) => (
       <>
-        <div>¥{cost.toFixed(3)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{((1 + r.actualReturnRate / 100) * cost).toFixed(3)}
-        </div>
+        <div>¥{((1 + r.actualReturnRate / 100) * cost).toFixed(3)}</div>
+        <div style={{ color: '#f00' }}>¥{cost.toFixed(3)}</div>
       </>
     ),
   },
@@ -86,9 +84,9 @@ const columns: ColumnType<ETFPosInfo>[] = [
   {
     title: (
       <div>
-        精算成本
+        精算卖价
         <br />
-        卖价
+        精算成本
       </div>
     ),
     dataIndex: 'avgCost2',
@@ -96,10 +94,8 @@ const columns: ColumnType<ETFPosInfo>[] = [
     align: 'center',
     render: (cost, r) => (
       <>
-        <div>¥{cost.toFixed(3)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{((1 + r.actualReturnRate / 100) * cost).toFixed(3)}
-        </div>
+        <div>¥{((1 + r.actualReturnRate / 100) * cost).toFixed(3)}</div>
+        <div style={{ color: '#f00' }}>¥{cost.toFixed(3)}</div>
       </>
     ),
   },
