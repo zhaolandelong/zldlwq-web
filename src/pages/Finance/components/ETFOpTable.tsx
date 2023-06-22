@@ -102,6 +102,26 @@ const columns: ColumnType<OptionPnCData>[] = [
       </>
     ),
   },
+  {
+    title: (
+      <div>
+        万元卖购
+        <br />
+        单日卖购
+      </div>
+    ),
+    dataIndex: 'currPriceC',
+    key: 'currPriceC',
+    align: 'right',
+    render: (price, r) => (
+      <>
+        <div>¥{((price * 10000) / r.strikePrice).toFixed(2)}</div>
+        <div style={{ color: '#f00' }}>
+          ¥{((price * 10000) / r.strikePrice / r.remainDays).toFixed(2)}
+        </div>
+      </>
+    ),
+  },
 ];
 
 const ETFOpTable: React.FC<{
@@ -143,7 +163,7 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 400 }}
+        scroll={{ x: 480 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}
@@ -154,7 +174,8 @@ const ETFOpTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 10000</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>打折率 = 日均打折 / 10000 / 现价 * 365</li>
+          <li>打折率 = 日均打折 / 10000 / 现价 * 365。用于跨品种对比打折程度</li>
+          <li>万元卖购 = 认购期权当前价 / 行权价 * 10000。用于跨品种对比权利金收益</li>
         </ul>
       </Text>
     </>
