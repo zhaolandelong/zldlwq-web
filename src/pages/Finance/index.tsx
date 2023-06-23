@@ -13,8 +13,9 @@ import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import { DealDate, InvestBaseInfo, ProdDealDateKV } from './types';
 import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
+import PayQR from '../../components/PayQR';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const getDefaultInvestInfos = (): InvestBaseInfo[] => {
   const storage = localStorage.getItem(STORAGE_KEY);
@@ -72,6 +73,7 @@ const Finance: React.FC = () => {
         </span>{' '}
         天)
       </Title>
+      <Text type="warning">注意：以下内容只是基于个人理解，仅供参考。</Text>
       <FloatButton
         description={`刷新\n${fetchTime}`}
         type="primary"
@@ -87,6 +89,7 @@ const Finance: React.FC = () => {
           <IndexTable dataSource={indexPriceInfos} />
         </Col>
       </Row>
+      <PayQR />
       <ETFOpTable stockInfos={etfPriceInfos} />
       <Row gutter={16}>
         <Col span={24} md={12}>
@@ -102,7 +105,7 @@ const Finance: React.FC = () => {
           />
         </Col>
       </Row>
-
+      <PayQR />
       <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
       <PositionFormList
         defaultValues={defaultInvestInfos}

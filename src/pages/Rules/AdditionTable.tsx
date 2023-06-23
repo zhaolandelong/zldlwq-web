@@ -126,6 +126,7 @@ const AdditionTable: React.FC = () => {
   return (
     <>
       <Title level={2} style={{ marginTop: 16 }}>加仓表</Title>
+      <Text type="warning">注意：以下内容只是基于个人理解，仅供参考。</Text>
       <Table
         columns={columns}
         dataSource={dataSource}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Typography } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 interface Record {
   type: string;
@@ -109,6 +109,7 @@ const ActionTable: React.FC = () => {
   return (
     <>
       <Title level={2}>操作规则</Title>
+      <Text type="warning">注意：以下内容只是基于个人理解，仅供参考。</Text>
       <Table
         columns={columns}
         dataSource={dataSource}
