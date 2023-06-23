@@ -89,7 +89,7 @@ const Finance: React.FC = () => {
           <IndexTable dataSource={indexPriceInfos} />
         </Col>
       </Row>
-      <PayQR />
+      {/* <PayQR /> */}
       <ETFOpTable stockInfos={etfPriceInfos} />
       <Row gutter={16}>
         <Col span={24} md={12}>
@@ -105,7 +105,7 @@ const Finance: React.FC = () => {
           />
         </Col>
       </Row>
-      <PayQR />
+      {/* <PayQR /> */}
       <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
       <PositionFormList
         defaultValues={defaultInvestInfos}
