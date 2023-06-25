@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import PayQR from '../components/PayQR';
+import PayArticle from '../components/PayArticle';
 // import { fetchFeatureDealDates } from './Finance/utils';
 
 const Test: React.FC = () => {
@@ -9,7 +9,7 @@ const Test: React.FC = () => {
     // });
     // fetchFeatureDealDates().then(console.log);
   }, []);
-  return <PayQR />;
+  return <PayArticle />;
 };
 
 export default Test;

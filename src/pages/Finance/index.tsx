@@ -13,7 +13,7 @@ import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import { DealDate, InvestBaseInfo, ProdDealDateKV } from './types';
 import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
-import PayQR from '../../components/PayQR';
+import PayArticle from '../../components/PayArticle';
 
 const { Title, Text } = Typography;
 
@@ -89,7 +89,7 @@ const Finance: React.FC = () => {
           <IndexTable dataSource={indexPriceInfos} />
         </Col>
       </Row>
-      {/* <PayQR /> */}
+      <PayArticle />
       <ETFOpTable stockInfos={etfPriceInfos} />
       <Row gutter={16}>
         <Col span={24} md={12}>
@@ -105,7 +105,7 @@ const Finance: React.FC = () => {
           />
         </Col>
       </Row>
-      {/* <PayQR /> */}
+      <PayArticle />
       <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
       <PositionFormList
         defaultValues={defaultInvestInfos}
