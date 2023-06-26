@@ -9,15 +9,15 @@ const QR: React.FC = () => (
     <div style={{ textAlign: 'center' }}>
       <Paragraph>如果这个🔧帮你赚（省）💰了，就请我喝杯🥤吧~</Paragraph>
       {/* <QRCode
-        value="https://mp.weixin.qq.com/s/c9h0B3pqCuRpOO1BjXhQiA"
+        value="https://mp.weixin.qq.com/s/P5yCaZaWzOMAruYpkxkjlw"
         errorLevel="H"
         icon={icon}
       /> */}
       <img style={{ width: 100 }} src={ImgPayArticle} alt="pay article" />
       <br />
-      <Text type="secondary">因为不能放收款码，所以只能用文章打赏了</Text>
+      <Text type="secondary">长按识别二维码</Text>
     </div>
-    <Divider>祝大家早日💰自由</Divider>
+    <Divider>有彩蛋哦~祝大家早日💰自由</Divider>
   </>
 );
 
