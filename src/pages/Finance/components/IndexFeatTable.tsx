@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type {
   ProdDealDateKV,
@@ -16,34 +16,10 @@ import { filterDealDates } from '../utils';
 const { Title, Text } = Typography;
 
 const INDEX_FEAT_INFOS = INDEX_INFOS.filter(
-  ({ op }) => op
+  ({ feat }) => feat
 ) as Required<IndexInfo>[];
 
-const columns: ColumnType<FeatureData>[] = [
-  {
-    title: (
-      <div>
-        名称
-        <br />
-        代码
-      </div>
-    ),
-    dataIndex: 'featCode',
-    key: 'featCode',
-    fixed: 'left',
-    align: 'center',
-    filters: Object.values(INDEX_FEAT_INFOS).map((info) => ({
-      text: info.feat,
-      value: info.feat,
-    })),
-    onFilter: (value, r) => r.featCode.startsWith(value as string),
-    render: (code, r) => (
-      <>
-        <div>{r.name}</div>
-        <div style={{ color: '#f00' }}>{code}</div>
-      </>
-    ),
-  },
+const baseColumns: ColumnType<FeatureData>[] = [
   {
     title: (
       <div>
@@ -57,7 +33,9 @@ const columns: ColumnType<FeatureData>[] = [
     sorter: (a, b) => a.discount / a.remainDays - b.discount / b.remainDays,
     render: (text, r) => (
       <>
-        <div>¥{((r.discount * r.featPointPrice) / r.remainDays).toFixed(2)}</div>
+        <div>
+          ¥{((r.discount * r.featPointPrice) / r.remainDays).toFixed(2)}
+        </div>
         <div style={{ color: '#f00' }}>
           {(
             (r.discount / (r.point + r.discount) / r.remainDays) *
@@ -118,6 +96,41 @@ const IndexFeatTable: React.FC<{
   const [dataSource, setDataSource] = useState<FeatureData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
+  
+  const filters = useMemo(() => {
+    const months = Array.from(
+      new Set(dataSource.map((info) => info.featCode.substring(2, 6)))
+    );
+    return months.map((month) => ({
+      text: month,
+      value: month,
+    }));
+  }, [dataSource]);
+
+  const columns: ColumnType<FeatureData>[] = [
+    {
+      title: (
+        <div>
+          名称
+          <br />
+          代码
+        </div>
+      ),
+      dataIndex: 'featCode',
+      key: 'featCode',
+      fixed: 'left',
+      align: 'center',
+      filters,
+      onFilter: (value, r) => value === r.featCode.substring(2, 6),
+      render: (code, r) => (
+        <>
+          <div>{r.name}</div>
+          <div style={{ color: '#f00' }}>{code}</div>
+        </>
+      ),
+    },
+    ...baseColumns,
+  ];
 
   useEffect(() => {
     const monthDealDates = filterDealDates(featCodes, featureDealDates);

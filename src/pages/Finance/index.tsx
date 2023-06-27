@@ -2,10 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import { FloatButton, Typography, Col, Row } from 'antd';
 import { fetchFeatureDealDates, fetchOpDealDate } from './services';
-import ETFTable from './components/ETFTable';
+import IndexETFTable from './components/IndexETFTable';
 import ETFOpTable from './components/ETFOpTable';
 import PositionTable from './components/PositionTable';
-import IndexTable from './components/IndexTable';
 import IndexOpTable from './components/IndexOpTable';
 import IndexFeatTable from './components/IndexFeatTable';
 import PositionFormList from './components/PositionFormList';
@@ -83,13 +82,12 @@ const Finance: React.FC = () => {
       />
       <Row gutter={16}>
         <Col span={24} md={12}>
-          <ETFTable dataSource={etfPriceInfos} />
+          <IndexETFTable indexData={indexPriceInfos} etfData={etfPriceInfos} />
         </Col>
         <Col span={24} md={12}>
-          <IndexTable dataSource={indexPriceInfos} />
+          <PayArticle />
         </Col>
       </Row>
-      <PayArticle />
       <ETFOpTable stockInfos={etfPriceInfos} />
       <Row gutter={16}>
         <Col span={24} md={12}>
@@ -107,10 +105,17 @@ const Finance: React.FC = () => {
       </Row>
       <PayArticle />
       <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
-      <PositionFormList
-        defaultValues={defaultInvestInfos}
-        onChange={handleInvestChange}
-      />
+      <Row gutter={16}>
+        <Col span={24} lg={16}>
+          <PositionFormList
+            defaultValues={defaultInvestInfos}
+            onChange={handleInvestChange}
+          />
+        </Col>
+        <Col span={24} lg={8}>
+          <PayArticle />
+        </Col>
+      </Row>
     </>
   );
 };

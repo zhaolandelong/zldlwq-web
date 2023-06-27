@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type {
   ProdDealDateKV,
@@ -18,31 +18,7 @@ const INDEX_OP_INFOS = INDEX_INFOS.filter(
   ({ op }) => op
 ) as Required<IndexInfo>[];
 
-const columns: ColumnType<OptionPnCData>[] = [
-  {
-    title: (
-      <div>
-        名称
-        <br />
-        代码
-      </div>
-    ),
-    dataIndex: 'code',
-    key: 'code',
-    fixed: 'left',
-    align: 'center',
-    filters: Object.values(INDEX_OP_INFOS).map((info) => ({
-      text: info.op,
-      value: info.op,
-    })),
-    onFilter: (value, r) => r.code.startsWith(value as string),
-    render: (code, r) => (
-      <>
-        <div>{r.name}</div>
-        <div style={{ color: '#f00' }}>{code}</div>
-      </>
-    ),
-  },
+const baseColumns: ColumnType<OptionPnCData>[] = [
   {
     title: (
       <div>
@@ -151,6 +127,41 @@ const IndexOpTable: React.FC<{
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
+  const filters = useMemo(() => {
+    const months = Array.from(
+      new Set(dataSource.map(({ code }) => code.substring(2, 6)))
+    );
+    return months.map((month) => ({
+      text: month,
+      value: month,
+    }));
+  }, [dataSource]);
+
+  const columns: ColumnType<OptionPnCData>[] = [
+    {
+      title: (
+        <div>
+          名称
+          <br />
+          代码
+        </div>
+      ),
+      dataIndex: 'code',
+      key: 'code',
+      fixed: 'left',
+      align: 'center',
+      filters,
+      onFilter: (value, r) => value === r.code.substring(2, 6),
+      render: (code, r) => (
+        <>
+          <div>{r.name}</div>
+          <div style={{ color: '#f00' }}>{code}</div>
+        </>
+      ),
+    },
+    ...baseColumns,
+  ];
+
   useEffect(() => {
     const monthDealDates = filterDealDates(opCodes, featureDealDates);
     if (monthDealDates && Array.isArray(stockInfos) && stockInfos.length) {
@@ -201,8 +212,12 @@ const IndexOpTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 100</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>年化打折率 = 日均打折 / 100 / 股指点数 * 365。用于跨品种对比打折程度</li>
-          <li>万元卖购 = 认购期权当前价 / 行权价 * 10000。用于跨品种对比权利金收益</li>
+          <li>
+            年化打折率 = 日均打折 / 100 / 股指点数 * 365。用于跨品种对比打折程度
+          </li>
+          <li>
+            万元卖购 = 认购期权当前价 / 行权价 * 10000。用于跨品种对比权利金收益
+          </li>
         </ul>
       </Text>
     </>

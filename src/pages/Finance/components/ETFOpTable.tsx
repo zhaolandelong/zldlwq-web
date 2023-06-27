@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
 import type { StockInfo, OptionPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
@@ -8,26 +8,7 @@ import { fetchEtfOpPrimaryDatas } from '../services';
 
 const { Title, Text } = Typography;
 
-const columns: ColumnType<OptionPnCData>[] = [
-  {
-    title: (
-      <div>
-        ETF期权
-        <br />
-        月份
-      </div>
-    ),
-    dataIndex: 'name',
-    key: 'name',
-    fixed: 'left',
-    align: 'center',
-    render: (name, r) => (
-      <>
-        <div>{name}</div>
-        <div style={{ color: '#f00' }}>{r.month}</div>
-      </>
-    ),
-  },
+const baseColumns: ColumnType<OptionPnCData>[] = [
   {
     title: (
       <div>
@@ -132,6 +113,39 @@ const ETFOpTable: React.FC<{
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
+  const filters = useMemo(() => {
+    const months = Array.from(new Set(dataSource.map((info) => info.month)));
+    return months.map((month) => ({
+      text: month,
+      value: month,
+    }));
+  }, [dataSource]);
+
+  const columns: ColumnType<OptionPnCData>[] = [
+    {
+      title: (
+        <div>
+          名称
+          <br />
+          月份
+        </div>
+      ),
+      dataIndex: 'name',
+      key: 'name',
+      fixed: 'left',
+      align: 'center',
+      filters,
+      onFilter: (value, r) => value === r.month,
+      render: (name, r) => (
+        <>
+          <div>{name}</div>
+          <div style={{ color: '#f00' }}>{r.month}</div>
+        </>
+      ),
+    },
+    ...baseColumns,
+  ];
+
   useEffect(() => {
     if (Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
@@ -174,8 +188,12 @@ const ETFOpTable: React.FC<{
         <ul>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 10000</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
-          <li>打折率 = 日均打折 / 10000 / 现价 * 365。用于跨品种对比打折程度</li>
-          <li>万元卖购 = 认购期权当前价 / 行权价 * 10000。用于跨品种对比权利金收益</li>
+          <li>
+            打折率 = 日均打折 / 10000 / 现价 * 365。用于跨品种对比打折程度
+          </li>
+          <li>
+            万元卖购 = 认购期权当前价 / 行权价 * 10000。用于跨品种对比权利金收益
+          </li>
         </ul>
       </Text>
     </>
