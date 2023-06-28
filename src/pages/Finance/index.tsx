@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import { FloatButton, Typography, Col, Row } from 'antd';
+import ga from 'react-ga';
 import { fetchFeatureDealDates, fetchOpDealDate } from './services';
 import IndexETFTable from './components/IndexETFTable';
 import ETFOpTable from './components/ETFOpTable';
@@ -59,6 +60,11 @@ const Finance: React.FC = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vals));
   };
 
+  const handleRefresh = () => {
+    ga.event({ category: 'Event', action: 'Click', label: 'Refresh' });
+    setfetchTime(moment().format('HH:mm:ss'));
+  };
+
   return (
     <>
       <Title level={4}>
@@ -78,7 +84,7 @@ const Finance: React.FC = () => {
         type="primary"
         shape="square"
         style={{ width: 60, bottom: 20 }}
-        onClick={() => setfetchTime(moment().format('HH:mm:ss'))}
+        onClick={handleRefresh}
       />
       <Row gutter={16}>
         <Col span={24} md={12}>

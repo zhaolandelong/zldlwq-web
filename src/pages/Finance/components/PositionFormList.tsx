@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { EditableProTable, type ProColumns } from '@ant-design/pro-components';
 import { Button, Typography } from 'antd';
+import ga from 'react-ga';
 import { InvestBaseInfo } from '../types';
-import { DEFAULT_INVEST_INFOS, ETF_INFOS } from '../constants';
+import { ETF_INFOS } from '../constants';
 
 const { Title } = Typography;
 
@@ -91,6 +92,11 @@ const PositionFormList: React.FC<{
             <Button
               key="reset"
               onClick={() => {
+                ga.event({
+                  category: 'Event',
+                  action: 'Click',
+                  label: 'Clear',
+                });
                 setDataSource([]);
               }}
             >
@@ -100,6 +106,7 @@ const PositionFormList: React.FC<{
               key="save"
               type="primary"
               onClick={() => {
+                ga.event({ category: 'Event', action: 'Click', label: 'Save' });
                 onChange(dataSource as InvestBaseInfo[]);
               }}
             >

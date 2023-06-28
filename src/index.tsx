@@ -6,6 +6,9 @@ import 'antd/dist/reset.css';
 import reportWebVitals from './reportWebVitals';
 import routes from './routes';
 import { Layout, Menu } from 'antd';
+import ga from 'react-ga';
+
+ga.initialize('G-CZMZ5085E4');
 
 const { Header, Footer, Content } = Layout;
 
