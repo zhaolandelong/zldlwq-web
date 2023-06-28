@@ -96,9 +96,9 @@ const baseColumns: ColumnType<OptionPnCData>[] = [
   {
     title: (
       <div>
-        万元卖购
+        1手卖购
         <br />
-        单日卖购
+        日均
       </div>
     ),
     dataIndex: 'currPriceC',
@@ -106,9 +106,29 @@ const baseColumns: ColumnType<OptionPnCData>[] = [
     align: 'right',
     render: (price, r) => (
       <>
-        <div>¥{((price * 10000) / r.strikePrice).toFixed(2)}</div>
+        <div>¥{(price * 100).toFixed(0)}</div>
         <div style={{ color: '#f00' }}>
-          ¥{((price * 10000) / r.strikePrice / r.remainDays).toFixed(2)}
+          ¥{((price * 100) / r.remainDays).toFixed(2)}
+        </div>
+      </>
+    ),
+  },
+  {
+    title: (
+      <div>
+        1手卖沽
+        <br />
+        日均
+      </div>
+    ),
+    dataIndex: 'currPriceP',
+    key: 'currPriceP',
+    align: 'right',
+    render: (price, r) => (
+      <>
+        <div>¥{(price * 100).toFixed(0)}</div>
+        <div style={{ color: '#f00' }}>
+          ¥{((price * 100) / r.remainDays).toFixed(2)}
         </div>
       </>
     ),
@@ -201,7 +221,7 @@ const IndexOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 500 }}
+        scroll={{ x: 650 }}
         dataSource={dataSource}
         rowKey="code"
         bordered
@@ -214,9 +234,6 @@ const IndexOpTable: React.FC<{
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
           <li>
             年化打折率 = 日均打折 / 100 / 股指点数 * 365。用于跨品种对比打折程度
-          </li>
-          <li>
-            万元卖购 = 认购期权当前价 / 行权价 * 10000。用于跨品种对比权利金收益
           </li>
         </ul>
       </Text>

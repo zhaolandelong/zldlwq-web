@@ -90,13 +90,13 @@ const Finance: React.FC = () => {
       </Row>
       <ETFOpTable stockInfos={etfPriceInfos} />
       <Row gutter={16}>
-        <Col span={24} md={12}>
+        <Col span={24} lg={14}>
           <IndexOpTable
             stockInfos={indexPriceInfos}
             featureDealDates={featureDealDates}
           />
         </Col>
-        <Col span={24} md={12}>
+        <Col span={24} lg={10}>
           <IndexFeatTable
             stockInfos={indexPriceInfos}
             featureDealDates={featureDealDates}
