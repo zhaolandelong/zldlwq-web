@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { EditableProTable, type ProColumns } from '@ant-design/pro-components';
 import { Button, Typography } from 'antd';
 import { InvestBaseInfo } from '../types';
-import { ETF_INFOS } from '../constants';
+import { DEFAULT_INVEST_INFOS, ETF_INFOS } from '../constants';
 
 const { Title } = Typography;
 
@@ -11,6 +11,9 @@ const columns: ProColumns<InvestBaseInfo>[] = [
     title: 'ETF',
     dataIndex: 'sCode',
     valueType: 'select',
+    fieldProps: {
+      allowClear: false,
+    },
     valueEnum: ETF_INFOS.reduce((acc, item) => {
       acc[item.sCode] = item.name;
       return acc;
@@ -80,6 +83,14 @@ const PositionFormList: React.FC<{
         }}
         toolBarRender={() => {
           return [
+            <Button
+              key="reset"
+              onClick={() => {
+                setDataSource([]);
+              }}
+            >
+              清空
+            </Button>,
             <Button
               key="save"
               type="primary"
