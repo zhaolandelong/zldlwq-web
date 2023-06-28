@@ -110,7 +110,7 @@ const columns: ColumnType<Record>[] = [
   },
 ];
 
-const dataSource = etfInfos.map(({ name, code, price }) => ({
+export const ADDITION_DATA = etfInfos.map(({ name, code, price }) => ({
   name: name,
   code: code,
   price,
@@ -129,7 +129,7 @@ const AdditionTable: React.FC = () => {
       <Text type="warning">注意：以下内容只是基于个人理解，仅供参考。</Text>
       <Table
         columns={columns}
-        dataSource={dataSource}
+        dataSource={ADDITION_DATA}
         rowKey="code"
         pagination={false}
         scroll={{ x: 700 }}

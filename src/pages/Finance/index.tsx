@@ -9,11 +9,14 @@ import PositionTable from './components/PositionTable';
 import IndexOpTable from './components/IndexOpTable';
 import IndexFeatTable from './components/IndexFeatTable';
 import PositionFormList from './components/PositionFormList';
+import SellOpETFTable from './components/SellOpETFTable';
+import PayArticle from '../../components/PayArticle';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
-import { DealDate, InvestBaseInfo, ProdDealDateKV } from './types';
-import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
-import PayArticle from '../../components/PayArticle';
+import useFetchPosition from './hooks/useFetchPosition';
+import { DealDate, InvestBaseInfo, ProdDealDateKV, StockInfo } from './types';
+import { DEFAULT_INVEST_INFOS, ETF_INFOS, STORAGE_KEY } from './constants';
+import { ADDITION_DATA } from '../Rules/AdditionTable';
 
 const { Title, Text } = Typography;
 
@@ -35,6 +38,36 @@ const Finance: React.FC = () => {
 
   const etfPriceInfos = useEtfPriceInfos(fetchTime);
   const indexPriceInfos = useIndexPriceInfos(fetchTime);
+  const { loading: posLoading, dataSource: posData } = useFetchPosition(
+    investInfos,
+    etfPriceInfos
+  );
+  const sellCallStokInfos: StockInfo[] = useMemo(() => {
+    return posData.map((data) => {
+      const base = ETF_INFOS.find(
+        ({ sCode }) => data.sCode === sCode
+      ) as unknown as StockInfo;
+      return {
+        ...base,
+        price: data.avgCost * (1 + data.actualReturnRate / 100),
+      };
+    });
+  }, [posData]);
+
+  const sellPutStokInfos: StockInfo[] = useMemo(() => {
+    return posData.map((data) => {
+      const base = ETF_INFOS.find(
+        ({ sCode }) => data.sCode === sCode
+      ) as unknown as StockInfo;
+      const price = (
+        ADDITION_DATA.find(({ code }) => base.code === code) as any
+      )[`p${data.additionTime + 1}`];
+      return {
+        ...base,
+        price,
+      };
+    });
+  }, [posData]);
 
   const firstFeature = useMemo(() => {
     if (typeof featureDealDates === 'undefined') return void 0;
@@ -109,17 +142,24 @@ const Finance: React.FC = () => {
           />
         </Col>
       </Row>
-      <PayArticle />
-      <PositionTable investInfos={investInfos} eftPriceInfos={etfPriceInfos} />
       <Row gutter={16}>
+        <Col span={24} lg={8}>
+          <PayArticle />
+        </Col>
         <Col span={24} lg={16}>
           <PositionFormList
             defaultValues={defaultInvestInfos}
             onChange={handleInvestChange}
           />
         </Col>
-        <Col span={24} lg={8}>
-          <PayArticle />
+      </Row>
+      <PositionTable loading={posLoading} dataSource={posData} />
+      <Row gutter={16}>
+        <Col span={24} md={12}>
+          <SellOpETFTable type="C" stockInfos={sellCallStokInfos} />
+        </Col>
+        <Col span={24} md={12}>
+          <SellOpETFTable type="P" stockInfos={sellPutStokInfos} />
         </Col>
       </Row>
     </>

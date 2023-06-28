@@ -46,6 +46,11 @@ const columns: ProColumns<InvestBaseInfo>[] = [
     }),
   },
   {
+    title: '已加仓次数',
+    dataIndex: 'additionTime',
+    valueType: 'digit',
+  },
+  {
     title: '操作',
     width: 50,
     valueType: 'option',
@@ -79,13 +84,13 @@ const PositionFormList: React.FC<{
 
   return (
     <>
-      <Title level={2}>参数</Title>
+      <Title level={2}>参数设置</Title>
       <EditableProTable<InvestBaseInfo>
         rowKey="id"
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
-          x: 570,
+          x: 600,
         }}
         toolBarRender={() => {
           return [
@@ -123,6 +128,7 @@ const PositionFormList: React.FC<{
             monthlyAmount: 25000,
             expectedReturnRate: 10,
             additionMutiple: 3,
+            additionTime: 0,
           }),
         }}
         columns={columns}

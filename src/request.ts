@@ -3,7 +3,8 @@ import jsonp from 'jsonp';
 import ls from 'localstorage-slim';
 
 const shouldUseStorage = true;
-const isDev = window.location.hostname === 'localhost';
+// const isDev = window.location.hostname === 'localhost';
+const isDev = false;
 const caches: Record<string, any> = {};
 const cachedPromise: Record<string, Promise<any>> = {};
 

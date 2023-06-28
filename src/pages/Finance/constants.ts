@@ -87,6 +87,7 @@ export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
     monthlyAmount: 25000,
     expectedReturnRate: 10,
     additionMutiple: 3,
+    additionTime: 0,
   },
   {
     sCode: 'sz159915',
@@ -94,5 +95,6 @@ export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
     monthlyAmount: 25000,
     expectedReturnRate: 15,
     additionMutiple: 3,
+    additionTime: 0,
   },
 ];

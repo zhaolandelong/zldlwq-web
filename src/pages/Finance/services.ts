@@ -177,6 +177,7 @@ const etfOpCodePrimaryIndexCache: {
   month: string;
   upIndex: number;
   downIndex: number;
+  price: number;
 }[] = [];
 
 const setEtfOpCodePrimaryIndexCache = (
@@ -184,15 +185,22 @@ const setEtfOpCodePrimaryIndexCache = (
 ) => {
   if (
     etfOpCodePrimaryIndexCache.findIndex(
-      (x) => x.code === data.code && x.month === data.month
+      (x) =>
+        x.code === data.code && x.month === data.month && x.price === data.price
     ) === -1
   ) {
     etfOpCodePrimaryIndexCache.push(data);
   }
 };
 
-const getEtfOpCodePrimaryIndexCache = (code: string, month: string) =>
-  etfOpCodePrimaryIndexCache.find((x) => x.code === code && x.month === month);
+const getEtfOpCodePrimaryIndexCache = (
+  code: string,
+  month: string,
+  price: number
+) =>
+  etfOpCodePrimaryIndexCache.find(
+    (x) => x.code === code && x.month === month && x.price === price
+  );
 
 const formatEtfOpPrimaryData = (data: {
   code: string;
@@ -220,9 +228,13 @@ const formatEtfOpPrimaryData = (data: {
 
 const getCachedOpQuery = (codeMonthArr: Array<StockInfo & { month: string }>) =>
   codeMonthArr
-    .map(({ code, month }) => {
+    .map(({ code, month, price }) => {
       const opQuery = opQueryCache[code + month];
-      const primaryIndexData = getEtfOpCodePrimaryIndexCache(code, month);
+      const primaryIndexData = getEtfOpCodePrimaryIndexCache(
+        code,
+        month,
+        price
+      );
       if (!primaryIndexData) return '';
       return (
         opQuery.opUpQuery.split(',')[primaryIndexData.upIndex] +
@@ -235,7 +247,8 @@ const getCachedOpQuery = (codeMonthArr: Array<StockInfo & { month: string }>) =>
 const getPrimaryIndex = (
   opUpDatas: OptionNestData[],
   opDownDatas: OptionNestData[],
-  price: number | string
+  price: number | string,
+  code: string
 ) => {
   let primaryUpIndex = 0;
   let primaryDownIndex = 0;
@@ -261,7 +274,7 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
   const cachedCodeMonthArr: Array<StockInfo & { month: string }> = [];
   const codeMonthArr: Array<StockInfo & { month: string }> = [];
   months.forEach((month) => {
-    if (getEtfOpCodePrimaryIndexCache(etfInfo.code, month)) {
+    if (getEtfOpCodePrimaryIndexCache(etfInfo.code, month, etfInfo.price)) {
       cachedCodeMonthArr.push({ ...etfInfo, month });
     } else {
       codeMonthArr.push({ ...etfInfo, month });
@@ -291,13 +304,15 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
           const { primaryUpIndex, primaryDownIndex } = getPrimaryIndex(
             opUpDatas,
             opDownDatas,
-            price
+            price,
+            code
           );
           setEtfOpCodePrimaryIndexCache({
             code,
             month,
             upIndex: primaryUpIndex,
             downIndex: primaryDownIndex,
+            price,
           });
           return formatEtfOpPrimaryData({
             code,
