@@ -16,7 +16,6 @@ import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import useFetchPosition from './hooks/useFetchPosition';
 import { DealDate, InvestBaseInfo, ProdDealDateKV, StockInfo } from './types';
 import { DEFAULT_INVEST_INFOS, ETF_INFOS, STORAGE_KEY } from './constants';
-import { ADDITION_DATA } from '../Rules/AdditionTable';
 
 const { Title, Text } = Typography;
 
@@ -59,12 +58,9 @@ const Finance: React.FC = () => {
       const base = ETF_INFOS.find(
         ({ sCode }) => data.sCode === sCode
       ) as unknown as StockInfo;
-      const price = (
-        ADDITION_DATA.find(({ code }) => base.code === code) as any
-      )[`p${data.additionTime + 1}`];
       return {
         ...base,
-        price,
+        price: data.additionPrice,
       };
     });
   }, [posData]);

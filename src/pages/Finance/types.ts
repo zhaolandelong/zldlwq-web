@@ -76,4 +76,5 @@ export interface ETFPosInfo extends InvestBaseInfo {
   fixedEtfCount: number;
   additionOpCount: number;
   additionEtfCount: number;
+  additionPrice: number;
 }

@@ -72,7 +72,7 @@ const SellOpETFTable: React.FC<{
     {
       title: (
         <div>
-          1手卖购
+          1手权利金
           <br />
           日均
         </div>

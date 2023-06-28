@@ -3,6 +3,7 @@ import type { ETFPosInfo, InvestBaseInfo, StockInfo } from '../types';
 import { fetchAvgPrice, fetchAvgPrice2 } from '../services';
 import moment from 'moment';
 import { getAnualReturnRate, getEtfOpCount } from '../utils';
+import { ADDITION_DATA } from '../../Rules/AdditionTable';
 
 const fetchAndFormatPosData = (
   investInfos: InvestBaseInfo[],
@@ -30,6 +31,11 @@ const fetchAndFormatPosData = (
         info.monthlyAmount * info.additionMutiple,
         price
       );
+      const additionPrice = (
+        ADDITION_DATA.find(
+          ({ code }) => info.sCode.substring(2) === code
+        ) as any
+      )[`p${info.additionTime + 1}`];
       const result: ETFPosInfo = {
         ...info,
         name,
@@ -42,6 +48,7 @@ const fetchAndFormatPosData = (
         fixedEtfCount: monthlyCount.etfCount,
         additionOpCount: additionCount.optionCount,
         additionEtfCount: additionCount.etfCount,
+        additionPrice,
       };
       return result;
     })

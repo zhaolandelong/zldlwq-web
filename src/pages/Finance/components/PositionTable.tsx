@@ -68,17 +68,17 @@ const columns: ColumnType<ETFPosInfo>[] = [
   {
     title: (
       <div>
-        已加仓次数
+        加仓价格
         <br />
-        加仓倍数
+        加仓次数
       </div>
     ),
     key: 'additionTime',
     align: 'center',
     render: (_, r) => (
       <>
-        <div>{r.additionTime}次</div>
-        <div style={{ color: '#f00' }}>{r.additionMutiple}倍</div>
+        <div>¥{r.additionPrice.toFixed(3)}</div>
+        <div style={{ color: '#f00' }}>{r.additionTime}次</div>
       </>
     ),
   },
@@ -140,6 +140,9 @@ const PositionTable: React.FC<{
         <li>
           精算成本：根据月定投额和每月开盘价，算出每月买入份数；求和（每月份数 *
           每月开盘价）；求和（每月买入分数）；二者相除
+        </li>
+        <li>
+          加仓价格：想知道怎么算的？去彩蛋里看看吧
         </li>
       </ul>
     </Text>
