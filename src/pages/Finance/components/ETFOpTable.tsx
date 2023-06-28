@@ -10,31 +10,20 @@ const { Title, Text } = Typography;
 
 const baseColumns: ColumnType<OptionPnCData>[] = [
   {
-    title: (
-      <div>
-        日均打折
-        <br />
-        打折率
-      </div>
-    ),
+    title: '打折率',
     align: 'right',
     width: 95,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
       (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
     render: (text, r) => (
-      <>
-        <div>
-          ¥{(((r.timeValueP - r.timeValueC) * 10000) / r.remainDays).toFixed(2)}
-        </div>
-        <div style={{ color: '#f00' }}>
-          {(
-            ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
-            36500
-          ).toFixed(2)}
-          %
-        </div>
-      </>
+      <div style={{ color: '#f00' }}>
+        {(
+          ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
+          36500
+        ).toFixed(2)}
+        %
+      </div>
     ),
   },
   {
@@ -42,14 +31,16 @@ const baseColumns: ColumnType<OptionPnCData>[] = [
       <div>
         1手打折
         <br />
-        剩余天数
+        日均打折
       </div>
     ),
     align: 'right',
     render: (text, r) => (
       <>
         <div>¥{((r.timeValueP - r.timeValueC) * 10000).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>{r.remainDays}天</div>
+        <div style={{ color: '#f00' }}>
+          ¥{(((r.timeValueP - r.timeValueC) * 10000) / r.remainDays).toFixed(2)}
+        </div>
       </>
     ),
   },
@@ -80,46 +71,6 @@ const baseColumns: ColumnType<OptionPnCData>[] = [
       <>
         <div>¥{price.toFixed(4)}</div>
         <div style={{ color: '#f00' }}>¥{r.timeValueC.toFixed(4)}</div>
-      </>
-    ),
-  },
-  {
-    title: (
-      <div>
-        1手卖购
-        <br />
-        日均
-      </div>
-    ),
-    dataIndex: 'currPriceC',
-    key: 'currPriceC',
-    align: 'right',
-    render: (price, r) => (
-      <>
-        <div>¥{(price * 10000).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{((price * 10000) / r.remainDays).toFixed(2)}
-        </div>
-      </>
-    ),
-  },
-  {
-    title: (
-      <div>
-        1手卖沽
-        <br />
-        日均
-      </div>
-    ),
-    dataIndex: 'currPriceP',
-    key: 'currPriceP',
-    align: 'right',
-    render: (price, r) => (
-      <>
-        <div>¥{(price * 10000).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{((price * 10000) / r.remainDays).toFixed(2)}
-        </div>
       </>
     ),
   },
@@ -159,7 +110,9 @@ const ETFOpTable: React.FC<{
       render: (name, r) => (
         <>
           <div>{name}</div>
-          <div style={{ color: '#f00' }}>{r.month}</div>
+          <div style={{ color: '#f00' }}>
+            {r.month}({r.remainDays}天)
+          </div>
         </>
       ),
     },
@@ -197,7 +150,7 @@ const ETFOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 650 }}
+        scroll={{ x: 500 }}
         dataSource={dataSource}
         rowKey={(r) => `${r.code}-${r.month}-${r.strikePrice}`}
         loading={loading}

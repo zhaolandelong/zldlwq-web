@@ -129,7 +129,7 @@ const PositionTable: React.FC<{
       columns={columns}
       dataSource={props.dataSource}
       rowKey="sCode"
-      scroll={{ x: 620 }}
+      scroll={{ x: 750 }}
       loading={props.loading}
       bordered
       pagination={false}

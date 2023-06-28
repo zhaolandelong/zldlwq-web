@@ -93,46 +93,6 @@ const baseColumns: ColumnType<OptionPnCData>[] = [
       </>
     ),
   },
-  {
-    title: (
-      <div>
-        1手卖购
-        <br />
-        日均
-      </div>
-    ),
-    dataIndex: 'currPriceC',
-    key: 'currPriceC',
-    align: 'right',
-    render: (price, r) => (
-      <>
-        <div>¥{(price * 100).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{((price * 100) / r.remainDays).toFixed(2)}
-        </div>
-      </>
-    ),
-  },
-  {
-    title: (
-      <div>
-        1手卖沽
-        <br />
-        日均
-      </div>
-    ),
-    dataIndex: 'currPriceP',
-    key: 'currPriceP',
-    align: 'right',
-    render: (price, r) => (
-      <>
-        <div>¥{(price * 100).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{((price * 100) / r.remainDays).toFixed(2)}
-        </div>
-      </>
-    ),
-  },
 ];
 
 const opCodes = INDEX_OP_INFOS.map((info) => info.op);
@@ -221,7 +181,7 @@ const IndexOpTable: React.FC<{
       <Table
         size="small"
         columns={columns}
-        scroll={{ x: 650 }}
+        scroll={{ x: 450 }}
         dataSource={dataSource}
         rowKey="code"
         bordered

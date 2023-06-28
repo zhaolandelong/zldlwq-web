@@ -45,7 +45,9 @@ const SellOpETFTable: React.FC<{
       render: (name, r) => (
         <>
           <div>{name}</div>
-          <div style={{ color: '#f00' }}>{r.month}</div>
+          <div style={{ color: '#f00' }}>
+            {r.month}({r.remainDays}天)
+          </div>
         </>
       ),
     },
@@ -80,9 +82,7 @@ const SellOpETFTable: React.FC<{
       align: 'right',
       render: (price, r) => (
         <>
-          <div>
-            ¥{(price * 10000).toFixed(0)}/{r.remainDays}天
-          </div>
+          <div>¥{(price * 10000).toFixed(0)}</div>
           <div style={{ color: '#f00' }}>
             ¥{((price * 10000) / r.remainDays).toFixed(2)}
           </div>
