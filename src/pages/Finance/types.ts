@@ -63,6 +63,7 @@ export interface InvestBaseInfo {
   monthlyAmount: number;
   additionMutiple: number;
   additionTime: number;
+  etfCount: number;
 }
 
 export interface ETFPosInfo extends InvestBaseInfo {

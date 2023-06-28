@@ -129,6 +129,7 @@ const PositionFormList: React.FC<{
             expectedReturnRate: 10,
             additionMutiple: 3,
             additionTime: 0,
+            etfCount: 0,
           }),
         }}
         columns={columns}

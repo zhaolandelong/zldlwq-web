@@ -78,7 +78,7 @@ export const INDEX_INFOS: IndexInfo[] = [
 
 export const DEFAULT_CODES = ['510300', '159915', '000300'];
 
-export const STORAGE_KEY = '1to10-local-storage';
+export const STORAGE_KEY = '1to10-local-storage-1';
 
 export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
   {
@@ -88,6 +88,7 @@ export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
     expectedReturnRate: 10,
     additionMutiple: 3,
     additionTime: 0,
+    etfCount: 0,
   },
   {
     sCode: 'sz159915',
@@ -96,5 +97,6 @@ export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
     expectedReturnRate: 15,
     additionMutiple: 3,
     additionTime: 0,
+    etfCount: 0,
   },
 ];
