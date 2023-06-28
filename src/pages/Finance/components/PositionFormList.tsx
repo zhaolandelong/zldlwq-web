@@ -53,9 +53,6 @@ const PositionFormList: React.FC<{
   onChange: (values: InvestBaseInfo[]) => void;
 }> = (props) => {
   const { defaultValues, onChange } = props;
-  const [editableKeys, setEditableRowKeys] = useState<React.Key[]>(
-    defaultValues.map((item) => item.sCode)
-  );
   const [dataSource, setDataSource] = useState<readonly InvestBaseInfo[]>(
     () => defaultValues
   );
@@ -109,11 +106,10 @@ const PositionFormList: React.FC<{
         onChange={setDataSource}
         editable={{
           type: 'multiple',
-          editableKeys,
+          editableKeys: ETF_INFOS.map(({ sCode }) => sCode),
           actionRender: (row, config, defaultDoms) => {
             return [defaultDoms.delete];
           },
-          onChange: setEditableRowKeys,
           onValuesChange: (record, recordList) => {
             setDataSource(recordList);
           },
