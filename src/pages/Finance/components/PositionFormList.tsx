@@ -56,8 +56,13 @@ const PositionFormList: React.FC<{
   onChange: (values: InvestBaseInfo[]) => void;
 }> = (props) => {
   const { defaultValues, onChange } = props;
-  const [dataSource, setDataSource] = useState<readonly InvestBaseInfo[]>(
-    () => defaultValues
+  const [dataSource, setDataSource] = useState<readonly InvestBaseInfo[]>(() =>
+    defaultValues.map((val, i) => {
+      if (!val.id) {
+        val.id = String(Date.now() + i);
+      }
+      return val;
+    })
   );
 
   const getOtherKey = () => {
@@ -75,7 +80,7 @@ const PositionFormList: React.FC<{
     <>
       <Title level={2}>参数</Title>
       <EditableProTable<InvestBaseInfo>
-        rowKey="sCode"
+        rowKey="id"
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
@@ -105,6 +110,7 @@ const PositionFormList: React.FC<{
         recordCreatorProps={{
           newRecordType: 'dataSource',
           record: () => ({
+            id: String(Date.now()),
             sCode: getOtherKey(),
             startDate: '2021-11-01',
             monthlyAmount: 25000,
@@ -117,7 +123,7 @@ const PositionFormList: React.FC<{
         onChange={setDataSource}
         editable={{
           type: 'multiple',
-          editableKeys: ETF_INFOS.map(({ sCode }) => sCode),
+          editableKeys: dataSource.map(({ id }) => id as string),
           actionRender: (row, config, defaultDoms) => {
             return [defaultDoms.delete];
           },

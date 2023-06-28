@@ -56,6 +56,7 @@ export interface FeatureData extends Required<IndexInfo> {
 }
 
 export interface InvestBaseInfo {
+  id?: string;
   sCode: string;
   startDate: string;
   expectedReturnRate: number;
