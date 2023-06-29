@@ -250,8 +250,8 @@ const getPrimaryIndex = (
   price: number | string,
   code: string
 ) => {
-  let primaryUpIndex = 0;
-  let primaryDownIndex = 0;
+  let primaryUpIndex = -1;
+  let primaryDownIndex = -1;
   let abs = Infinity;
   opUpDatas.forEach((upData, index) => {
     const _abs = Math.abs(upData.strikePrice - Number(price));
@@ -297,7 +297,8 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
     );
   });
 
-  const result: OptionPnCData[] = await Promise.all(
+  const result: OptionPnCData[] = [];
+  await Promise.all(
     codeMonthArr.map(({ code, month, name, price }) =>
       fetchEtfOpByMonth({ code, yearMonth: month }).then(
         ({ opUpDatas = [], opDownDatas = [] }) => {
@@ -307,21 +308,25 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
             price,
             code
           );
-          setEtfOpCodePrimaryIndexCache({
-            code,
-            month,
-            upIndex: primaryUpIndex,
-            downIndex: primaryDownIndex,
-            price,
-          });
-          return formatEtfOpPrimaryData({
-            code,
-            name,
-            month,
-            stockPrice: price,
-            primaryUp: opUpDatas[primaryUpIndex],
-            primaryDown: opDownDatas[primaryDownIndex],
-          });
+          if (primaryUpIndex > -1 && primaryDownIndex > -1) {
+            setEtfOpCodePrimaryIndexCache({
+              code,
+              month,
+              upIndex: primaryUpIndex,
+              downIndex: primaryDownIndex,
+              price,
+            });
+            result.push(
+              formatEtfOpPrimaryData({
+                code,
+                name,
+                month,
+                stockPrice: price,
+                primaryUp: opUpDatas[primaryUpIndex],
+                primaryDown: opDownDatas[primaryDownIndex],
+              })
+            );
+          }
         }
       )
     )

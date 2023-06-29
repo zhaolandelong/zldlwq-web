@@ -73,9 +73,5 @@ export interface ETFPosInfo extends InvestBaseInfo {
   avgCost2: number; // 平均成本2 - 较精确计算，总投入 / 总持仓
   actualReturnRate: number; // 实际年化收益率
   price: number;
-  fixedOpCount: number;
-  fixedEtfCount: number;
-  additionOpCount: number;
-  additionEtfCount: number;
   additionPrice: number;
 }

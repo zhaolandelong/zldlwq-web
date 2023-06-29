@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { ETFPosInfo, InvestBaseInfo, StockInfo } from '../types';
 import { fetchAvgPrice, fetchAvgPrice2 } from '../services';
 import moment from 'moment';
-import { getAnualReturnRate, getEtfOpCount } from '../utils';
+import { getAnualReturnRate } from '../utils';
 import { ADDITION_DATA } from '../../Rules/AdditionTable';
 
 const fetchAndFormatPosData = (
@@ -26,11 +26,6 @@ const fetchAndFormatPosData = (
       const { price = 0, name = info.sCode } =
         eftPriceInfos.find((item) => item.sCode === info.sCode) ?? {};
       const avgPrices = avgPricesArr[index];
-      const monthlyCount = getEtfOpCount(info.monthlyAmount, price);
-      const additionCount = getEtfOpCount(
-        info.monthlyAmount * info.additionMutiple,
-        price
-      );
       const additionPrice = (
         ADDITION_DATA.find(
           ({ code }) => info.sCode.substring(2) === code
@@ -44,10 +39,6 @@ const fetchAndFormatPosData = (
         avgCost2: avgPrices[1],
         actualReturnRate,
         price,
-        fixedOpCount: monthlyCount.optionCount,
-        fixedEtfCount: monthlyCount.etfCount,
-        additionOpCount: additionCount.optionCount,
-        additionEtfCount: additionCount.etfCount,
         additionPrice,
       };
       return result;

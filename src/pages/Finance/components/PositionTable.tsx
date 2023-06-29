@@ -2,6 +2,7 @@ import React from 'react';
 import { Table, Typography } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ETFPosInfo } from '../types';
+import { getEtfOpCount } from '../utils';
 
 const { Title, Text } = Typography;
 
@@ -51,19 +52,21 @@ const columns: ColumnType<ETFPosInfo>[] = [
   },
   {
     title: '定投期权/ETF',
-    dataIndex: 'fixedOpCount',
     key: 'fixedOpCount',
     width: 140,
-    render: (count, r) => (
-      <>
-        <div>
-          {count} OP/{r.fixedEtfCount} ETF
-        </div>
-        <div style={{ color: '#f00' }}>
-          {count + 1} OP/{r.fixedEtfCount - 10000} ETF
-        </div>
-      </>
-    ),
+    render: (_, r) => {
+      const { optionCount, etfCount } = getEtfOpCount(r.monthlyAmount, r.price);
+      return (
+        <>
+          <div>
+            {optionCount} OP/{etfCount} ETF
+          </div>
+          <div style={{ color: '#f00' }}>
+            {optionCount + 1} OP/{etfCount - 10000} ETF
+          </div>
+        </>
+      );
+    },
   },
   {
     title: (
@@ -84,19 +87,24 @@ const columns: ColumnType<ETFPosInfo>[] = [
   },
   {
     title: '加仓期权/ETF',
-    dataIndex: 'additionOpCount',
     key: 'additionOpCount',
     width: 140,
-    render: (count, r) => (
-      <>
-        <div>
-          {count} OP/{r.additionEtfCount} ETF
-        </div>
-        <div style={{ color: '#f00' }}>
-          {count + 1} OP/{r.additionEtfCount - 10000} ETF
-        </div>
-      </>
-    ),
+    render: (_, r) => {
+      const { optionCount, etfCount } = getEtfOpCount(
+        r.monthlyAmount * r.additionMutiple,
+        r.additionPrice
+      );
+      return (
+        <>
+          <div>
+            {optionCount} OP/{etfCount} ETF
+          </div>
+          <div style={{ color: '#f00' }}>
+            {optionCount + 1} OP/{etfCount - 10000} ETF
+          </div>
+        </>
+      );
+    },
   },
   {
     title: (
@@ -142,7 +150,7 @@ const PositionTable: React.FC<{
           每月开盘价）；求和（每月买入分数）；二者相除
         </li>
         <li>
-          加仓价格：想知道怎么算的？去彩蛋里看看吧
+          加仓价格：<Text mark>想知道怎么算的？去彩蛋里看看吧</Text>
         </li>
       </ul>
     </Text>
