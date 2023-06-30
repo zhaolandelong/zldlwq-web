@@ -40,7 +40,6 @@ export const filterDealDates = (
 };
 
 export const calculateEtfOpMargin = (
-  etfPrice: number,
   settlePrice: number,
   lastClosePrice: number,
   strikePrice: number,

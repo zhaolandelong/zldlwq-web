@@ -51,7 +51,7 @@ const Finance: React.FC = () => {
         price: data.avgCost * (1 + data.actualReturnRate / 100),
       };
     });
-  }, [posData]);
+  }, [posData, etfPriceInfos]);
 
   const sellPutStokInfos: StockInfo[] = useMemo(() => {
     return posData.map((data) => {
@@ -63,7 +63,7 @@ const Finance: React.FC = () => {
         price: data.additionPrice,
       };
     });
-  }, [posData]);
+  }, [etfPriceInfos, posData]);
 
   const firstFeature = useMemo(() => {
     if (typeof featureDealDates === 'undefined') return void 0;

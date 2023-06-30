@@ -128,7 +128,7 @@ const PositionFormList: React.FC<{
             monthlyAmount: 25000,
             expectedReturnRate: 10,
             additionMutiple: 3,
-            additionTime: 0,
+            additionTime: 2,
             etfCount: 0,
           }),
         }}

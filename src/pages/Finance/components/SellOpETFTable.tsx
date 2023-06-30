@@ -123,7 +123,6 @@ const SellOpETFTable: React.FC<{
           <div>
             ¥
             {calculateEtfOpMargin(
-              r.stockPrice,
               type === 'C' ? r.settlePriceC : r.settlePriceP,
               r.stockLastClosePrice,
               r.strikePrice,
@@ -134,7 +133,6 @@ const SellOpETFTable: React.FC<{
             {(
               (price * 365000000) /
               calculateEtfOpMargin(
-                r.stockPrice,
                 type === 'C' ? r.settlePriceC : r.settlePriceP,
                 r.stockLastClosePrice,
                 r.strikePrice,
