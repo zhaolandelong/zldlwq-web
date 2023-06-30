@@ -2,8 +2,10 @@ import moment from 'moment';
 import type {
   DealDate,
   StockInfo,
-  OptionNestData,
-  OptionPnCData,
+  IndexOpNestData,
+  IndexOpPnCData,
+  EtfOpNestData,
+  EtfOpPnCData,
 } from './types';
 import { jsonpPromise, axiosGet } from '../../request';
 
@@ -88,7 +90,7 @@ export const fetchOpDealDate = (
 
 export const fetchFinanceDatas = (
   opCodes: string[]
-): Promise<Pick<StockInfo, 'code' | 'price'>[]> =>
+): Promise<Pick<StockInfo, 'code' | 'price' | 'lastClosePrice'>[]> =>
   axiosGet(`https://qt.gtimg.cn/q=${opCodes.join(',')}`).then((res: string) =>
     res
       .split(';')
@@ -98,6 +100,7 @@ export const fetchFinanceDatas = (
         return {
           code: arr[2],
           price: Number(arr[3]),
+          lastClosePrice: Number(arr[4]),
         };
       })
   );
@@ -112,10 +115,12 @@ const formatOpDatas = (data: string) =>
       标的证券类型，标的股票，期权合约简称，振幅(38)，最高价，最低价，成交量，成交额，分红调整标志，昨结算价，认购认沽标志，
       到期日，剩余天数，虚实值标志，内在价值，时间价值
       */
-    const result: OptionNestData = {
+    const result: EtfOpNestData = {
       currPrice: Number(arr[2]),
       strikePrice: Number(arr[7]),
-      PorC: arr[45] as OptionNestData['PorC'],
+      lastClosePrice: Number(arr[8]),
+      settlePrice: Number(arr[44]),
+      PorC: arr[45] as EtfOpNestData['PorC'],
       dealDate: arr[46],
       remainDays: Number(arr[47]),
       innerValue: Number(arr[49]),
@@ -207,9 +212,10 @@ const formatEtfOpPrimaryData = (data: {
   name: string;
   month: string;
   stockPrice: number;
-  primaryUp: OptionNestData;
-  primaryDown: OptionNestData;
-}) => {
+  stockLastClosePrice: number;
+  primaryUp: EtfOpNestData;
+  primaryDown: EtfOpNestData;
+}): EtfOpPnCData => {
   const { primaryUp, primaryDown, ...rest } = data;
   return {
     ...rest,
@@ -223,6 +229,8 @@ const formatEtfOpPrimaryData = (data: {
     innerValueP: primaryDown.innerValue,
     timeValueC: primaryUp.timeValue,
     timeValueP: primaryDown.timeValue,
+    settlePriceC: primaryUp.settlePrice,
+    settlePriceP: primaryDown.settlePrice,
   };
 };
 
@@ -245,8 +253,8 @@ const getCachedOpQuery = (codeMonthArr: Array<StockInfo & { month: string }>) =>
     .join(',');
 
 const getPrimaryIndex = (
-  opUpDatas: OptionNestData[],
-  opDownDatas: OptionNestData[],
+  opUpDatas: IndexOpNestData[],
+  opDownDatas: IndexOpNestData[],
   price: number | string,
   code: string
 ) => {
@@ -285,21 +293,23 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
   ).then((res) => {
     const arr = formatOpDatas(res);
     let index = -1;
-    return cachedCodeMonthArr.map(({ code, month, name, price }) =>
-      formatEtfOpPrimaryData({
-        code,
-        name,
-        month,
-        stockPrice: price,
-        primaryUp: arr[++index],
-        primaryDown: arr[++index],
-      })
+    return cachedCodeMonthArr.map(
+      ({ code, month, name, price, lastClosePrice }) =>
+        formatEtfOpPrimaryData({
+          code,
+          name,
+          month,
+          stockPrice: price,
+          stockLastClosePrice: lastClosePrice,
+          primaryUp: arr[++index],
+          primaryDown: arr[++index],
+        })
     );
   });
 
-  const result: OptionPnCData[] = [];
+  const result: EtfOpPnCData[] = [];
   await Promise.all(
-    codeMonthArr.map(({ code, month, name, price }) =>
+    codeMonthArr.map(({ code, month, name, price, lastClosePrice }) =>
       fetchEtfOpByMonth({ code, yearMonth: month }).then(
         ({ opUpDatas = [], opDownDatas = [] }) => {
           const { primaryUpIndex, primaryDownIndex } = getPrimaryIndex(
@@ -322,6 +332,7 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
                 name,
                 month,
                 stockPrice: price,
+                stockLastClosePrice: lastClosePrice,
                 primaryUp: opUpDatas[primaryUpIndex],
                 primaryDown: opDownDatas[primaryDownIndex],
               })
@@ -372,7 +383,7 @@ export const fetchIndexOpPrimaryDatas = async (params: {
   months.forEach((month) => {
     codeMonthArr.push({ ...indexInfo, month });
   });
-  const result: OptionPnCData[] = await Promise.all(
+  const result: IndexOpPnCData[] = await Promise.all(
     codeMonthArr.map(({ month, name, price }, i) =>
       fetchIndexOpByMonth({ op, month }).then((opArr) => {
         let primaryIndex = 0;

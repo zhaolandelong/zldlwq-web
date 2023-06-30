@@ -15,7 +15,7 @@ import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import useFetchPosition from './hooks/useFetchPosition';
 import { DealDate, InvestBaseInfo, ProdDealDateKV, StockInfo } from './types';
-import { DEFAULT_INVEST_INFOS, ETF_INFOS, STORAGE_KEY } from './constants';
+import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
 
 const { Title, Text } = Typography;
 
@@ -43,7 +43,7 @@ const Finance: React.FC = () => {
   );
   const sellCallStokInfos: StockInfo[] = useMemo(() => {
     return posData.map((data) => {
-      const base = ETF_INFOS.find(
+      const base = etfPriceInfos.find(
         ({ sCode }) => data.sCode === sCode
       ) as unknown as StockInfo;
       return {
@@ -55,7 +55,7 @@ const Finance: React.FC = () => {
 
   const sellPutStokInfos: StockInfo[] = useMemo(() => {
     return posData.map((data) => {
-      const base = ETF_INFOS.find(
+      const base = etfPriceInfos.find(
         ({ sCode }) => data.sCode === sCode
       ) as unknown as StockInfo;
       return {

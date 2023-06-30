@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { StockInfo, OptionPnCData } from '../types';
+import type { StockInfo, IndexOpPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
@@ -8,7 +8,7 @@ import { fetchEtfOpPrimaryDatas } from '../services';
 
 const { Title, Text } = Typography;
 
-const baseColumns: ColumnType<OptionPnCData>[] = [
+const baseColumns: ColumnType<IndexOpPnCData>[] = [
   {
     title: '打折率',
     align: 'right',
@@ -80,7 +80,7 @@ const ETFOpTable: React.FC<{
   stockInfos: StockInfo[];
 }> = (props) => {
   const { stockInfos } = props;
-  const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
+  const [dataSource, setDataSource] = useState<IndexOpPnCData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
@@ -92,7 +92,7 @@ const ETFOpTable: React.FC<{
     }));
   }, [dataSource]);
 
-  const columns: ColumnType<OptionPnCData>[] = [
+  const columns: ColumnType<IndexOpPnCData>[] = [
     {
       title: (
         <div>
@@ -105,6 +105,7 @@ const ETFOpTable: React.FC<{
       key: 'name',
       fixed: 'left',
       align: 'center',
+      width: 110,
       filters,
       onFilter: (value, r) => value === r.month,
       render: (name, r) => (

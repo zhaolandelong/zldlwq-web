@@ -3,6 +3,7 @@ export interface StockInfo {
   name: string;
   sCode: string;
   price: number;
+  lastClosePrice: number;
 }
 export interface IndexInfo {
   code: string;
@@ -14,17 +15,22 @@ export interface IndexInfo {
   featPointPrice?: number;
 }
 
-export interface OptionNestData {
-  currPrice: number;
-  strikePrice: number;
-  PorC: 'C' | 'P';
-  dealDate: string;
-  remainDays: number;
-  innerValue: number;
-  timeValue: number;
+export interface IndexOpNestData {
+  currPrice: number; // 最新价
+  strikePrice: number; // 行权价
+  PorC: 'C' | 'P'; // 认购认沽标志
+  dealDate: string; // 到期日
+  remainDays: number; // 剩余天数
+  innerValue: number; // 内在价值
+  timeValue: number; // 时间价值
 }
 
-export interface OptionPnCData {
+export interface EtfOpNestData extends IndexOpNestData {
+  settlePrice: number; // 昨结算价
+  lastClosePrice: number; // 昨收价
+}
+
+export interface IndexOpPnCData {
   code: string;
   name: string;
   month: string;
@@ -39,6 +45,12 @@ export interface OptionPnCData {
   innerValueC: number;
   timeValueP: number;
   timeValueC: number;
+}
+
+export interface EtfOpPnCData extends IndexOpPnCData {
+  stockLastClosePrice: number;
+  settlePriceC: number;
+  settlePriceP: number;
 }
 
 export interface DealDate {

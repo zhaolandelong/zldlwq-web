@@ -9,9 +9,10 @@ const useEtfPriceInfos = (fetchTime: string) => {
   useEffect(() => {
     fetchFinanceDatas(ETF_INFOS.map((info) => info.sCode)).then((resArr) => {
       setEtfPriceInfos(
-        resArr.map(({ price }, i) => ({
+        resArr.map(({ price, lastClosePrice }, i) => ({
           ...ETF_INFOS[i],
           price,
+          lastClosePrice,
         }))
       );
     });

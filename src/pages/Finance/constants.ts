@@ -1,10 +1,8 @@
-import type {
-  StockInfo,
-  IndexInfo,
-  InvestBaseInfo,
-} from './types';
+import type { StockInfo, IndexInfo, InvestBaseInfo } from './types';
 
-export const ETF_INFOS: (Omit<StockInfo, 'price'> & { hasOp: boolean })[] = [
+export const ETF_INFOS: (Omit<StockInfo, 'price' | 'lastClosePrice'> & {
+  hasOp: boolean;
+})[] = [
   {
     code: '510300',
     sCode: 'sh510300',

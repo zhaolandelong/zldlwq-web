@@ -9,9 +9,10 @@ const useIndexPriceInfos = (fetchTime: string) => {
   useEffect(() => {
     fetchFinanceDatas(INDEX_INFOS.map((info) => info.sCode)).then((resArr) => {
       setPriceInfos(
-        resArr.map(({ price }, i) => ({
+        resArr.map(({ price, lastClosePrice }, i) => ({
           ...INDEX_INFOS[i],
           price,
+          lastClosePrice
         }))
       );
     });

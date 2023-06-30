@@ -38,3 +38,25 @@ export const filterDealDates = (
   }
   return result;
 };
+
+export const calculateEtfOpMargin = (
+  settlePrice: number,
+  lastClosePrice: number,
+  strikePrice: number,
+  PorC: 'P' | 'C'
+): number => {
+  const premium =
+    settlePrice +
+    Math.max(
+      0.12 * lastClosePrice -
+        Math.max(
+          PorC === 'C'
+            ? strikePrice - lastClosePrice
+            : lastClosePrice - strikePrice,
+          0
+        ),
+      0.07 * lastClosePrice
+    );
+
+  return premium * 10000;
+};

@@ -3,7 +3,7 @@ import { Checkbox, Table, Typography } from 'antd';
 import type {
   ProdDealDateKV,
   StockInfo,
-  OptionPnCData,
+  IndexOpPnCData,
   IndexInfo,
 } from '../types';
 import type { ColumnType } from 'antd/es/table';
@@ -18,7 +18,7 @@ const INDEX_OP_INFOS = INDEX_INFOS.filter(
   ({ op }) => op
 ) as Required<IndexInfo>[];
 
-const baseColumns: ColumnType<OptionPnCData>[] = [
+const baseColumns: ColumnType<IndexOpPnCData>[] = [
   {
     title: (
       <div>
@@ -103,7 +103,7 @@ const IndexOpTable: React.FC<{
 }> = (props) => {
   const { stockInfos, featureDealDates } = props;
 
-  const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
+  const [dataSource, setDataSource] = useState<IndexOpPnCData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
@@ -117,7 +117,7 @@ const IndexOpTable: React.FC<{
     }));
   }, [dataSource]);
 
-  const columns: ColumnType<OptionPnCData>[] = [
+  const columns: ColumnType<IndexOpPnCData>[] = [
     {
       title: (
         <div>

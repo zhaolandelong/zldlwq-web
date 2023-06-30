@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Table, Typography } from 'antd';
-import type { StockInfo, OptionPnCData } from '../types';
+import type { StockInfo, EtfOpPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../services';
+import { calculateEtfOpMargin } from '../utils';
 
 const { Title } = Typography;
 
@@ -16,7 +17,7 @@ const SellOpETFTable: React.FC<{
   const dataIndex = type === 'C' ? 'currPriceC' : 'currPriceP';
   const priceName = type === 'C' ? '清仓价' : '加仓价';
 
-  const [dataSource, setDataSource] = useState<OptionPnCData[]>([]);
+  const [dataSource, setDataSource] = useState<EtfOpPnCData[]>([]);
   const [loading, setLoading] = useState(true);
 
   const filters = useMemo(() => {
@@ -27,7 +28,7 @@ const SellOpETFTable: React.FC<{
     }));
   }, [dataSource]);
 
-  const columns: ColumnType<OptionPnCData>[] = [
+  const columns: ColumnType<EtfOpPnCData>[] = [
     {
       title: (
         <div>
@@ -85,6 +86,25 @@ const SellOpETFTable: React.FC<{
           <div>¥{(price * 10000).toFixed(0)}</div>
           <div style={{ color: '#f00' }}>
             ¥{((price * 10000) / r.remainDays).toFixed(2)}
+          </div>
+        </>
+      ),
+    },
+    {
+      title: <div>参考保证金</div>,
+      dataIndex,
+      key: 'margin',
+      align: 'right',
+      render: (_, r) => (
+        <>
+          <div>
+            ¥
+            {calculateEtfOpMargin(
+              type === 'C' ? r.settlePriceC : r.settlePriceP,
+              r.stockLastClosePrice,
+              r.strikePrice,
+              type
+            ).toFixed(2)}
           </div>
         </>
       ),

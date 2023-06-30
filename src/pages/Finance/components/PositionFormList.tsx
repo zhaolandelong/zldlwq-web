@@ -90,7 +90,7 @@ const PositionFormList: React.FC<{
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
-          x: 600,
+          x: 650,
         }}
         toolBarRender={() => {
           return [
