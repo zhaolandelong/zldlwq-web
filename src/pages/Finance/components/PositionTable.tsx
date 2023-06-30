@@ -150,7 +150,7 @@ const PositionTable: React.FC<{
           每月开盘价）；求和（每月买入分数）；二者相除
         </li>
         <li>
-          加仓价格：<Text mark>想知道怎么算的？去彩蛋里看看吧</Text>
+          加仓价格：如果已加仓 2 次，这里就会显示第 3 次加仓的价格。<Text mark>想知道怎么算的？去彩蛋里看看吧</Text>
         </li>
       </ul>
     </Text>

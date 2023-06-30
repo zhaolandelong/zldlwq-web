@@ -40,23 +40,30 @@ export const filterDealDates = (
 };
 
 export const calculateEtfOpMargin = (
+  etfPrice: number,
   settlePrice: number,
   lastClosePrice: number,
   strikePrice: number,
-  PorC: 'P' | 'C'
+  type: 'P' | 'C'
 ): number => {
-  const premium =
-    settlePrice +
-    Math.max(
-      0.12 * lastClosePrice -
+  let premium;
+  if (type === 'C') {
+    premium =
+      settlePrice +
+      Math.max(
+        0.12 * lastClosePrice - Math.max(strikePrice - lastClosePrice, 0),
+        0.07 * lastClosePrice
+      );
+  } else {
+    premium = Math.min(
+      settlePrice +
         Math.max(
-          PorC === 'C'
-            ? strikePrice - lastClosePrice
-            : lastClosePrice - strikePrice,
-          0
+          0.12 * lastClosePrice - Math.max(lastClosePrice - strikePrice, 0),
+          0.07 * strikePrice
         ),
-      0.07 * lastClosePrice
+      strikePrice
     );
+  }
 
   return premium * 10000;
 };

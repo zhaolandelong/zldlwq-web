@@ -6,17 +6,34 @@ import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../services';
 import { calculateEtfOpMargin } from '../utils';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
+
+const textMap = {
+  C: {
+    title: '卖出认购 ETF 期权',
+    currPriceIndex: 'currPriceC',
+    priceName: '清仓价',
+    formulaDesc:
+      '参考保证金 = [昨结算价 + Max(12% * 昨收盘价 - 认购期权虚值, 7% * 昨收盘价)] * 10000',
+    outOpDesc: '认购期权虚值 = Max(行权价 - 昨收盘价, 0)',
+  },
+  P: {
+    title: '卖出认沽 ETF 期权',
+    currPriceIndex: 'currPriceP',
+    priceName: '加仓价',
+    formulaDesc:
+      '参考保证金 = Min{[昨结算价 + Max(12% * 昨收盘价 - 认沽期权虚值, 7% * 行权价格)], 行权价格} * 10000',
+    outOpDesc: '认沽期权虚值 = Max(昨收盘价 - 行权价, 0)',
+  },
+};
 
 const SellOpETFTable: React.FC<{
   type: 'C' | 'P';
   stockInfos: StockInfo[];
 }> = (props) => {
   const { type, stockInfos } = props;
-  const title = `卖${type === 'C' ? '购' : '沽'}权利金`;
-  const dataIndex = type === 'C' ? 'currPriceC' : 'currPriceP';
-  const priceName = type === 'C' ? '清仓价' : '加仓价';
-
+  const { title, currPriceIndex, priceName, formulaDesc, outOpDesc } =
+    textMap[type];
   const [dataSource, setDataSource] = useState<EtfOpPnCData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,7 +95,7 @@ const SellOpETFTable: React.FC<{
           日均
         </div>
       ),
-      dataIndex,
+      dataIndex: currPriceIndex,
       key: 'currPrice',
       align: 'right',
       render: (price, r) => (
@@ -91,20 +108,41 @@ const SellOpETFTable: React.FC<{
       ),
     },
     {
-      title: <div>参考保证金</div>,
-      dataIndex,
+      title: (
+        <div>
+          参考保证金
+          <br />
+          年化收益率
+        </div>
+      ),
+      dataIndex: currPriceIndex,
       key: 'margin',
       align: 'right',
-      render: (_, r) => (
+      render: (price, r) => (
         <>
           <div>
             ¥
             {calculateEtfOpMargin(
+              r.stockPrice,
               type === 'C' ? r.settlePriceC : r.settlePriceP,
               r.stockLastClosePrice,
               r.strikePrice,
               type
             ).toFixed(2)}
+          </div>
+          <div style={{ color: '#f00' }}>
+            {(
+              (price * 365000000) /
+              calculateEtfOpMargin(
+                r.stockPrice,
+                type === 'C' ? r.settlePriceC : r.settlePriceP,
+                r.stockLastClosePrice,
+                r.strikePrice,
+                type
+              ) /
+              r.remainDays
+            ).toFixed(2)}
+            %
           </div>
         </>
       ),
@@ -136,6 +174,14 @@ const SellOpETFTable: React.FC<{
         pagination={false}
         bordered
       />
+      <Text type="secondary">
+        <ul>
+          <li>1手权利金 = 期权现价 * 10000</li>
+          <li>{formulaDesc}</li>
+          <li>{outOpDesc}</li>
+          <li>年化收益率 = 1手权利金 / 参考保证金 / 剩余天数 * 365</li>
+        </ul>
+      </Text>
     </>
   );
 };
