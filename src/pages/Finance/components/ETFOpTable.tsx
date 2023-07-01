@@ -1,29 +1,47 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type { StockInfo, IndexOpPnCData } from '../types';
+import type { StockInfo, EtfOpPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../services';
+import { calculateEtfOpMargin } from '../utils';
 
 const { Title, Text } = Typography;
 
-const baseColumns: ColumnType<IndexOpPnCData>[] = [
+const baseColumns: ColumnType<EtfOpPnCData>[] = [
   {
-    title: '打折率',
+    title: (
+      <div>
+        1手保证金
+        <br />
+        打折率
+      </div>
+    ),
     align: 'right',
-    width: 95,
+    width: 105,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
       (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
     render: (text, r) => (
-      <div style={{ color: '#f00' }}>
-        {(
-          ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
-          36500
-        ).toFixed(2)}
-        %
-      </div>
+      <>
+        <div>
+          ¥
+          {calculateEtfOpMargin(
+            r.settlePriceP,
+            r.stockLastClosePrice,
+            r.strikePrice,
+            'P'
+          ).toFixed(2)}
+        </div>
+        <div style={{ color: '#f00' }}>
+          {(
+            ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
+            36500
+          ).toFixed(2)}
+          %
+        </div>
+      </>
     ),
   },
   {
@@ -80,7 +98,7 @@ const ETFOpTable: React.FC<{
   stockInfos: StockInfo[];
 }> = (props) => {
   const { stockInfos } = props;
-  const [dataSource, setDataSource] = useState<IndexOpPnCData[]>([]);
+  const [dataSource, setDataSource] = useState<EtfOpPnCData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
@@ -92,7 +110,7 @@ const ETFOpTable: React.FC<{
     }));
   }, [dataSource]);
 
-  const columns: ColumnType<IndexOpPnCData>[] = [
+  const columns: ColumnType<EtfOpPnCData>[] = [
     {
       title: (
         <div>
