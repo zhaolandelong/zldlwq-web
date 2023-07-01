@@ -3,9 +3,9 @@ import { EditableProTable, type ProColumns } from '@ant-design/pro-components';
 import { Button, Typography } from 'antd';
 import ga from 'react-ga';
 import { InvestBaseInfo } from '../types';
-import { ETF_INFOS } from '../constants';
+import { ETF_INFOS, ETF_PE13_PRICE } from '../constants';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const columns: ProColumns<InvestBaseInfo>[] = [
   {
@@ -46,6 +46,15 @@ const columns: ProColumns<InvestBaseInfo>[] = [
     }),
   },
   {
+    title: '首次加仓价',
+    dataIndex: 'firstAdditionPrice',
+    valueType: 'money',
+    fieldProps: {
+      step: 0.001,
+      precision: 3,
+    },
+  },
+  {
     title: '已加仓次数',
     dataIndex: 'additionTime',
     valueType: 'digit',
@@ -71,15 +80,15 @@ const PositionFormList: React.FC<{
     })
   );
 
-  const getOtherKey = () => {
+  const getOtherInfo = () => {
     const alreadyKeys = dataSource.map((item) => item.sCode);
     for (let i = 0; i < ETF_INFOS.length; i++) {
       const sCode = ETF_INFOS[i].sCode;
       if (!alreadyKeys.includes(sCode)) {
-        return sCode;
+        return { sCode, firstAdditionPrice: ETF_PE13_PRICE[sCode] };
       }
     }
-    return '';
+    return { sCode: '', firstAdditionPrice: 0 };
   };
 
   return (
@@ -90,7 +99,7 @@ const PositionFormList: React.FC<{
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
-          x: 650,
+          x: 750,
         }}
         toolBarRender={() => {
           return [
@@ -121,16 +130,20 @@ const PositionFormList: React.FC<{
         }}
         recordCreatorProps={{
           newRecordType: 'dataSource',
-          record: () => ({
-            id: String(Date.now()),
-            sCode: getOtherKey(),
-            startDate: '2021-11-01',
-            monthlyAmount: 25000,
-            expectedReturnRate: 10,
-            additionMutiple: 3,
-            additionTime: 2,
-            etfCount: 0,
-          }),
+          record: () => {
+            const { sCode, firstAdditionPrice } = getOtherInfo();
+            return {
+              id: String(Date.now()),
+              sCode,
+              startDate: '2021-11-01',
+              monthlyAmount: 25000,
+              expectedReturnRate: 10,
+              additionMutiple: 3,
+              additionTime: 0,
+              firstAdditionPrice,
+              etfCount: 0,
+            };
+          },
         }}
         columns={columns}
         value={dataSource}
@@ -146,6 +159,19 @@ const PositionFormList: React.FC<{
           },
         }}
       />
+      <Text type="secondary">
+        <ul>
+          <li>
+            若首次定投时，沪深300指数 PE &lt; 13，则首次加仓价 = 首次定投价 *
+            0.9，请自行修改价格
+          </li>
+          <li>
+            若首次定投时，沪深300指数 PE &gt; 13，
+            <Text mark>请参考二维码里的彩蛋说明</Text>
+            ，默认值取的就是彩蛋里的算法
+          </li>
+        </ul>
+      </Text>
     </>
   );
 };

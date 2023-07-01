@@ -71,9 +71,9 @@ const columns: ColumnType<ETFPosInfo>[] = [
   {
     title: (
       <div>
-        加仓价格
+        下次加仓价
         <br />
-        加仓次数
+        已加仓
       </div>
     ),
     key: 'additionTime',

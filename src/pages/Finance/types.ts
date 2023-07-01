@@ -75,6 +75,7 @@ export interface InvestBaseInfo {
   monthlyAmount: number;
   additionMutiple: number;
   additionTime: number;
+  firstAdditionPrice: number;
   etfCount: number;
 }
 
