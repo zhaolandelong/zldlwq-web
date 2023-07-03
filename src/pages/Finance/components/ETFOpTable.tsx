@@ -178,6 +178,7 @@ const ETFOpTable: React.FC<{
       />
       <Text type="secondary">
         <ul>
+          <li>1手保证金 = 1手卖出认沽的保证金（买入认购无需保证金）</li>
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 10000</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
           <li>

@@ -174,6 +174,12 @@ const SellOpETFTable: React.FC<{
       />
       <Text type="secondary">
         <ul>
+          {type === 'C' ? (
+            <li>
+              注意：若「卖出认购价格」 &gt;&gt;
+              「期权最高行权价」，原则上就<Text type='warning'>不需要做卖出认购了</Text>，表里的数据仅作参考
+            </li>
+          ) : null}
           <li>1手权利金 = 期权现价 * 10000</li>
           <li>{formulaDesc}</li>
           <li>{outOpDesc}</li>
