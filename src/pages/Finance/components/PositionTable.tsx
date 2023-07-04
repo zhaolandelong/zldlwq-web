@@ -51,19 +51,25 @@ const columns: ColumnType<ETFPosInfo>[] = [
     ),
   },
   {
-    title: '定投期权/ETF',
+    title: (
+      <div>
+        定投期权数
+        <br />
+        ETF 调整
+      </div>
+    ),
     key: 'fixedOpCount',
-    width: 140,
+    align: 'right',
     render: (_, r) => {
-      const { optionCount, etfCount } = getEtfOpCount(r.monthlyAmount, r.price);
+      const { optionCount, etfCount } = getEtfOpCount(
+        r.monthlyAmount,
+        r.price,
+        r.etfCount
+      );
       return (
         <>
-          <div>
-            {optionCount} OP/{etfCount} ETF
-          </div>
-          <div style={{ color: '#f00' }}>
-            {optionCount + 1} OP/{etfCount - 10000} ETF
-          </div>
+          <div>{optionCount} OP</div>
+          <div style={{ color: '#f00' }}>{etfCount} ETF</div>
         </>
       );
     },
@@ -86,22 +92,25 @@ const columns: ColumnType<ETFPosInfo>[] = [
     ),
   },
   {
-    title: '加仓期权/ETF',
+    title: (
+      <div>
+        加仓期权数
+        <br />
+        ETF 调整
+      </div>
+    ),
     key: 'additionOpCount',
-    width: 140,
+    align: 'right',
     render: (_, r) => {
       const { optionCount, etfCount } = getEtfOpCount(
         r.monthlyAmount * r.additionMutiple,
-        r.additionPrice
+        r.additionPrice,
+        r.etfCount
       );
       return (
         <>
-          <div>
-            {optionCount} OP/{etfCount} ETF
-          </div>
-          <div style={{ color: '#f00' }}>
-            {optionCount + 1} OP/{etfCount - 10000} ETF
-          </div>
+          <div>{optionCount} OP</div>
+          <div style={{ color: '#f00' }}>{etfCount} ETF</div>
         </>
       );
     },
@@ -137,7 +146,7 @@ const PositionTable: React.FC<{
       columns={columns}
       dataSource={props.dataSource}
       rowKey="sCode"
-      scroll={{ x: 750 }}
+      scroll={{ x: 700 }}
       loading={props.loading}
       bordered
       pagination={false}
@@ -150,7 +159,8 @@ const PositionTable: React.FC<{
           每月开盘价）；求和（每月买入分数）；二者相除
         </li>
         <li>
-          加仓价格：如果已加仓 2 次，这里就会显示第 3 次加仓的价格。<Text mark>想知道怎么算的？去彩蛋里看看吧</Text>
+          加仓价格：如果已加仓 2 次，这里就会显示第 3 次加仓的价格。
+          <Text mark>想知道怎么算的？去彩蛋里看看吧</Text>
         </li>
       </ul>
     </Text>

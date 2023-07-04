@@ -58,6 +58,16 @@ const columns: ProColumns<InvestBaseInfo>[] = [
     title: '已加仓次数',
     dataIndex: 'additionTime',
     valueType: 'digit',
+    width: 105,
+  },
+  {
+    title: 'ETF数量',
+    dataIndex: 'etfCount',
+    valueType: 'digit',
+    width: 105,
+    fieldProps: {
+      step: 100,
+    },
   },
   {
     title: '操作',
@@ -99,7 +109,7 @@ const PositionFormList: React.FC<{
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
-          x: 750,
+          x: 850,
         }}
         toolBarRender={() => {
           return [

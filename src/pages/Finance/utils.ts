@@ -10,9 +10,18 @@ export const getAnualReturnRate = (
   return (investMonths / 12) * expectedReturnRate;
 };
 
-export const getEtfOpCount = (amount: number, price: number) => {
-  const optionCount = Math.floor(amount / price / 10000);
-  const etfCount = Math.floor(amount / price / 100 - optionCount * 100) * 100;
+export const getEtfOpCount = (
+  amount: number,
+  price: number,
+  baseEtfCount = 0
+) => {
+  const ETF_OP_HAND_COUNT = 10000;
+  let optionCount = Math.floor(amount / price / ETF_OP_HAND_COUNT);
+  let etfCount = Math.floor(amount / price / 100 - optionCount * 100) * 100;
+  if (etfCount + baseEtfCount > ETF_OP_HAND_COUNT) {
+    optionCount += 1;
+    etfCount -= ETF_OP_HAND_COUNT;
+  }
   return { optionCount, etfCount };
 };
 
