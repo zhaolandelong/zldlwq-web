@@ -18,6 +18,38 @@ const httpFetch = (options, type) =>
       .on('error', reject);
   });
 
+const getCookies = (options, type) =>
+  new Promise((resolve, reject) => {
+    (type === 'https' ? https : http)
+      .get(options, (res) => {
+        const cookies = res.headers['set-cookie'] ?? [];
+        resolve(cookies.map((ck) => ck.split(';')[0]).join('; '));
+      })
+      .on('error', reject);
+  });
+
+let xueqiuCookies = '';
+
+const xueqiuFetch = async (options) => {
+  const { headers, ...rest } = options;
+  const fetchOptions = {
+    ...rest,
+    headers: {
+      ...headers,
+      Cookie: xueqiuCookies,
+    },
+  };
+  let json = await httpFetch(fetchOptions, 'https');
+  if (json.includes('"error_code":"400016"')) {
+    xueqiuCookies = await getCookies(
+      { hostname: 'xueqiu.com', path: '/hq' },
+      'https'
+    );
+    json = await xueqiuFetch(options);
+  }
+  return json;
+};
+
 const server = http.createServer(async function (req, res) {
   //create web server
   const { query, pathname } = url.parse(req.url, true);
@@ -55,6 +87,18 @@ const server = http.createServer(async function (req, res) {
         }
       }
       res.end(JSON.stringify(result));
+    } else if (pathname.includes('/xueqiu')) {
+      // https://xueqiu.com/hq#fundtype=18&pfundtype=1&industry=5_7&firstName=5
+      const path = `${pathname.substring(7)}?${new URLSearchParams(
+        query
+      ).toString()}`;
+      const json = await xueqiuFetch({
+        hostname: 'stock.xueqiu.com',
+        path,
+      });
+
+      res.setHeader('Content-Type', 'application/json;charset=UTF-8');
+      res.end(json);
     }
   } catch (e) {
     console.error('error', e);
