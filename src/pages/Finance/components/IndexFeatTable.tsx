@@ -8,7 +8,7 @@ import type {
 } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
-import { fetchFeatPointByMonths } from '../services';
+import { fetchFeatPointByMonths } from '../../../services';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
 import { filterDealDates } from '../utils';

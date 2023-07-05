@@ -4,7 +4,7 @@ import type { StockInfo, EtfOpPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchEtfOpPrimaryDatas } from '../services';
+import { fetchEtfOpPrimaryDatas } from '../../../services';
 import { calculateEtfOpMargin } from '../utils';
 
 const { Title, Text } = Typography;

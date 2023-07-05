@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StockInfo } from '../types';
 import { ETF_INFOS } from '../constants';
-import { fetchFinanceDatas } from '../services';
+import { fetchFinanceDatas } from '../../../services';
 
 const useEtfPriceInfos = (fetchTime: string) => {
   const [etfPriceInfos, setEtfPriceInfos] = useState<StockInfo[]>([]);

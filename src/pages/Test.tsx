@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import PayArticle from '../components/PayArticle';
-// import { fetchFeatureDealDates } from './Finance/utils';
+import { fetchNewStagging, StaggingType } from '../services';
 
 const Test: React.FC = () => {
   useEffect(() => {
-    // fetchOpDealDate('2023-07', 'io2306').then((res) => {
-    //   console.log(res);
-    // });
-    // fetchFeatureDealDates().then(console.log);
+    fetchNewStagging(StaggingType.STOCK).then(console.log);
+    fetchNewStagging(StaggingType.BOND).then(console.log);
+    fetchNewStagging(StaggingType.REITs).then(console.log);
   }, []);
   return <PayArticle />;
 };

@@ -3,7 +3,7 @@ import { Table, Typography } from 'antd';
 import type { StockInfo, EtfOpPnCData } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { flattenDeep } from 'lodash-es';
-import { fetchEtfOpPrimaryDatas } from '../services';
+import { fetchEtfOpPrimaryDatas } from '../../../services';
 import { calculateEtfOpMargin } from '../utils';
 
 const { Title, Text } = Typography;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ETFPosInfo, InvestBaseInfo, StockInfo } from '../types';
-import { fetchAvgPrice, fetchAvgPrice2 } from '../services';
+import { fetchAvgPrice, fetchAvgPrice2 } from '../../../services';
 import moment from 'moment';
 import { getAnualReturnRate } from '../utils';
 
