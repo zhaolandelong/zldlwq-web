@@ -3,7 +3,8 @@ import jsonp from 'jsonp';
 import ls from 'localstorage-slim';
 
 const shouldUseStorage = true;
-const isDev = window.location.hostname === 'localhost';
+// const isDev = window.location.hostname === 'localhost';
+const isDev = false;
 const caches: Record<string, any> = {};
 const cachedPromise: Record<string, Promise<any>> = {};
 
@@ -52,7 +53,10 @@ export const axiosGet = (url: string, cached: boolean = false) => {
   return cachedPromise[url];
 };
 
-export const jsonpPromise = (url: string, cached: boolean = false) => {
+export const jsonpPromise = <T>(
+  url: string,
+  cached: boolean = false
+): Promise<T> => {
   if (Object.prototype.hasOwnProperty.call(cachedPromise, url)) {
     return cachedPromise[url];
   }

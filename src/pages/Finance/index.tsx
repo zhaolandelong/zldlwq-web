@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import { FloatButton, Typography, Col, Row } from 'antd';
 import ga from 'react-ga';
-import { fetchFeatureDealDates, fetchOpDealDate } from '../../services';
+import { fetchFeatureDealDates, fetchOpDealDate } from './services';
 import IndexETFTable from './components/IndexETFTable';
 import ETFOpTable from './components/ETFOpTable';
 import PositionTable from './components/PositionTable';

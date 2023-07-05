@@ -1,13 +1,22 @@
 import React, { useEffect } from 'react';
+import HK from './HK';
+import { Typography } from 'antd';
+import moment from 'moment';
 // import { fetchNewStagging, StaggingType } from '../services';
+const { Title } = Typography;
 
-const Test: React.FC = () => {
+const Stagging: React.FC = () => {
   useEffect(() => {
     // fetchNewStagging(StaggingType.STOCK).then(console.log);
     // fetchNewStagging(StaggingType.BOND).then(console.log);
     // fetchNewStagging(StaggingType.REITs).then(console.log);
   }, []);
-  return <div>123</div>;
+  return (
+    <>
+      <Title level={1}>日期： {moment().format('YYYY-MM-DD dddd')}</Title>
+      <HK />
+    </>
+  );
 };
 
-export default Test;
+export default Stagging;

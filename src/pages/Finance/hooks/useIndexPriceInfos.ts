@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { StockInfo } from '../types';
 import { INDEX_INFOS } from '../constants';
-import { fetchFinanceDatas } from '../../../services';
+import { fetchFinanceDatas } from '../services';
 
 const useIndexPriceInfos = (fetchTime: string) => {
   const [stockInfos, setPriceInfos] = useState<StockInfo[]>([]);

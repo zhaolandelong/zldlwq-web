@@ -9,7 +9,7 @@ import type {
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
-import { fetchIndexOpPrimaryDatas } from '../../../services';
+import { fetchIndexOpPrimaryDatas } from '../services';
 import { filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;

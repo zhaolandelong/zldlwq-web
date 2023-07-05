@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import PayArticle from '../components/PayArticle';
-import { fetchNewStagging, StaggingType } from '../services';
 
 const Test: React.FC = () => {
   useEffect(() => {
