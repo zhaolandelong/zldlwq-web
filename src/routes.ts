@@ -2,20 +2,26 @@ import type { RouteProps } from 'react-router-dom';
 import Finance from './pages/Finance';
 import Rules from './pages/Rules';
 import Test from './pages/Test';
+import Stagging from './pages/Stagging';
 
-const routes: RouteProps[] = [
+const routes: (RouteProps & { name: string })[] = [
   {
-    id: 'Home',
+    name: '首页',
     path: '/',
     Component: Finance,
   },
   {
-    id: 'Rules',
+    name: '打新',
+    path: 'stagging',
+    Component: Stagging,
+  },
+  {
+    name: '规则',
     path: 'rules',
     Component: Rules,
   },
   {
-    id: 'Test',
+    name: '测试',
     path: 'test',
     Component: Test,
   },

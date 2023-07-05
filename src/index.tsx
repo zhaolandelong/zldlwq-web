@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import routes from './routes';
 import { Layout, Menu } from 'antd';
 import ga from 'react-ga';
+import type { MenuItemType } from 'antd/es/menu/hooks/useItems';
 
 ga.initialize('G-CZMZ5085E4');
 
@@ -16,27 +17,33 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+const routeItems = routes.map((route) => ({
+  key: route.path,
+  label: <NavLink to={route?.path ?? '/'}>{route.name}</NavLink>,
+})) as MenuItemType[];
+
 root.render(
   <React.StrictMode>
     <Router>
       <Layout className="root-layout">
         <Header style={{ height: 30, lineHeight: '30px' }}>
-          <Menu theme="dark" mode="horizontal">
-            {routes.map((route) => (
-              <Menu.Item key={route.id}>
-                <NavLink to={route?.path ?? '/'}>{route.id}</NavLink>
-              </Menu.Item>
-            ))}
-          </Menu>
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            items={routeItems}
+            defaultSelectedKeys={[window.location.hash.substring(2) || '/']}
+          />
         </Header>
         <Content style={{ padding: '0 8px' }}>
           <Routes>
             {routes.map((route) => (
-              <Route key={route.id} {...route} />
+              <Route key={route.path} {...route} />
             ))}
           </Routes>
         </Content>
-        <Footer style={{ textAlign: 'center', paddingTop: 30 }}>Powered by Dylan</Footer>
+        <Footer style={{ textAlign: 'center', paddingTop: 30 }}>
+          Powered by Dylan
+        </Footer>
       </Layout>
     </Router>
   </React.StrictMode>

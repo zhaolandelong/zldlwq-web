@@ -62,7 +62,7 @@ const IndexETFTable: React.FC<{
         size="small"
         columns={columns}
         dataSource={dataSource}
-        rowKey="code"
+        rowKey={r => r.index.code}
         pagination={false}
       />
     </>

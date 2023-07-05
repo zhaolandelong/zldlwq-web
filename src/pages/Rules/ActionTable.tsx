@@ -113,7 +113,7 @@ const ActionTable: React.FC = () => {
       <Table
         columns={columns}
         dataSource={dataSource}
-        rowKey="code"
+        rowKey="type"
         pagination={false}
         scroll={{ x: 800 }}
         size="small"
