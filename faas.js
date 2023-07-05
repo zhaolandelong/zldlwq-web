@@ -22,7 +22,7 @@ const getCookies = (options, type) =>
   new Promise((resolve, reject) => {
     (type === 'https' ? https : http)
       .get(options, (res) => {
-        const cookies = res.headers['set-cookie'] ?? [];
+        const cookies = res.headers['set-cookie'] || [];
         resolve(cookies.map((ck) => ck.split(';')[0]).join('; '));
       })
       .on('error', reject);
@@ -89,7 +89,7 @@ const server = http.createServer(async function (req, res) {
       res.end(JSON.stringify(result));
     } else if (pathname.includes('/xueqiu')) {
       // https://xueqiu.com/hq#fundtype=18&pfundtype=1&industry=5_7&firstName=5
-      const path = `${pathname.substring(7)}?${new URLSearchParams(
+      const path = `${pathname.split('/xueqiu')[1]}?${new URLSearchParams(
         query
       ).toString()}`;
       const json = await xueqiuFetch({
