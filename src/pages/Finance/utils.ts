@@ -48,30 +48,85 @@ export const filterDealDates = (
   return result;
 };
 
-export const calculateEtfOpMargin = (
-  settlePrice: number,
-  lastClosePrice: number,
-  strikePrice: number,
-  type: 'P' | 'C'
-): number => {
-  let premium;
+interface MarginParams {
+  settlePrice: number; // 昨结算价
+  lastClosePrice: number; // 昨收盘价
+  strikePrice: number; // 行权价
+  guarantee?: number; // 保障系数
+  adjustment?: number; // 调整系数
+  multiple?: number; // 乘数
+  type: 'P' | 'C';
+}
+
+export const calculateEtfOpMargin = (params: MarginParams): number => {
+  const {
+    settlePrice,
+    lastClosePrice,
+    strikePrice,
+    guarantee = 0.07,
+    adjustment = 0.12,
+    multiple = 10000,
+    type,
+  } = params;
   if (type === 'C') {
-    premium =
-      settlePrice +
-      Math.max(
-        0.12 * lastClosePrice - Math.max(strikePrice - lastClosePrice, 0),
-        0.07 * lastClosePrice
-      );
-  } else {
-    premium = Math.min(
-      settlePrice +
+    return (
+      (settlePrice +
         Math.max(
-          0.12 * lastClosePrice - Math.max(lastClosePrice - strikePrice, 0),
-          0.07 * strikePrice
-        ),
-      strikePrice
+          adjustment * lastClosePrice -
+            Math.max(strikePrice - lastClosePrice, 0),
+          guarantee * lastClosePrice
+        )) *
+      multiple
     );
   }
+  return (
+    Math.min(
+      settlePrice +
+        Math.max(
+          adjustment * lastClosePrice -
+            Math.max(lastClosePrice - strikePrice, 0),
+          guarantee * strikePrice
+        ),
+      strikePrice
+    ) * multiple
+  );
+};
 
-  return premium * 10000;
+// - 参考保证金 = [昨结算价 + Max(调整系数 * 昨收盘价 - 看涨期权虚值,
+//   保障系数 * 调整系数 * 昨收盘价)] * 10000
+//   - 看涨期权虚值 = Max(行权价 - 昨收盘价, 0)
+//   - 参考保证金 = [昨结算价 + Max(调整系数 * 昨收盘价 - 看跌期权虚值,
+//   保障系数 * 调整系数 * 行权价)] * 10000
+//   - 看跌期权虚值 = Max(昨收盘价 - 行权价, 0)
+//   - 调整系数 = 10%，保障系数 = 0.5
+
+export const calculateIndexOpMargin = (params: MarginParams): number => {
+  const {
+    settlePrice,
+    lastClosePrice,
+    strikePrice,
+    guarantee = 0.5,
+    adjustment = 0.18,
+    multiple = 200,
+    type,
+  } = params;
+  if (type === 'C') {
+    return (
+      (settlePrice +
+        Math.max(
+          adjustment * lastClosePrice -
+            Math.max(strikePrice - lastClosePrice, 0),
+          guarantee * adjustment * lastClosePrice
+        )) *
+      multiple
+    );
+  }
+  return (
+    (settlePrice +
+      Math.max(
+        adjustment * lastClosePrice - Math.max(lastClosePrice - strikePrice, 0),
+        guarantee * adjustment * strikePrice
+      )) *
+    multiple
+  );
 };

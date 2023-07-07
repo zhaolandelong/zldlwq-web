@@ -27,12 +27,12 @@ const baseColumns: ColumnType<EtfOpPnCData>[] = [
       <>
         <div>
           ¥
-          {calculateEtfOpMargin(
-            r.settlePriceP,
-            r.stockLastClosePrice,
-            r.strikePrice,
-            'P'
-          ).toFixed(2)}
+          {calculateEtfOpMargin({
+            settlePrice: r.settlePriceP,
+            lastClosePrice: r.stockLastClosePrice,
+            strikePrice: r.strikePrice,
+            type: 'P',
+          }).toFixed(2)}
         </div>
         <div style={{ color: '#f00' }}>
           {(

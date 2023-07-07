@@ -428,3 +428,24 @@ export const fetchFeatPointByMonths = async (
 
 export const fetchFeatureDealDates = (): Promise<Record<string, string>> =>
   axiosGet('http://api.1to10.zldlwq.top/api/cffex', true);
+
+export const fetchIndexOpLastData = (
+  code: string, // io2307
+  type: 'P' | 'C',
+  strikePrice: number // 3950
+) =>
+  fetchSinaFinance(`P_OP_${code}${type}${strikePrice}`).then((str) => {
+    const arr = str.match(/"(.*?)"/)[1].split(',');
+    return {
+      buyCount: Number(arr[0]), // 买量
+      buyPrice: Number(arr[1]), // 买价
+      currPrice: Number(arr[2]), // 最新价
+      sellPrice: Number(arr[3]), // 卖价
+      sellCount: Number(arr[4]), // 卖量
+      position: Number(arr[5]), // 持仓
+      rate: Number(arr[6]), // 涨跌 * 100
+      strikePrice: Number(arr[7]), // 行权价
+      lastClosePrice: Number(arr[8]), // 昨收
+      openPrice: Number(arr[9]), // 今开
+    };
+  });
