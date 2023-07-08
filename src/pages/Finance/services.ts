@@ -202,17 +202,18 @@ const getEtfOpCodePrimaryIndexCache = (
   );
 
 const formatEtfOpPrimaryData = (data: {
-  code: string;
-  name: string;
+  stockInfo: StockInfo;
   month: string;
-  stockPrice: number;
-  stockLastClosePrice: number;
   primaryUp: EtfOpNestData;
   primaryDown: EtfOpNestData;
 }): EtfOpPnCData => {
-  const { primaryUp, primaryDown, ...rest } = data;
+  const { primaryUp, primaryDown, month, stockInfo } = data;
+  const { price, lastClosePrice, ...rest } = stockInfo;
   return {
     ...rest,
+    stockLastClosePrice: lastClosePrice,
+    stockPrice: price,
+    month,
     isPrimary: true,
     strikePrice: primaryUp.strikePrice,
     dealDate: primaryUp.dealDate,
@@ -287,46 +288,39 @@ export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
   ).then((res) => {
     const arr = formatOpDatas(res);
     let index = -1;
-    return cachedCodeMonthArr.map(
-      ({ code, month, name, price, lastClosePrice }) =>
-        formatEtfOpPrimaryData({
-          code,
-          name,
-          month,
-          stockPrice: price,
-          stockLastClosePrice: lastClosePrice,
-          primaryUp: arr[++index],
-          primaryDown: arr[++index],
-        })
+    return cachedCodeMonthArr.map(({ month, ...rest }) =>
+      formatEtfOpPrimaryData({
+        stockInfo: rest,
+        month,
+        primaryUp: arr[++index],
+        primaryDown: arr[++index],
+      })
     );
   });
 
   const result: EtfOpPnCData[] = [];
   await Promise.all(
-    codeMonthArr.map(({ code, month, name, price, lastClosePrice }) =>
-      fetchEtfOpByMonth({ code, yearMonth: month }).then(
+    codeMonthArr.map(({ month, ...rest }) =>
+      fetchEtfOpByMonth({ code: rest.code, yearMonth: month }).then(
         ({ opUpDatas = [], opDownDatas = [] }) => {
           const { primaryUpIndex, primaryDownIndex } = getPrimaryIndex(
             opUpDatas,
             opDownDatas,
-            price,
-            code
+            rest.price,
+            rest.code
           );
           if (primaryUpIndex > -1 && primaryDownIndex > -1) {
             setEtfOpCodePrimaryIndexCache({
-              code,
+              code: rest.code,
               month,
               upIndex: primaryUpIndex,
               downIndex: primaryDownIndex,
-              price,
+              price: rest.price,
             });
             result.push(
               formatEtfOpPrimaryData({
-                code,
-                name,
+                stockInfo: rest,
                 month,
-                stockPrice: price,
-                stockLastClosePrice: lastClosePrice,
                 primaryUp: opUpDatas[primaryUpIndex],
                 primaryDown: opDownDatas[primaryDownIndex],
               })
@@ -378,7 +372,7 @@ export const fetchIndexOpPrimaryDatas = async (params: {
     codeMonthArr.push({ ...indexInfo, month });
   });
   const result: IndexOpPnCData[] = await Promise.all(
-    codeMonthArr.map(({ month, name, price }, i) =>
+    codeMonthArr.map(({ month, name, price, sCode, code }, i) =>
       fetchIndexOpByMonth({ op, month }).then((opArr) => {
         let primaryIndex = 0;
         let abs = Infinity;
@@ -393,7 +387,9 @@ export const fetchIndexOpPrimaryDatas = async (params: {
         const innerValueC = Math.max(price - strikePrice, 0);
         const innerValueP = Math.max(strikePrice - price, 0);
         return {
-          code: op + month,
+          code,
+          opCode: op + month,
+          sCode,
           name,
           month,
           stockPrice: price,

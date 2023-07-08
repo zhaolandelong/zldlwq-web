@@ -8,9 +8,8 @@ import type {
 } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
-import { flattenDeep } from 'lodash-es';
-import { fetchIndexOpPrimaryDatas } from '../services';
-import { filterDealDates } from '../utils';
+import { fetchIndexOpLastData, fetchIndexOpPrimaryDatas } from '../services';
+import { calculateIndexOpMargin, filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
 
@@ -18,25 +17,27 @@ const INDEX_OP_INFOS = INDEX_INFOS.filter(
   ({ op }) => op
 ) as Required<IndexInfo>[];
 
-const baseColumns: ColumnType<IndexOpPnCData>[] = [
+interface OpRecord extends IndexOpPnCData, StockInfo, Required<IndexInfo> {
+  margin: number;
+}
+
+const baseColumns: ColumnType<OpRecord>[] = [
   {
     title: (
       <div>
-        日均打折
+        1手保证金
         <br />
         打折率
       </div>
     ),
-    width: 95,
+    width: 110,
     align: 'right',
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays -
       (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, r) => (
       <>
-        <div>
-          ¥{(((r.timeValueP - r.timeValueC) * 100) / r.remainDays).toFixed(2)}
-        </div>
+        <div>¥{r.margin.toFixed(2)}</div>
         <div style={{ color: '#f00' }}>
           {(
             ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
@@ -52,14 +53,16 @@ const baseColumns: ColumnType<IndexOpPnCData>[] = [
       <div>
         1手打折
         <br />
-        剩余天数
+        日均打折
       </div>
     ),
     align: 'right',
     render: (text, r) => (
       <>
         <div>¥{((r.timeValueP - r.timeValueC) * 100).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>{r.remainDays}天</div>
+        <div style={{ color: '#f00' }}>
+          ¥{(((r.timeValueP - r.timeValueC) * 100) / r.remainDays).toFixed(2)}
+        </div>
       </>
     ),
   },
@@ -103,7 +106,7 @@ const IndexOpTable: React.FC<{
 }> = (props) => {
   const { stockInfos, featureDealDates } = props;
 
-  const [dataSource, setDataSource] = useState<IndexOpPnCData[]>([]);
+  const [dataSource, setDataSource] = useState<OpRecord[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
 
@@ -117,7 +120,7 @@ const IndexOpTable: React.FC<{
     }));
   }, [dataSource]);
 
-  const columns: ColumnType<IndexOpPnCData>[] = [
+  const columns: ColumnType<OpRecord>[] = [
     {
       title: (
         <div>
@@ -126,16 +129,16 @@ const IndexOpTable: React.FC<{
           代码
         </div>
       ),
-      dataIndex: 'code',
-      key: 'code',
+      dataIndex: 'opCode',
+      key: 'opCode',
       fixed: 'left',
       align: 'center',
       filters,
-      onFilter: (value, r) => value === r.code.substring(2, 6),
-      render: (code, r) => (
+      onFilter: (value, r) => value === r.opCode.substring(2, 6),
+      render: (opCode, r) => (
         <>
           <div>{r.name}</div>
-          <div style={{ color: '#f00' }}>{code}</div>
+          <div style={{ color: '#f00' }}>{opCode}</div>
         </>
       ),
     },
@@ -146,20 +149,57 @@ const IndexOpTable: React.FC<{
     const monthDealDates = filterDealDates(opCodes, featureDealDates);
     if (monthDealDates && Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
-      Promise.all(
+
+      const stockOpInfos: (StockInfo & Required<IndexInfo>)[] =
         INDEX_OP_INFOS.filter(({ code }) => codes.includes(code)).map(
-          ({ code, op }) =>
-            fetchIndexOpPrimaryDatas({
-              indexInfo: stockInfos.find(
-                (info) => info.code === code
-              ) as StockInfo,
-              op,
-              ...monthDealDates[op],
-            })
+          (opInfo) => ({
+            ...(stockInfos.find(
+              ({ code }) => code === opInfo.code
+            ) as StockInfo),
+            ...opInfo,
+          })
+        );
+
+      Promise.all(
+        stockOpInfos.map((info) =>
+          fetchIndexOpPrimaryDatas({
+            indexInfo: info,
+            op: info.op,
+            ...monthDealDates[info.op],
+          })
         )
       )
-        .then((indexOpArr) => {
-          setDataSource(flattenDeep(indexOpArr));
+        .then(async (indexOpArr) => {
+          const result: OpRecord[] = [];
+          indexOpArr.forEach((opArr, i) => {
+            const stockOpInfo = stockOpInfos[i];
+            opArr.forEach((opData) => {
+              result.push({
+                ...opData,
+                ...stockOpInfo,
+                margin: 0,
+              });
+            });
+          });
+          await Promise.all(
+            result.map((data, i) =>
+              fetchIndexOpLastData(
+                data.opCode.toLowerCase(),
+                'P',
+                data.strikePrice
+              ).then((res) => {
+                const margin = calculateIndexOpMargin({
+                  settlePrice: res.lastClosePrice,
+                  lastClosePrice: data.lastClosePrice,
+                  strikePrice: data.strikePrice,
+                  type: 'P',
+                });
+                result[i].margin = margin;
+                return res;
+              })
+            )
+          );
+          setDataSource(result);
         })
         .finally(() => {
           setLoading(false);
@@ -183,7 +223,7 @@ const IndexOpTable: React.FC<{
         columns={columns}
         scroll={{ x: 450 }}
         dataSource={dataSource}
-        rowKey="code"
+        rowKey="opCode"
         bordered
         loading={loading}
         pagination={false}

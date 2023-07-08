@@ -32,6 +32,8 @@ export interface EtfOpNestData extends IndexOpNestData {
 
 export interface IndexOpPnCData {
   code: string;
+  opCode: string;
+  sCode: string;
   name: string;
   month: string;
   isPrimary: boolean;
@@ -47,7 +49,7 @@ export interface IndexOpPnCData {
   timeValueC: number;
 }
 
-export interface EtfOpPnCData extends IndexOpPnCData {
+export interface EtfOpPnCData extends Omit<IndexOpPnCData, 'opCode'> {
   stockLastClosePrice: number;
   settlePriceC: number;
   settlePriceP: number;
