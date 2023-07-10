@@ -6,91 +6,64 @@ import { DEFAULT_CODES, ETF_INFOS } from '../constants';
 import { flattenDeep } from 'lodash-es';
 import { fetchEtfOpPrimaryDatas } from '../services';
 import { calculateEtfOpMargin } from '../utils';
+import { renderCell, renderTitle } from '../../../components/CellRender';
 
 const { Title, Text } = Typography;
 
 const baseColumns: ColumnType<EtfOpPnCData>[] = [
   {
-    title: (
-      <div>
-        1手保证金
-        <br />
-        打折率
-      </div>
-    ),
+    title: renderTitle('1手保证金', '打折率'),
     align: 'right',
     width: 105,
     sorter: (a, b) =>
       (a.timeValueP - a.timeValueC) / a.remainDays / a.strikePrice -
       (b.timeValueP - b.timeValueC) / b.remainDays / b.strikePrice,
-    render: (text, r) => (
-      <>
-        <div>
+    render: (text, r) =>
+      renderCell(
+        `
           ¥
-          {calculateEtfOpMargin({
+          ${calculateEtfOpMargin({
             settlePrice: r.settlePriceP,
             lastClosePrice: r.stockLastClosePrice,
             strikePrice: r.strikePrice,
             type: 'P',
           }).toFixed(2)}
-        </div>
-        <div style={{ color: '#f00' }}>
-          {(
+        `,
+        `
+          ${(
             ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
             36500
           ).toFixed(2)}
-          %
-        </div>
-      </>
-    ),
+          %`
+      ),
   },
   {
-    title: (
-      <div>
-        1手打折
-        <br />
-        日均打折
-      </div>
-    ),
+    title: renderTitle('1手打折', '日均打折'),
     align: 'right',
-    render: (text, r) => (
-      <>
-        <div>¥{((r.timeValueP - r.timeValueC) * 10000).toFixed(0)}</div>
-        <div style={{ color: '#f00' }}>
-          ¥{(((r.timeValueP - r.timeValueC) * 10000) / r.remainDays).toFixed(2)}
-        </div>
-      </>
-    ),
+    render: (text, r) =>
+      renderCell(
+        `¥${((r.timeValueP - r.timeValueC) * 10000).toFixed(0)}`,
+        `
+          ¥${(((r.timeValueP - r.timeValueC) * 10000) / r.remainDays).toFixed(
+            2
+          )}`
+      ),
   },
   {
-    title: (
-      <div>
-        行权价
-        <br />
-        现价
-      </div>
-    ),
+    title: renderTitle('行权价', '现价'),
     dataIndex: 'strikePrice',
     key: 'strikePrice',
     align: 'center',
-    render: (price, r) => (
-      <>
-        <div>¥{price.toFixed(3)}</div>
-        <div style={{ color: '#f00' }}>¥{r.stockPrice.toFixed(3)}</div>
-      </>
-    ),
+    render: (price, r) =>
+      renderCell(`¥${price.toFixed(3)}`, `¥${r.stockPrice.toFixed(3)}`),
   },
   {
     title: '时间价值(P|C)',
     dataIndex: 'timeValueP',
     key: 'timeValueP',
     align: 'center',
-    render: (price, r) => (
-      <>
-        <div>¥{price.toFixed(4)}</div>
-        <div style={{ color: '#f00' }}>¥{r.timeValueC.toFixed(4)}</div>
-      </>
-    ),
+    render: (price, r) =>
+      renderCell(`¥${price.toFixed(4)}`, `¥${r.timeValueC.toFixed(4)}`),
   },
 ];
 
@@ -112,13 +85,7 @@ const ETFOpTable: React.FC<{
 
   const columns: ColumnType<EtfOpPnCData>[] = [
     {
-      title: (
-        <div>
-          名称
-          <br />
-          月份
-        </div>
-      ),
+      title: renderTitle('名称', '月份'),
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
@@ -126,14 +93,7 @@ const ETFOpTable: React.FC<{
       width: 110,
       filters,
       onFilter: (value, r) => value === r.month,
-      render: (name, r) => (
-        <>
-          <div>{name}</div>
-          <div style={{ color: '#f00' }}>
-            {r.month}({r.remainDays}天)
-          </div>
-        </>
-      ),
+      render: (name, r) => renderCell(name, `${r.remainDays}天`),
     },
     ...baseColumns,
   ];

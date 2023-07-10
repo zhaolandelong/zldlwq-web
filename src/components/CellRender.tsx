@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const renderTitle = (txt1: string, txt2: string) => (
   <div>
     {txt1}
