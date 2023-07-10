@@ -106,7 +106,7 @@ export const calculateIndexOpMargin = (params: MarginParams): number => {
     lastClosePrice,
     strikePrice,
     guarantee = 0.5,
-    adjustment = 0.18,
+    adjustment = 0.13,
     multiple = 100,
     type,
   } = params;

@@ -24,7 +24,7 @@ interface OpRecord extends IndexOpPnCData, StockInfo, Required<IndexInfo> {
 
 const baseColumns: ColumnType<OpRecord>[] = [
   {
-    title: renderTitle('1手保证金', '打折率'),
+    title: renderTitle('', '打折率'),
     width: 110,
     align: 'right',
     sorter: (a, b) =>
@@ -32,7 +32,8 @@ const baseColumns: ColumnType<OpRecord>[] = [
       (b.timeValueP - b.timeValueC) / b.remainDays,
     render: (text, r) =>
       renderCell(
-        `¥${r.margin.toFixed(2)}`,
+        // `¥${r.margin.toFixed(2)}`,
+        ``,
         `${(
           ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
           36500
@@ -187,6 +188,14 @@ const IndexOpTable: React.FC<{
       />
       <Text type="secondary">
         <ul>
+          {/* <li>
+            「1手保证金」值为<Text mark>估算</Text>
+            ，仅作参考，因暂时无法取到股指期权的结算价，故先用收盘价来计算
+          </li>
+          <li>
+            1手保证金 = [结算价 + max(收盘价 * 调整系数 - 虚值额，最低保障系数 *
+            行权价 * 调整系数)] * 100
+          </li> */}
           <li>打折（1 手）= ( 时间价值(P) - 时间价值(C) ) * 100</li>
           <li>日均打折 = 打折（1 手） / 剩余天数</li>
           <li>
