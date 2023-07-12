@@ -24,7 +24,7 @@ interface OpRecord extends IndexOpPnCData, StockInfo, Required<IndexInfo> {
 
 const baseColumns: ColumnType<OpRecord>[] = [
   {
-    title: renderTitle('', '打折率'),
+    title: renderTitle('日均打折', '打折率'),
     width: 110,
     align: 'right',
     sorter: (a, b) =>
@@ -33,7 +33,7 @@ const baseColumns: ColumnType<OpRecord>[] = [
     render: (text, r) =>
       renderCell(
         // `¥${r.margin.toFixed(2)}`,
-        ``,
+        `¥${(((r.timeValueP - r.timeValueC) * 100) / r.remainDays).toFixed(2)}`,
         `${(
           ((r.timeValueP - r.timeValueC) / r.stockPrice / r.remainDays) *
           36500
@@ -42,12 +42,12 @@ const baseColumns: ColumnType<OpRecord>[] = [
       ),
   },
   {
-    title: renderTitle('1手打折', '日均打折'),
+    title: renderTitle('1手打折', '剩余天数'),
     align: 'right',
     render: (text, r) =>
       renderCell(
         `¥${((r.timeValueP - r.timeValueC) * 100).toFixed(0)}`,
-        `¥${(((r.timeValueP - r.timeValueC) * 100) / r.remainDays).toFixed(2)}`
+        `${r.remainDays}天`
       ),
   },
   {
