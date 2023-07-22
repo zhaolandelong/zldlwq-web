@@ -6,6 +6,7 @@ import { fetchFeatureDealDates, fetchOpDealDate } from './services';
 import IndexETFTable from './components/IndexETFTable';
 import ETFOpTable from './components/ETFOpTable';
 import PositionTable from './components/PositionTable';
+import PositionReference from './components/PositionReference';
 import IndexOpTable from './components/IndexOpTable';
 import IndexFeatTable from './components/IndexFeatTable';
 import PositionFormList from './components/PositionFormList';
@@ -139,14 +140,15 @@ const Finance: React.FC = () => {
         </Col>
       </Row>
       <Row gutter={16}>
-        <Col span={24} lg={8}>
-          <PayArticle />
-        </Col>
-        <Col span={24} lg={16}>
+        <Col span={24} lg={18}>
           <PositionFormList
             defaultValues={defaultInvestInfos}
             onChange={handleInvestChange}
           />
+          <PayArticle />
+        </Col>
+        <Col span={24} lg={6}>
+          <PositionReference loading={posLoading} dataSource={posData} />
         </Col>
       </Row>
       <PositionTable loading={posLoading} dataSource={posData} />

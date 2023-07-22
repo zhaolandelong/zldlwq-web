@@ -1,4 +1,4 @@
-import type { ProdDealDateKV } from './types';
+import type { ETFPosInfo, ProdDealDateKV } from './types';
 
 export const getAnualReturnRate = (
   expectedReturnRate: number,
@@ -129,4 +129,26 @@ export const calculateIndexOpMargin = (params: MarginParams): number => {
       )) *
     multiple
   );
+};
+
+export const getRealInvestment = (posInfo: ETFPosInfo) => {
+  const {
+    realCount,
+    realInvestment,
+    firstAdditionPrice,
+    additionTimes,
+    monthlyAmount,
+  } = posInfo;
+  let count = realCount;
+  let investMent = realInvestment;
+  for (let i = 0, addPrice, addCount; i < additionTimes; i++) {
+    addPrice = firstAdditionPrice * (1 - 0.1 * i);
+    addCount = Math.floor(monthlyAmount / addPrice / 100) * 100;
+    count += addCount;
+    investMent += addCount * addPrice;
+  }
+  return {
+    investMent,
+    count,
+  };
 };

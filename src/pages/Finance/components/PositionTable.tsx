@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Typography } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ETFPosInfo } from '../types';
-import { getEtfOpCount } from '../utils';
+import { getEtfOpCount, getRealInvestment } from '../utils';
 import { renderCell, renderTitle } from '../../../components/CellRender';
 
 const { Title, Text } = Typography;
@@ -53,13 +53,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
     key: 'realCount',
     align: 'right',
     render: (_, r) => {
-      const { realCount, firstAdditionPrice, additionTimes, monthlyAmount } = r;
-      let count = realCount;
-      for (let i = 0, addPrice, addCount; i < additionTimes; i++) {
-        addPrice = firstAdditionPrice * (1 - 0.1 * i);
-        addCount = Math.floor(monthlyAmount / addPrice / 100) * 100;
-        count += addCount;
-      }
+      const { count } = getRealInvestment(r);
       return renderCell(
         `${Math.floor(count / 10000)} OP`,
         `${count % 10000} ETF`
