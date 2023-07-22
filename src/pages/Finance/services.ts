@@ -42,12 +42,12 @@ export const fetchAvgPrice = (
     return arr.reduce((a, b) => a + b.close, 0) / arr.length;
   });
 
-export const fetchAvgPrice2 = (
+export const fetchRealInvestment = (
   sCode: string,
   startDate: string,
   amount: number = 25000,
   endDate: string = moment().format('YYYY-MM-DD')
-): Promise<number> =>
+) =>
   fetchEtfMonthK(sCode, startDate, endDate).then((arr) => {
     let _count;
     let count = 0;
@@ -57,7 +57,10 @@ export const fetchAvgPrice2 = (
       count += _count;
       sum += _count * open;
     });
-    return sum / count;
+    return {
+      realInvestment: sum,
+      realCount: count,
+    };
   });
 
 /**

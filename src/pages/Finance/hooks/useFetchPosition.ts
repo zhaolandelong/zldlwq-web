@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ETFPosInfo, InvestBaseInfo, StockInfo } from '../types';
-import { fetchAvgPrice, fetchAvgPrice2 } from '../services';
+import { fetchAvgPrice, fetchRealInvestment } from '../services';
 import moment from 'moment';
 import { getAnualReturnRate } from '../utils';
 
@@ -12,7 +12,7 @@ const fetchAndFormatPosData = (
     investInfos.map((info) =>
       Promise.all([
         fetchAvgPrice(info.sCode, info.startDate),
-        fetchAvgPrice2(info.sCode, info.startDate, info.monthlyAmount),
+        fetchRealInvestment(info.sCode, info.startDate, info.monthlyAmount),
       ])
     )
   ).then((avgPricesArr) =>
@@ -24,15 +24,16 @@ const fetchAndFormatPosData = (
       );
       const { price = 0, name = info.sCode } =
         eftPriceInfos.find((item) => item.sCode === info.sCode) ?? {};
-      const avgPrices = avgPricesArr[index];
+      const [avgCost, { realInvestment, realCount }] = avgPricesArr[index];
       const additionPrice =
-        info.firstAdditionPrice * (1 - 0.1 * info.additionTime);
+        info.firstAdditionPrice * (1 - 0.1 * info.additionTimes);
       const result: ETFPosInfo = {
         ...info,
         name,
         investMonths,
-        avgCost: avgPrices[0],
-        avgCost2: avgPrices[1],
+        avgCost,
+        realInvestment,
+        realCount,
         actualReturnRate,
         price,
         additionPrice,

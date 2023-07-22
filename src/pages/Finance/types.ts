@@ -76,8 +76,8 @@ export interface InvestBaseInfo {
   expectedReturnRate: number;
   monthlyAmount: number;
   additionMutiple: number;
-  additionTime: number;
-  firstAdditionPrice: number;
+  additionTimes: number; // 加仓次数
+  firstAdditionPrice: number; // 首次加仓价
   etfCount: number;
 }
 
@@ -85,8 +85,9 @@ export interface ETFPosInfo extends InvestBaseInfo {
   name: string;
   investMonths: number; // 投资月数
   avgCost: number; // 平均成本 - 取 n 月均线的收盘价
-  avgCost2: number; // 平均成本2 - 较精确计算，总投入 / 总持仓
+  realInvestment: number; // 较精确计算，总投入
+  realCount: number; // 较精确计算，总持仓
   actualReturnRate: number; // 实际年化收益率
   price: number;
-  additionPrice: number;
+  additionPrice: number; // 下次加仓价格
 }

@@ -3,6 +3,7 @@ import { Table, Typography } from 'antd';
 import type { ColumnType } from 'antd/es/table';
 import type { ETFPosInfo } from '../types';
 import { getEtfOpCount } from '../utils';
+import { renderCell, renderTitle } from '../../../components/CellRender';
 
 const { Title, Text } = Typography;
 
@@ -13,51 +14,29 @@ const columns: ColumnType<ETFPosInfo>[] = [
     key: 'name',
     fixed: 'left',
     width: 110,
-    render: (name, r) => (
-      <>
-        <div>{name}</div>
-        <div style={{ color: '#f00' }}>¥{r.price}</div>
-      </>
-    ),
+    render: (name, r) => renderCell(name, `¥${r.price}`),
   },
   {
     title: '收益率',
     dataIndex: 'actualReturnRate',
     key: 'actualReturnRate',
     align: 'center',
-    render: (rate, r) => (
-      <>
-        <div>{rate.toFixed(2)}%</div>
-        <div style={{ color: '#f00' }}>{r.investMonths}个月</div>
-      </>
-    ),
+    render: (rate, r) =>
+      renderCell(`${rate.toFixed(2)}%`, `${r.investMonths}个月`),
   },
   {
-    title: (
-      <div>
-        估算卖价
-        <br />
-        估算成本
-      </div>
-    ),
+    title: renderTitle('估算卖价', '估算成本'),
     dataIndex: 'avgCost',
     key: 'avgCost',
     align: 'center',
-    render: (cost, r) => (
-      <>
-        <div>¥{((1 + r.actualReturnRate / 100) * cost).toFixed(3)}</div>
-        <div style={{ color: '#f00' }}>¥{cost.toFixed(3)}</div>
-      </>
-    ),
+    render: (cost, r) =>
+      renderCell(
+        `¥${((1 + r.actualReturnRate / 100) * cost).toFixed(3)}`,
+        `¥${cost.toFixed(3)}`
+      ),
   },
   {
-    title: (
-      <div>
-        定投期权数
-        <br />
-        ETF 调整
-      </div>
-    ),
+    title: renderTitle('定投期权数', 'ETF 调整'),
     key: 'fixedOpCount',
     align: 'right',
     render: (_, r) => {
@@ -66,39 +45,47 @@ const columns: ColumnType<ETFPosInfo>[] = [
         r.price,
         r.etfCount
       );
-      return (
-        <>
-          <div>{optionCount} OP</div>
-          <div style={{ color: '#f00' }}>{etfCount} ETF</div>
-        </>
+      return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
+    },
+  },
+  {
+    title: '理论持仓',
+    key: 'realCount',
+    align: 'right',
+    render: (_, r) => {
+      const { realCount, firstAdditionPrice, additionTimes, monthlyAmount } = r;
+      let count = realCount;
+      for (let i = 0, addPrice, addCount; i < additionTimes; i++) {
+        addPrice = firstAdditionPrice * (1 - 0.1 * i);
+        addCount = Math.floor(monthlyAmount / addPrice / 100) * 100;
+        count += addCount;
+      }
+      return renderCell(
+        `${Math.floor(count / 10000)} OP`,
+        `${count % 10000} ETF`
       );
     },
   },
   {
-    title: (
-      <div>
-        下次加仓价
-        <br />
-        已加仓
-      </div>
-    ),
-    key: 'additionTime',
+    title: renderTitle('下次加仓价', '已加仓卖购价'),
+    key: 'additionTimes',
     align: 'center',
-    render: (_, r) => (
-      <>
-        <div>¥{r.additionPrice.toFixed(3)}</div>
-        <div style={{ color: '#f00' }}>{r.additionTime}次</div>
-      </>
-    ),
+    render: (_, r) => {
+      let sellCallPrice;
+      if (r.additionTimes <= 0) {
+        sellCallPrice = 0;
+      } else {
+        sellCallPrice =
+          r.firstAdditionPrice * (1 - 0.1 * (r.additionTimes - 2));
+      }
+      return renderCell(
+        `¥${r.additionPrice.toFixed(3)}`,
+        `¥${sellCallPrice.toFixed(3)}`
+      );
+    },
   },
   {
-    title: (
-      <div>
-        加仓期权数
-        <br />
-        ETF 调整
-      </div>
-    ),
+    title: renderTitle('加仓期权数', 'ETF 调整'),
     key: 'additionOpCount',
     align: 'right',
     render: (_, r) => {
@@ -107,31 +94,8 @@ const columns: ColumnType<ETFPosInfo>[] = [
         r.additionPrice,
         r.etfCount
       );
-      return (
-        <>
-          <div>{optionCount} OP</div>
-          <div style={{ color: '#f00' }}>{etfCount} ETF</div>
-        </>
-      );
+      return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
     },
-  },
-  {
-    title: (
-      <div>
-        精算卖价
-        <br />
-        精算成本
-      </div>
-    ),
-    dataIndex: 'avgCost2',
-    key: 'avgCost2',
-    align: 'center',
-    render: (cost, r) => (
-      <>
-        <div>¥{((1 + r.actualReturnRate / 100) * cost).toFixed(3)}</div>
-        <div style={{ color: '#f00' }}>¥{cost.toFixed(3)}</div>
-      </>
-    ),
   },
 ];
 
@@ -155,12 +119,23 @@ const PositionTable: React.FC<{
       <ul>
         <li>估算成本：上个月 n 月均线价格</li>
         <li>
-          精算成本：根据月定投额和每月开盘价，算出每月买入份数；求和（每月份数 *
-          每月开盘价）；求和（每月买入分数）；二者相除
+          理论持仓：
+          <ul>
+            <li>
+              先取 n 个月，每月首个交易日的开盘价，计算出每月买入 ETF 数量；
+            </li>
+            <li>再根据加仓次数和首次加仓价格，计算出加仓买入 ETF 的数量；</li>
+            <li>二者相加即为理论持仓数量；</li>
+            <li>
+              特别说明，<Text mark>若有打底仓的情况，数据会出现偏差</Text>
+              ，故仅供参考；
+            </li>
+          </ul>
         </li>
+        <li>下次加仓价格：若已加仓 2 次，这里就会显示第 3 次加仓的价格；</li>
         <li>
-          加仓价格：如果已加仓 2 次，这里就会显示第 3 次加仓的价格。
-          <Text mark>想知道怎么算的？去彩蛋里看看吧</Text>
+          已加仓卖购价：此次加仓价上浮 10%。若已加仓 2 次，这里就会显示第 1
+          次加仓的价格；
         </li>
       </ul>
     </Text>

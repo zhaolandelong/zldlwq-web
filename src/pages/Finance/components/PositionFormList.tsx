@@ -56,7 +56,7 @@ const columns: ProColumns<InvestBaseInfo>[] = [
   },
   {
     title: '已加仓次数',
-    dataIndex: 'additionTime',
+    dataIndex: 'additionTimes',
     valueType: 'digit',
     width: 105,
   },
@@ -149,7 +149,7 @@ const PositionFormList: React.FC<{
               monthlyAmount: 25000,
               expectedReturnRate: 10,
               additionMutiple: 3,
-              additionTime: 0,
+              additionTimes: 0,
               firstAdditionPrice,
               etfCount: 0,
             };
