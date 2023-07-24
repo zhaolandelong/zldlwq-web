@@ -36,28 +36,28 @@ const columns: ColumnType<ETFPosInfo>[] = [
       ),
   },
   {
-    title: renderTitle('定投期权数', 'ETF 调整'),
-    key: 'fixedOpCount',
-    align: 'right',
-    render: (_, r) => {
-      const { optionCount, etfCount } = getEtfOpCount(
-        r.monthlyAmount,
-        r.price,
-        r.etfCount
-      );
-      return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
-    },
-  },
-  {
     title: '理论持仓',
     key: 'realCount',
     align: 'right',
     render: (_, r) => {
       const { count } = getRealInvestment(r);
       return renderCell(
-        `${Math.floor(count / 10000)} OP`,
-        `${count % 10000} ETF`
+        `${Math.floor(count / 10000) + r.opErrorCount} OP`,
+        `${(count % 10000) + +r.etfErrorCount} ETF`
       );
+    },
+  },
+  {
+    title: '月定投参考',
+    key: 'fixedOpCount',
+    align: 'right',
+    render: (_, r) => {
+      const { optionCount, etfCount } = getEtfOpCount(
+        r.monthlyAmount,
+        r.price,
+        (getRealInvestment(r).count % 10000) + r.etfErrorCount
+      );
+      return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
     },
   },
   {
@@ -79,14 +79,14 @@ const columns: ColumnType<ETFPosInfo>[] = [
     },
   },
   {
-    title: renderTitle('加仓期权数', 'ETF 调整'),
+    title: '加仓参考',
     key: 'additionOpCount',
     align: 'right',
     render: (_, r) => {
       const { optionCount, etfCount } = getEtfOpCount(
         r.monthlyAmount * r.additionMutiple,
         r.additionPrice,
-        r.etfCount
+        (getRealInvestment(r).count % 10000) + r.etfErrorCount
       );
       return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
     },

@@ -76,7 +76,8 @@ export interface InvestBaseInfo {
   additionMutiple: number;
   additionTimes: number; // 加仓次数
   firstAdditionPrice: number; // 首次加仓价
-  etfCount: number;
+  etfErrorCount: number; // ETF 误差调整
+  opErrorCount: number; // OP 误差调整
 }
 
 export interface ETFPosInfo extends InvestBaseInfo {

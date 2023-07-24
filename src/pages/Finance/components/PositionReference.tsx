@@ -33,7 +33,7 @@ const PostiionReference: React.FC<{
         price,
       } = da;
       const _count = getRealInvestment(da).count;
-      const count = Math.floor(_count / 10000);
+      const count = Math.floor(_count / 10000) + da.opErrorCount;
       // 合成多头
       datas.push({
         name: `权${name}购${month}月${Math.round(price * 10) * 100}`,
@@ -53,14 +53,14 @@ const PostiionReference: React.FC<{
       // 卖沽加仓
       datas.push({
         name: `义${name}沽0月${Math.round(additionPrice * 10) * 100}`,
-        count: Math.floor(
-          (monthlyAmount * additionMutiple) / additionPrice / 10000
+        count: Number(
+          ((monthlyAmount * additionMutiple) / additionPrice / 10000).toFixed(1)
         ),
       });
       // ETF
       datas.push({
         name: `${name} ETF基金`,
-        count: _count % 10000,
+        count: (_count % 10000) + da.etfErrorCount,
       });
     });
     return datas;
@@ -123,7 +123,8 @@ const PostiionReference: React.FC<{
             ，故月份无法明确显示，这里用 0 代替；
           </li>
           <li>若卖出认购价格超过行权价最大值，则忽略该条；</li>
-          <li>表中持仓数仅为理论值，可能跟真实数据有差异，仅作参考。</li>
+          <li>表中持仓数仅为理论值，可能跟真实数据有差异，仅作参考；</li>
+          <li>卖沽数量取小数点后1位，方便判断如何取整。</li>
         </ul>
       </Text>
     </>

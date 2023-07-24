@@ -102,7 +102,7 @@ const Finance: React.FC = () => {
       </Title>
       <Text type="warning">注意：以下内容只是基于个人理解，仅供参考。</Text>
       <FloatButton
-        description={`刷新\n${fetchTime}`}
+        description={`更新\n${fetchTime}`}
         type="primary"
         shape="square"
         style={{ width: 60, bottom: 20 }}

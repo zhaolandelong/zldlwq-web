@@ -76,7 +76,7 @@ export const INDEX_INFOS: IndexInfo[] = [
 
 export const DEFAULT_CODES = ['510300', '159915', '000300'];
 
-export const STORAGE_KEY = '1to10-local-storage-3';
+export const STORAGE_KEY = '1to10-local-storage-4';
 
 export const ETF_PE13_PRICE: Record<InvestBaseInfo['sCode'], number> = {
   sh510300: 4.383,
@@ -95,7 +95,8 @@ export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
     additionMutiple: 3,
     additionTimes: 0,
     firstAdditionPrice: ETF_PE13_PRICE['sh510300'],
-    etfCount: 0,
+    etfErrorCount: 0,
+    opErrorCount: 0,
   },
   {
     sCode: 'sz159915',
@@ -105,6 +106,7 @@ export const DEFAULT_INVEST_INFOS: InvestBaseInfo[] = [
     additionMutiple: 3,
     additionTimes: 0,
     firstAdditionPrice: ETF_PE13_PRICE['sz159915'],
-    etfCount: 0,
+    etfErrorCount: 0,
+    opErrorCount: 0,
   },
 ];

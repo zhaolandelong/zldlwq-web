@@ -4,6 +4,7 @@ import { Button, Typography } from 'antd';
 import ga from 'react-ga';
 import { InvestBaseInfo } from '../types';
 import { ETF_INFOS, ETF_PE13_PRICE } from '../constants';
+import { renderCell, renderTitle } from '../../../components/CellRender';
 
 const { Title, Text } = Typography;
 
@@ -61,12 +62,23 @@ const columns: ProColumns<InvestBaseInfo>[] = [
     width: 105,
   },
   {
-    title: 'ETF数量',
-    dataIndex: 'etfCount',
+    title: '期权误差调整',
+    dataIndex: 'opErrorCount',
+    valueType: 'digit',
+    width: 105,
+    fieldProps: {
+      step: 1,
+      min: Number.MIN_SAFE_INTEGER,
+    },
+  },
+  {
+    title: 'ETF误差调整',
+    dataIndex: 'etfErrorCount',
     valueType: 'digit',
     width: 105,
     fieldProps: {
       step: 100,
+      min: Number.MIN_SAFE_INTEGER,
     },
   },
   {
@@ -109,7 +121,7 @@ const PositionFormList: React.FC<{
         maxLength={ETF_INFOS.length}
         bordered
         scroll={{
-          x: 850,
+          x: 1000,
         }}
         toolBarRender={() => {
           return [
@@ -151,7 +163,8 @@ const PositionFormList: React.FC<{
               additionMutiple: 3,
               additionTimes: 0,
               firstAdditionPrice,
-              etfCount: 0,
+              etfErrorCount: 0,
+              opErrorCount: 0,
             };
           },
         }}
@@ -173,13 +186,14 @@ const PositionFormList: React.FC<{
         <ul>
           <li>
             若首次定投时，沪深300指数 PE &lt; 13，则首次加仓价 = 首次定投价 *
-            0.9，请自行修改价格
+            0.9，请自行修改价格；
           </li>
           <li>
             若首次定投时，沪深300指数 PE &gt; 13，
             <Text mark>请参考二维码里的彩蛋说明</Text>
-            ，默认值取的就是彩蛋里的算法
+            ，默认值取的就是彩蛋里的算法；
           </li>
+          <li>因打底仓造成的误差很难计算，所以添加了「期权误差调整」和「ETF误差调整」2个参数，用来与实际数据找平。</li>
         </ul>
       </Text>
     </>
