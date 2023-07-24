@@ -15,8 +15,9 @@ import PayArticle from '../../components/PayArticle';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import useFetchPosition from './hooks/useFetchPosition';
-import { DealDate, InvestBaseInfo, ProdDealDateKV, StockInfo } from './types';
+import { DealDate, InvestBaseInfo, StockInfo } from './types';
 import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
+import { getNthDayOfMonths, getOpDealMonths } from './utils';
 
 const { Title, Text } = Typography;
 
@@ -28,11 +29,18 @@ const getDefaultInvestInfos = (): InvestBaseInfo[] => {
   return DEFAULT_INVEST_INFOS;
 };
 
+const defaultInvestInfos = getDefaultInvestInfos();
+const opDealMonths = getOpDealMonths();
+const etfOpDealDates = getNthDayOfMonths(opDealMonths, 4, 3).filter((ym) =>
+  moment(ym).isSameOrAfter(moment().startOf('D'))
+);
+// const etfOpDealDates = ['2023-07-24', '2023-08-16'].filter(ym => !moment(ym).isSameOrBefore(moment()));
+const indexOpDealDates = getNthDayOfMonths(opDealMonths, 3, 5).filter((ym) =>
+  moment(ym).isSameOrAfter(moment().startOf('D'))
+);
+
 const Finance: React.FC = () => {
-  const defaultInvestInfos = getDefaultInvestInfos();
   const [fetchTime, setfetchTime] = useState(moment().format('HH:mm:ss'));
-  const [dealDate, setDealDate] = useState<DealDate>();
-  const [featureDealDates, setFeatureDealDates] = useState<ProdDealDateKV>();
   const [investInfos, setInvestInfos] =
     useState<InvestBaseInfo[]>(defaultInvestInfos);
 
@@ -66,25 +74,6 @@ const Finance: React.FC = () => {
     });
   }, [etfPriceInfos, posData]);
 
-  const firstFeature = useMemo(() => {
-    if (typeof featureDealDates === 'undefined') return void 0;
-    return Object.values(featureDealDates)[0];
-  }, [featureDealDates]);
-
-  useEffect(() => {
-    const nowMoment = moment();
-    fetchOpDealDate(nowMoment.format('YYYY-MM')).then(setDealDate);
-    fetchFeatureDealDates().then((res) => {
-      const result: typeof res = {};
-      Object.entries(res).forEach(([key, val]) => {
-        if (nowMoment.isBefore(moment(val))) {
-          result[key] = val;
-        }
-      });
-      setFeatureDealDates(result);
-    });
-  }, []);
-
   const handleInvestChange = (vals: InvestBaseInfo[]) => {
     setInvestInfos(vals);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(vals));
@@ -99,12 +88,15 @@ const Finance: React.FC = () => {
     <>
       <Title level={4}>
         Today is {moment().format('YYYY-MM-DD dddd')}. <br />
-        ETF 期权到期日： {dealDate?.expireDay} (
-        <span style={{ color: 'red' }}>{dealDate?.remainderDays}</span> 天)
-        <br />
-        股指期权到期日： {moment(firstFeature).format('YYYY-MM-DD')} (
+        ETF 期权到期日： {etfOpDealDates[0]} (
         <span style={{ color: 'red' }}>
-          {moment(firstFeature).diff(moment(), 'days')}
+          {moment(etfOpDealDates[0]).diff(moment(), 'days') + 1}
+        </span>{' '}
+        天)
+        <br />
+        股指期权到期日： {indexOpDealDates[0]} (
+        <span style={{ color: 'red' }}>
+          {moment(indexOpDealDates[0]).diff(moment(), 'days') + 1}
         </span>{' '}
         天)
       </Title>
@@ -129,13 +121,13 @@ const Finance: React.FC = () => {
         <Col span={24} lg={14}>
           <IndexOpTable
             stockInfos={indexPriceInfos}
-            featureDealDates={featureDealDates}
+            dealDates={indexOpDealDates}
           />
         </Col>
         <Col span={24} lg={10}>
           <IndexFeatTable
             stockInfos={indexPriceInfos}
-            featureDealDates={featureDealDates}
+            dealDates={indexOpDealDates}
           />
         </Col>
       </Row>

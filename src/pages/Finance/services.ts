@@ -366,10 +366,10 @@ const fetchIndexOpByMonth = async (params: { op: string; month: string }) => {
 export const fetchIndexOpPrimaryDatas = async (params: {
   indexInfo: StockInfo;
   op: string;
-  months: string[];
   dealDates: string[];
 }) => {
-  const { indexInfo, months, dealDates, op } = params;
+  const { indexInfo, dealDates, op } = params;
+  const months = dealDates.map((dd) => moment(dd).format('YYMM'));
   const codeMonthArr: Array<typeof indexInfo & { month: string }> = [];
   months.forEach((month) => {
     codeMonthArr.push({ ...indexInfo, month });
@@ -399,7 +399,7 @@ export const fetchIndexOpPrimaryDatas = async (params: {
           isPrimary: true,
           strikePrice,
           dealDate: dealDates[i],
-          remainDays: moment(dealDates[i]).diff(moment(), 'days'),
+          remainDays: moment(dealDates[i]).diff(moment(), 'days') + 1,
           currPriceC,
           currPriceP,
           innerValueC,

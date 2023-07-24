@@ -1,15 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type {
-  ProdDealDateKV,
-  StockInfo,
-  IndexOpPnCData,
-  IndexInfo,
-} from '../types';
+import type { StockInfo, IndexOpPnCData, IndexInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
 import { fetchIndexOpLastData, fetchIndexOpPrimaryDatas } from '../services';
-import { calculateIndexOpMargin, filterDealDates } from '../utils';
+import { calculateIndexOpMargin } from '../utils';
 import { renderCell, renderTitle } from '../../../components/CellRender';
 
 const { Title, Text } = Typography;
@@ -67,13 +62,11 @@ const baseColumns: ColumnType<OpRecord>[] = [
   },
 ];
 
-const opCodes = INDEX_OP_INFOS.map((info) => info.op);
-
 const IndexOpTable: React.FC<{
   stockInfos: StockInfo[];
-  featureDealDates?: ProdDealDateKV;
+  dealDates: string[];
 }> = (props) => {
-  const { stockInfos, featureDealDates } = props;
+  const { stockInfos, dealDates = [] } = props;
 
   const [dataSource, setDataSource] = useState<OpRecord[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
@@ -104,8 +97,7 @@ const IndexOpTable: React.FC<{
   ];
 
   useEffect(() => {
-    const monthDealDates = filterDealDates(opCodes, featureDealDates);
-    if (monthDealDates && Array.isArray(stockInfos) && stockInfos.length) {
+    if (dealDates.length && Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
 
       const stockOpInfos: (StockInfo & Required<IndexInfo>)[] =
@@ -123,7 +115,7 @@ const IndexOpTable: React.FC<{
           fetchIndexOpPrimaryDatas({
             indexInfo: info,
             op: info.op,
-            ...monthDealDates[info.op],
+            dealDates,
           })
         )
       )
@@ -163,7 +155,7 @@ const IndexOpTable: React.FC<{
           setLoading(false);
         });
     }
-  }, [stockInfos, featureDealDates]);
+  }, [stockInfos, dealDates]);
 
   return (
     <>

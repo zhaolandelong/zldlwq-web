@@ -1,17 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Checkbox, Table, Typography } from 'antd';
-import type {
-  ProdDealDateKV,
-  StockInfo,
-  FeatureData,
-  IndexInfo,
-} from '../types';
+import type { StockInfo, FeatureData, IndexInfo } from '../types';
 import type { ColumnType } from 'antd/es/table';
 import { DEFAULT_CODES, INDEX_INFOS } from '../constants';
 import { fetchFeatPointByMonths } from '../services';
 import { flatten } from 'lodash-es';
 import moment from 'moment';
-import { filterDealDates } from '../utils';
 
 const { Title, Text } = Typography;
 
@@ -85,18 +79,16 @@ const baseColumns: ColumnType<FeatureData>[] = [
   },
 ];
 
-const featCodes = INDEX_FEAT_INFOS.map((info) => info.feat);
-
 const IndexFeatTable: React.FC<{
   stockInfos: StockInfo[];
-  featureDealDates?: ProdDealDateKV;
+  dealDates: string[];
 }> = (props) => {
-  const { stockInfos, featureDealDates } = props;
+  const { stockInfos, dealDates = [] } = props;
 
   const [dataSource, setDataSource] = useState<FeatureData[]>([]);
   const [codes, setCodes] = useState<string[]>(DEFAULT_CODES);
   const [loading, setLoading] = useState(true);
-  
+
   const filters = useMemo(() => {
     const months = Array.from(
       new Set(dataSource.map((info) => info.featCode.substring(2, 6)))
@@ -133,31 +125,25 @@ const IndexFeatTable: React.FC<{
   ];
 
   useEffect(() => {
-    const monthDealDates = filterDealDates(featCodes, featureDealDates);
-    if (monthDealDates && Array.isArray(stockInfos) && stockInfos.length) {
+    if (dealDates.length && Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
+      const months = dealDates.map((dd) => moment(dd).format('YYMM'));
       Promise.all(
         INDEX_FEAT_INFOS.filter(({ code }) => codes.includes(code)).map(
           (info) => {
             const { feat, code } = info;
-            return fetchFeatPointByMonths(
-              feat,
-              monthDealDates[feat].months
-            ).then((pointArr) =>
+            return fetchFeatPointByMonths(feat, months).then((pointArr) =>
               pointArr.map((point, i) => {
                 const indexInfo = stockInfos.find(
                   (info) => info.code === code
                 ) as StockInfo;
-                const month = monthDealDates[feat].months[i];
+                const month = months[i];
                 const result: FeatureData = {
                   ...info,
                   point,
                   discount: indexInfo.price - point,
                   featCode: feat + month,
-                  remainDays: moment(monthDealDates[feat].dealDates[i]).diff(
-                    moment(),
-                    'days'
-                  ),
+                  remainDays: moment(dealDates[i]).diff(moment(), 'days') + 1,
                 };
                 return result;
               })
@@ -172,7 +158,7 @@ const IndexFeatTable: React.FC<{
           setLoading(false);
         });
     }
-  }, [stockInfos, featureDealDates]);
+  }, [stockInfos, dealDates]);
 
   return (
     <>

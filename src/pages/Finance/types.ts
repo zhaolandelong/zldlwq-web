@@ -60,8 +60,6 @@ export interface DealDate {
   remainderDays: number;
 }
 
-export type ProdDealDateKV = Record<string, string>; // { MO2309: 20230915 }
-
 export interface FeatureData extends Required<IndexInfo> {
   featCode: string; // IF2306
   point: number;

@@ -1,4 +1,5 @@
-import type { ETFPosInfo, ProdDealDateKV } from './types';
+import moment from 'moment';
+import type { ETFPosInfo } from './types';
 
 export const getAnualReturnRate = (
   expectedReturnRate: number,
@@ -23,29 +24,6 @@ export const getEtfOpCount = (
     etfCount -= ETF_OP_HAND_COUNT;
   }
   return { optionCount, etfCount };
-};
-
-export const filterDealDates = (
-  filterProds: string[],
-  prodDealDateKV?: ProdDealDateKV
-) => {
-  if (typeof prodDealDateKV === 'undefined') {
-    return null;
-  }
-  const result: Record<string, { months: string[]; dealDates: string[] }> = {};
-
-  for (let key in prodDealDateKV) {
-    const prod = key.slice(0, 2);
-    if (!filterProds.includes(prod)) {
-      continue;
-    }
-    if (!result[prod]) {
-      result[prod] = { months: [], dealDates: [] };
-    }
-    result[prod].months.push(key.slice(-4));
-    result[prod].dealDates.push(prodDealDateKV[key]);
-  }
-  return result;
 };
 
 interface MarginParams {
@@ -151,4 +129,34 @@ export const getRealInvestment = (posInfo: ETFPosInfo) => {
     investMent,
     count,
   };
+};
+
+// 获取某几月第n个星期day
+export const getNthDayOfMonths = (yearMonths: string[], n = 3, day = 5) =>
+  yearMonths.map((ym) => {
+    const firstDayOfMonth = moment(ym);
+    let diff = day - 7 - firstDayOfMonth.day();
+    if (firstDayOfMonth.day() > day) {
+      diff += 7;
+    }
+    return firstDayOfMonth.add(7 * n + diff, 'days').format('YYYY-MM-DD');
+  });
+
+// 获取期权交易月份
+export const getOpDealMonths = (startYearMonth?: string) => {
+  const today = moment(startYearMonth);
+  const monthArr = [
+    today.format('YYYYMM'),
+    today.add(1, 'M').format('YYYYMM'),
+    today.add(1, 'M').format('YYYYMM'),
+  ];
+  let len = monthArr.length;
+  let i = 1;
+  while (monthArr.length < len + 1) {
+    if (i * 3 > today.month() + 1) {
+      monthArr.push(today.add(i * 3 - today.month() - 1, 'M').format('YYYYMM'));
+    }
+    i += 1;
+  }
+  return monthArr;
 };

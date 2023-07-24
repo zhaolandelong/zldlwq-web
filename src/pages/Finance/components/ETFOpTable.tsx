@@ -93,7 +93,7 @@ const ETFOpTable: React.FC<{
       width: 110,
       filters,
       onFilter: (value, r) => value === r.month,
-      render: (name, r) => renderCell(name, `${r.remainDays}天`),
+      render: (name, r) => renderCell(name, `${r.month}(${r.remainDays}天)`),
     },
     ...baseColumns,
   ];
