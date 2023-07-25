@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import moment from 'moment';
 import { FloatButton, Typography, Col, Row } from 'antd';
 import ga from 'react-ga';
-import { fetchFeatureDealDates, fetchOpDealDate } from './services';
 import IndexETFTable from './components/IndexETFTable';
 import ETFOpTable from './components/ETFOpTable';
 import PositionTable from './components/PositionTable';
@@ -12,10 +11,11 @@ import IndexFeatTable from './components/IndexFeatTable';
 import PositionFormList from './components/PositionFormList';
 import SellOpETFTable from './components/SellOpETFTable';
 import PayArticle from '../../components/PayArticle';
+import Instructions from '../../components/Instructions';
 import useEtfPriceInfos from './hooks/useEtfPriceInfos';
 import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import useFetchPosition from './hooks/useFetchPosition';
-import { DealDate, InvestBaseInfo, StockInfo } from './types';
+import { InvestBaseInfo, StockInfo } from './types';
 import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
 import { getNthDayOfMonths, getOpDealMonths } from './utils';
 
@@ -113,7 +113,7 @@ const Finance: React.FC = () => {
           <IndexETFTable indexData={indexPriceInfos} etfData={etfPriceInfos} />
         </Col>
         <Col span={24} md={12}>
-          <PayArticle />
+          <Instructions />
         </Col>
       </Row>
       <ETFOpTable stockInfos={etfPriceInfos} />
