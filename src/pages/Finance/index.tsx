@@ -132,15 +132,19 @@ const Finance: React.FC = () => {
         </Col>
       </Row>
       <Row gutter={16}>
-        <Col span={24} lg={18}>
+        <Col span={24} lg={16}>
           <PositionFormList
             defaultValues={defaultInvestInfos}
             onChange={handleInvestChange}
           />
           <PayArticle />
         </Col>
-        <Col span={24} lg={6}>
-          <PositionReference loading={posLoading} dataSource={posData} />
+        <Col span={24} lg={8}>
+          <PositionReference
+            loading={posLoading}
+            dataSource={posData}
+            stockInfos={etfPriceInfos}
+          />
         </Col>
       </Row>
       <PositionTable loading={posLoading} dataSource={posData} />

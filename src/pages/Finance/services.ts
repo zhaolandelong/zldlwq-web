@@ -275,8 +275,11 @@ const getPrimaryIndex = (
   };
 };
 
-export const fetchEtfOpPrimaryDatas = async (etfInfo: StockInfo) => {
-  const months = await fetchOpMonths();
+export const fetchEtfOpPrimaryDatas = async (
+  etfInfo: StockInfo,
+  _months?: string[]
+) => {
+  const months = _months ?? (await fetchOpMonths());
   const cachedCodeMonthArr: Array<StockInfo & { month: string }> = [];
   const codeMonthArr: Array<StockInfo & { month: string }> = [];
   months.forEach((month) => {

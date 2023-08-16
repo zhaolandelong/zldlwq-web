@@ -150,7 +150,7 @@ const SellOpETFTable: React.FC<{
   useEffect(() => {
     if (Array.isArray(stockInfos) && stockInfos.length) {
       setLoading(true);
-      Promise.all(stockInfos.map(fetchEtfOpPrimaryDatas))
+      Promise.all(stockInfos.map((info) => fetchEtfOpPrimaryDatas(info)))
         .then((etfOpArr) => {
           setDataSource(flattenDeep(etfOpArr));
         })

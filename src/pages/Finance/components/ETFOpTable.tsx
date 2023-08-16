@@ -104,7 +104,7 @@ const ETFOpTable: React.FC<{
       Promise.all(
         stockInfos
           .filter((info) => codes.includes(info.code))
-          .map(fetchEtfOpPrimaryDatas)
+          .map((info) => fetchEtfOpPrimaryDatas(info))
       )
         .then((etfOpArr) => {
           setDataSource(flattenDeep(etfOpArr));
