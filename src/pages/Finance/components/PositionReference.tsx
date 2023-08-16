@@ -109,6 +109,9 @@ const PostiionReference: React.FC<{
       });
       // 卖沽加仓
       etfInfo = etfInfos[++i];
+      const countSP = Number(
+        ((monthlyAmount * additionMutiple) / additionPrice / 10000).toFixed(1)
+      );
       datas.push({
         name: `义${name}沽${month}月${Math.round(additionPrice * 10) * 100}`,
         margin:
@@ -117,16 +120,15 @@ const PostiionReference: React.FC<{
             lastClosePrice: etfInfo.stockLastClosePrice,
             strikePrice: etfInfo.strikePrice,
             type: 'P',
-          }) * count,
-        count: Number(
-          ((monthlyAmount * additionMutiple) / additionPrice / 10000).toFixed(1)
-        ),
+          }) * countSP,
+        count: countSP,
       });
       // ETF
+      const countETF = (_count % 10000) + da.etfErrorCount;
       datas.push({
         name: `${name} ETF基金`,
-        margin: price * ((_count % 10000) + da.etfErrorCount),
-        count: (_count % 10000) + da.etfErrorCount,
+        margin: price * countETF,
+        count: countETF,
       });
     });
     return datas;
