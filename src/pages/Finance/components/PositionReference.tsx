@@ -89,7 +89,9 @@ const PostiionReference: React.FC<{
             lastClosePrice: etfInfo.stockLastClosePrice,
             strikePrice: etfInfo.strikePrice,
             type: 'P',
-          }) * count,
+          }) *
+          count *
+          1.2,
         count,
       });
       // 卖购止盈
@@ -104,7 +106,9 @@ const PostiionReference: React.FC<{
             lastClosePrice: etfInfo.stockLastClosePrice,
             strikePrice: etfInfo.strikePrice,
             type: 'C',
-          }) * count,
+          }) *
+          count *
+          1.2,
         count,
       });
       // 卖沽加仓
@@ -120,7 +124,9 @@ const PostiionReference: React.FC<{
             lastClosePrice: etfInfo.stockLastClosePrice,
             strikePrice: etfInfo.strikePrice,
             type: 'P',
-          }) * countSP,
+          }) *
+          countSP *
+          1.2,
         count: countSP,
       });
       // ETF
@@ -209,8 +215,8 @@ const PostiionReference: React.FC<{
             因每个人做卖购和卖沽的<Text mark>日期不一样</Text>
             ，故月份无法明确显示，此处取合成多头相同月份；
           </li>
-          <li>若卖出认购价格超过行权价最大值，则忽略该条；</li>
-          <li>表中持仓数仅为理论值，可能跟真实数据有差异，仅作参考；</li>
+          <li>若卖出认购价格<Text mark>超过行权价最大值</Text>，则忽略该条；</li>
+          <li>因暂时未找到一些实时数据源，表中数据<Text mark>在非交易期间较准确</Text>，交易期间仅作参考；</li>
           <li>卖沽数量取小数点后1位，方便判断如何取整。</li>
         </ul>
       </Text>
