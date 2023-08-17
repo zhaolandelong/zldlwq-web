@@ -16,27 +16,23 @@ const columns: ColumnType<StockData>[] = [
     key: 'name',
     render: (_, r) => r.index.name,
   },
-  // {
-  //   title: '股票代码',
-  //   key: 'indexCode',
-  //   render: (_, r) => r.index.code,
-  // },
   {
     title: '股指点数',
     key: 'point',
     align: 'center',
     render: (_, r) => r.index.price.toFixed(2),
   },
-  // {
-  //   title: 'ETF 代码',
-  //   key: 'etfCode',
-  //   render: (_, r) => r.etf.code,
-  // },
   {
     title: 'ETF 价格',
     key: 'etfPrice',
     align: 'center',
     render: (_, r) => `¥${r.etf.price.toFixed(3)}`,
+  },
+  {
+    title: '股指/ETF比值',
+    key: 'rate',
+    align: 'center',
+    render: (_, r) => Math.round(r.index.price / r.etf.price),
   },
 ];
 
@@ -62,7 +58,7 @@ const IndexETFTable: React.FC<{
         size="small"
         columns={columns}
         dataSource={dataSource}
-        rowKey={r => r.index.code}
+        rowKey={(r) => r.index.code}
         pagination={false}
       />
     </>
