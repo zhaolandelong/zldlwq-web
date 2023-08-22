@@ -73,7 +73,8 @@ const PostiionReference: React.FC<{
         price,
       } = da;
       const _count = getRealInvestment(da).count;
-      const count = Math.floor(_count / 10000) + da.opErrorCount;
+      const count =
+        Math.floor((_count + da.etfErrorCount) / 10000) + da.opErrorCount;
       // 合成多头
       datas.push({
         name: `权${name}购${month}月${Math.round(price * 10) * 100}`,
@@ -130,7 +131,7 @@ const PostiionReference: React.FC<{
         count: countSP,
       });
       // ETF
-      const countETF = (_count % 10000) + da.etfErrorCount;
+      const countETF = (_count + da.etfErrorCount) % 10000;
       datas.push({
         name: `${name} ETF基金`,
         margin: price * countETF,
@@ -215,8 +216,13 @@ const PostiionReference: React.FC<{
             因每个人做卖购和卖沽的<Text mark>日期不一样</Text>
             ，故月份无法明确显示，此处取合成多头相同月份；
           </li>
-          <li>若卖出认购价格<Text mark>超过行权价最大值</Text>，则忽略该条；</li>
-          <li>因暂时未找到一些实时数据源，表中数据<Text mark>在非交易期间较准确</Text>，交易期间仅作参考；</li>
+          <li>
+            若卖出认购价格<Text mark>超过行权价最大值</Text>，则忽略该条；
+          </li>
+          <li>
+            因暂时未找到一些实时数据源，表中数据
+            <Text mark>在非交易期间较准确</Text>，交易期间仅作参考；
+          </li>
           <li>卖沽数量取小数点后1位，方便判断如何取整。</li>
         </ul>
       </Text>

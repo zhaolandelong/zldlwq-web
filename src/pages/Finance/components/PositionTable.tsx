@@ -42,8 +42,8 @@ const columns: ColumnType<ETFPosInfo>[] = [
     render: (_, r) => {
       const { count } = getRealInvestment(r);
       return renderCell(
-        `${Math.floor(count / 10000) + r.opErrorCount} OP`,
-        `${(count % 10000) + +r.etfErrorCount} ETF`
+        `${Math.floor((count + r.etfErrorCount) / 10000) + r.opErrorCount} OP`,
+        `${(count + r.etfErrorCount) % 10000} ETF`
       );
     },
   },
@@ -55,7 +55,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
       const { optionCount, etfCount } = getEtfOpCount(
         r.monthlyAmount,
         r.price,
-        (getRealInvestment(r).count % 10000) + r.etfErrorCount
+        ((getRealInvestment(r).count + r.etfErrorCount) % 10000)
       );
       return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
     },
@@ -86,7 +86,7 @@ const columns: ColumnType<ETFPosInfo>[] = [
       const { optionCount, etfCount } = getEtfOpCount(
         r.monthlyAmount * r.additionMutiple,
         r.additionPrice,
-        (getRealInvestment(r).count % 10000) + r.etfErrorCount
+        ((getRealInvestment(r).count + r.etfErrorCount) % 10000)
       );
       return renderCell(`${optionCount} OP`, `${etfCount} ETF`);
     },

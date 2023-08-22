@@ -116,12 +116,14 @@ export const getRealInvestment = (posInfo: ETFPosInfo) => {
     firstAdditionPrice,
     additionTimes,
     monthlyAmount,
+    additionMutiple,
   } = posInfo;
   let count = realCount;
   let investMent = realInvestment;
   for (let i = 0, addPrice, addCount; i < additionTimes; i++) {
     addPrice = firstAdditionPrice * (1 - 0.1 * i);
-    addCount = Math.floor(monthlyAmount / addPrice / 100) * 100;
+    addCount =
+      Math.floor((monthlyAmount * additionMutiple) / addPrice / 100) * 100;
     count += addCount;
     investMent += addCount * addPrice;
   }
