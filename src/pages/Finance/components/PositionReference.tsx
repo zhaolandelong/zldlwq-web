@@ -86,9 +86,9 @@ const PostiionReference: React.FC<{
         name: `义${name}沽${month}月${Math.round(price * 10) * 100}`,
         margin:
           calculateEtfOpMargin({
-            settlePrice: etfInfo.settlePriceP,
-            lastClosePrice: etfInfo.stockLastClosePrice,
-            strikePrice: etfInfo.strikePrice,
+            settlePrice: etfInfo?.settlePriceP,
+            lastClosePrice: etfInfo?.stockLastClosePrice,
+            strikePrice: etfInfo?.strikePrice,
             type: 'P',
           }) *
           count *
@@ -103,9 +103,9 @@ const PostiionReference: React.FC<{
         }`,
         margin:
           calculateEtfOpMargin({
-            settlePrice: etfInfo.settlePriceC,
-            lastClosePrice: etfInfo.stockLastClosePrice,
-            strikePrice: etfInfo.strikePrice,
+            settlePrice: etfInfo?.settlePriceC,
+            lastClosePrice: etfInfo?.stockLastClosePrice,
+            strikePrice: etfInfo?.strikePrice,
             type: 'C',
           }) *
           count *
@@ -121,9 +121,9 @@ const PostiionReference: React.FC<{
         name: `义${name}沽${month}月${Math.round(additionPrice * 10) * 100}`,
         margin:
           calculateEtfOpMargin({
-            settlePrice: etfInfo.settlePriceP,
-            lastClosePrice: etfInfo.stockLastClosePrice,
-            strikePrice: etfInfo.strikePrice,
+            settlePrice: etfInfo?.settlePriceP,
+            lastClosePrice: etfInfo?.stockLastClosePrice,
+            strikePrice: etfInfo?.strikePrice,
             type: 'P',
           }) *
           countSP *
