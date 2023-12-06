@@ -138,15 +138,22 @@ const DEFAULT_LIST_QUERY = {
   source: 'WEB',
 };
 
-type ListQuery = typeof DEFAULT_LIST_QUERY;
-
 export enum StaggingType {
   STOCK,
   BOND,
   REITs,
+  BEI_JING,
 }
 
 const staggingQuery: Record<StaggingType, any> = {
+  [StaggingType.BEI_JING]: {
+    sortColumns: 'APPLY_DATE',
+    reportName: 'RPT_NEEQ_ISSUEINFO_LIST',
+    quoteColumns:
+      'f14~01~SECURITY_CODE~SECURITY_NAME_ABBR,f2~01~SECURITY_CODE,f3~01~SECURITY_CODE,NEW_CHANGE_RATE~01~SECURITY_CODE',
+    quoteType: '0',
+    source: 'NEEQSELECT',
+  },
   [StaggingType.STOCK]: {
     sortColumns: 'APPLY_DATE,SECURITY_CODE',
     sortTypes: '-1,-1',
@@ -172,7 +179,10 @@ const staggingQuery: Record<StaggingType, any> = {
   },
 };
 // https://data.eastmoney.com/xg/xg/default.html
-const listQueryStrigify = (type: StaggingType, params?: ListQuery): string =>
+const listQueryStrigify = (
+  type: StaggingType,
+  params?: Record<string, any>
+): string =>
   new URLSearchParams(
     Object.assign(
       {},
@@ -182,7 +192,7 @@ const listQueryStrigify = (type: StaggingType, params?: ListQuery): string =>
     ) as unknown as Record<string, string>
   ).toString();
 
-interface DongFangStaggingData {
+export interface DongFangStaggingData {
   SECURITY_CODE: string;
   SECURITY_NAME: string;
   TRADE_MARKET_CODE: string;
@@ -244,12 +254,20 @@ interface DongFangStaggingData {
   NEWEST_PRICE?: number | string;
 }
 
-export const fetchNewStagging = (type: StaggingType, params?: ListQuery) =>
+export interface BeiJingStaggingData extends DongFangStaggingData {
+  SECURITY_NAME_ABBR: string;
+  APPLY_AMT_100: number;
+}
+
+export const fetchNewStagging = (
+  type: StaggingType,
+  params?: Record<string, any>
+) =>
   jsonpPromise<{
     version: string;
     result: {
       pages: number;
-      data: DongFangStaggingData[];
+      data: BeiJingStaggingData[];
       count: number;
     };
     success: boolean;

@@ -5,7 +5,7 @@ import type { ColumnType } from 'antd/es/table';
 import { fetchHKStagging, type HKStaggingItem } from './services';
 import { renderCell, renderTitle } from '../../components/CellRender';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const columns: ColumnType<HKStaggingItem>[] = [
   {
