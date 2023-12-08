@@ -21,7 +21,7 @@ const routes: (RouteProps & { name: string })[] = [
     Component: Rules,
   },
   {
-    name: '测试',
+    name: '商城',
     path: 'test',
     Component: Test,
   },
