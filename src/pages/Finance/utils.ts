@@ -162,3 +162,57 @@ export const getOpDealMonths = (startYearMonth?: string) => {
   }
   return monthArr;
 };
+
+export enum TradeMonthType {
+  ETFOp,
+  IndexOp,
+  IndexFeat,
+}
+// ETF 期权、股指期权、股指期货交易月份及交割日
+export const getDealMonthsAndDates = (
+  type = TradeMonthType.ETFOp,
+  startYearMonth?: string
+) => {
+  let currMonth = moment(startYearMonth);
+  let nextMonthCount = 1;
+  let nextQuaterCount = 2;
+  let dealDateWeek = 4;
+  let dealDateDay = 3;
+  if (type === TradeMonthType.IndexOp) {
+    nextMonthCount = 2;
+    nextQuaterCount = 3;
+    dealDateWeek = 3;
+    dealDateDay = 5;
+  }
+  if (type === TradeMonthType.IndexFeat) {
+    dealDateWeek = 3;
+    dealDateDay = 5;
+  }
+  if (startYearMonth === undefined) {
+    const [currMonthDealDate] = getNthDayOfMonths(
+      [currMonth.format('YYYY-MM')],
+      dealDateWeek,
+      dealDateDay
+    );
+    if (moment().isSameOrAfter(moment(currMonthDealDate).startOf('D'))) {
+      currMonth.add(1, 'M');
+    }
+  }
+  const monthSet = new Set([currMonth.format('YYYYMM')]);
+  for (let i = 0; i < nextMonthCount; i++) {
+    monthSet.add(currMonth.add(1, 'M').format('YYYYMM'));
+  }
+  let currQuarterEnd = currMonth.clone().endOf('quarter');
+  if (currMonth.month() !== currQuarterEnd.month()) {
+    currQuarterEnd.add(-1, 'Q');
+  }
+  for (let i = 0; i < nextQuaterCount; i++) {
+    monthSet.add(currQuarterEnd.add(1, 'Q').format('YYYYMM'));
+  }
+  const months = Array.from(monthSet);
+  return {
+    type,
+    months,
+    dealDates: getNthDayOfMonths(months, dealDateWeek, dealDateDay),
+  };
+};

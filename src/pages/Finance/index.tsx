@@ -17,7 +17,7 @@ import useIndexPriceInfos from './hooks/useIndexPriceInfos';
 import useFetchPosition from './hooks/useFetchPosition';
 import { InvestBaseInfo, StockInfo } from './types';
 import { DEFAULT_INVEST_INFOS, STORAGE_KEY } from './constants';
-import { getNthDayOfMonths, getOpDealMonths } from './utils';
+import { getDealMonthsAndDates, TradeMonthType } from './utils';
 
 const { Title, Text } = Typography;
 
@@ -30,13 +30,14 @@ const getDefaultInvestInfos = (): InvestBaseInfo[] => {
 };
 
 const defaultInvestInfos = getDefaultInvestInfos();
-const opDealMonths = getOpDealMonths();
-const etfOpDealDates = getNthDayOfMonths(opDealMonths, 4, 3).filter((ym) =>
-  moment(ym).isSameOrAfter(moment().startOf('D'))
+const { dealDates: etfOpDealDates } = getDealMonthsAndDates(
+  TradeMonthType.ETFOp
 );
-// const etfOpDealDates = ['2023-07-24', '2023-08-16'].filter(ym => !moment(ym).isSameOrBefore(moment()));
-const indexOpDealDates = getNthDayOfMonths(opDealMonths, 3, 5).filter((ym) =>
-  moment(ym).isSameOrAfter(moment().startOf('D'))
+const { dealDates: indexOpDealDates } = getDealMonthsAndDates(
+  TradeMonthType.IndexOp
+);
+const { dealDates: indexFeatDealDates } = getDealMonthsAndDates(
+  TradeMonthType.IndexFeat
 );
 
 const Finance: React.FC = () => {
@@ -127,7 +128,7 @@ const Finance: React.FC = () => {
         <Col span={24} lg={10}>
           <IndexFeatTable
             stockInfos={indexPriceInfos}
-            dealDates={indexOpDealDates}
+            dealDates={indexFeatDealDates}
           />
         </Col>
       </Row>
