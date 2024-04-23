@@ -164,20 +164,22 @@ export const getOpDealMonths = (startYearMonth?: string) => {
 };
 
 export enum TradeMonthType {
-  ETFOp,
-  IndexOp,
-  IndexFeat,
+  ETFOp, // ETF 期权
+  IndexOp, // 股指期权
+  IndexFeat, // 股指期货
 }
 // ETF 期权、股指期权、股指期货交易月份及交割日
 export const getDealMonthsAndDates = (
   type = TradeMonthType.ETFOp,
-  startYearMonth?: string
+  startDate?: string
 ) => {
-  let currMonth = moment(startYearMonth);
+  const currDate = moment(startDate);
+  // 初始化参数
   let nextMonthCount = 1;
   let nextQuaterCount = 2;
   let dealDateWeek = 4;
   let dealDateDay = 3;
+  // 根据 type 重置参数
   if (type === TradeMonthType.IndexOp) {
     nextMonthCount = 2;
     nextQuaterCount = 3;
@@ -188,22 +190,23 @@ export const getDealMonthsAndDates = (
     dealDateWeek = 3;
     dealDateDay = 5;
   }
-  if (startYearMonth === undefined) {
-    const [currMonthDealDate] = getNthDayOfMonths(
-      [currMonth.format('YYYY-MM')],
-      dealDateWeek,
-      dealDateDay
-    );
-    if (moment().isSameOrAfter(moment(currMonthDealDate).startOf('D'))) {
-      currMonth.add(1, 'M');
-    }
+  // 判断起始月份
+  const [currMonthDealDate] = getNthDayOfMonths(
+    [currDate.format('YYYY-MM')],
+    dealDateWeek,
+    dealDateDay
+  );
+  if (moment().isSameOrAfter(moment(currMonthDealDate).startOf('D'))) {
+    currDate.add(1, 'M');
   }
-  const monthSet = new Set([currMonth.format('YYYYMM')]);
+  // 处理月合约
+  const monthSet = new Set([currDate.format('YYYYMM')]);
   for (let i = 0; i < nextMonthCount; i++) {
-    monthSet.add(currMonth.add(1, 'M').format('YYYYMM'));
+    monthSet.add(currDate.add(1, 'M').format('YYYYMM'));
   }
-  let currQuarterEnd = currMonth.clone().endOf('quarter');
-  if (currMonth.month() !== currQuarterEnd.month()) {
+  // 处理季合约
+  let currQuarterEnd = currDate.clone().endOf('quarter');
+  if (currDate.month() !== currQuarterEnd.month()) {
     currQuarterEnd.add(-1, 'Q');
   }
   for (let i = 0; i < nextQuaterCount; i++) {
